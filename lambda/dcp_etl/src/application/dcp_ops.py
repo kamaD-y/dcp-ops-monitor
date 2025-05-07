@@ -6,7 +6,7 @@ from src.domain.dcp_ops_domain import (
 )
 
 
-def main():
+def main() -> None:
     """確定拠出年金 Web ページをスクレイピングし、結果を整形し通知する"""
     scraper = DcpOperationsStatusScraper()
     scraper.scrape()

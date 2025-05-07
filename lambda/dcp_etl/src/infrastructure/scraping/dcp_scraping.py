@@ -5,7 +5,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
-
 from src.settings.settings import get_logger, get_settings
 
 logger = get_logger()
@@ -51,7 +50,7 @@ def get_driver() -> WebDriver:
     return driver
 
 
-def scrape(user_id: str, password: str, birthdate: str, driver=get_driver()) -> str:
+def scrape(user_id: str, password: str, birthdate: str, driver: WebDriver = get_driver()) -> str:
     """NRKページをスクレイピングし、資産情報ページをhtml形式の文字列で返却する"""
     try:
         # NRKログインページへ遷移
@@ -94,7 +93,7 @@ def scrape(user_id: str, password: str, birthdate: str, driver=get_driver()) -> 
         logger.info("driver quit.")
 
 
-def _try_login(driver: WebDriver, user_id: str, password: str, birthdate: str):
+def _try_login(driver: WebDriver, user_id: str, password: str, birthdate: str) -> None:
     """ログインを試みる"""
     user_id_input = driver.find_element(By.NAME, "userId")
     password_input = driver.find_element(By.NAME, "password")
@@ -107,7 +106,7 @@ def _try_login(driver: WebDriver, user_id: str, password: str, birthdate: str):
     login_btn.submit()
 
 
-def _try_goto_assets_page(driver: WebDriver):
+def _try_goto_assets_page(driver: WebDriver) -> None:
     """資産評価額照会ページへ遷移する"""
     menu01 = driver.find_element(By.ID, "mainMenu01")
     menu01.click()
@@ -116,7 +115,7 @@ def _try_goto_assets_page(driver: WebDriver):
     driver.find_element(By.CLASS_NAME, "total")
 
 
-def _try_logout(driver: WebDriver):
+def _try_logout(driver: WebDriver) -> None:
     """ログアウトを試みる"""
     logout_a = driver.find_element(By.LINK_TEXT, "ログアウト")
     logout_a.click()

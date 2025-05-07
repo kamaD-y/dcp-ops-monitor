@@ -1,5 +1,4 @@
 import boto3
-
 from src.settings.settings import get_logger
 
 logger = get_logger()

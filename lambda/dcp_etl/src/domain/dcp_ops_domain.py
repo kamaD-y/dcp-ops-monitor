@@ -1,8 +1,9 @@
 import os
 from datetime import datetime, timedelta
+from typing import Any, TypeGuard
 
 from bs4 import BeautifulSoup
-
+from bs4.element import Tag
 from src.domain.dcp_value_object import DcpAssetsInfo, DcpAssetsInfoProduct, DcpOpsIndicators
 from src.infrastructure.aws.sns import publish
 from src.infrastructure.aws.ssm import get_parameter
@@ -17,10 +18,14 @@ class ExtractError(Exception):
     pass
 
 
+class ElementTypeError(ExtractError):
+    pass
+
+
 class DcpOperationsStatusScraper:
     """確定拠出年金の運用状況をスクレイピングするクラス"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.html_source = None
         self.user_id = None
         self.password = None
@@ -38,7 +43,7 @@ class DcpOperationsStatusScraper:
             self.password = settings.password
             self.birthdate = settings.birthdate
 
-    def scrape(self) -> str:
+    def scrape(self) -> None:
         """スクレイピングを実行する"""
         try:
             if not self.user_id or not self.password or not self.birthdate:
@@ -54,10 +59,22 @@ class DcpOperationsStatusScraper:
 class DcpOperationStatusExtractor:
     """確定拠出年金の運用状況を抽出するクラス"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.assets_info = DcpAssetsInfo()
 
-    def extract(self, html_source):
+    def is_tag_element(self, element: Any) -> TypeGuard[Tag]:
+        """要素がタグ要素かどうかを判定する型ガード"""
+        if isinstance(element, Tag):
+            return True
+        return False
+
+    def is_tag_elements(self, elements: Any) -> TypeGuard[list[Tag]]:
+        """要素がタグ要素のリストかどうかを判定する型ガード"""
+        if isinstance(elements, list) and all(isinstance(e, Tag) for e in elements):
+            return True
+        return False
+
+    def extract(self, html_source: str) -> None:
         """スクレイピング結果から資産情報を抽出する"""
         try:
             soup = BeautifulSoup(html_source, "html.parser")
@@ -77,9 +94,12 @@ class DcpOperationStatusExtractor:
             # TODO: html_sourceをS3にアップロードする処理を追加する
             raise ExtractError("extract_assets error")
 
-    def _extract_assets_total(self, soup: BeautifulSoup) -> dict:
+    def _extract_assets_total(self, soup: BeautifulSoup) -> None:
         """総評価額を抽出する"""
         total = soup.find(class_="total")
+        if not self.is_tag_element(total):
+            raise ElementTypeError("total is not a tag element")
+
         # 拠出金額累計
         self.assets_info.total.cumulative_contributions = total.find_all("dd")[0].text
         # 評価損益
@@ -87,15 +107,32 @@ class DcpOperationStatusExtractor:
         # 資産評価額
         self.assets_info.total.total_asset_valuation = total.find_all("dd")[2].text
 
-    def _extract_assets_products(self, soup: BeautifulSoup) -> dict:
+    def _extract_assets_products(self, soup: BeautifulSoup) -> None:
         """商品別の資産評価額を抽出する"""
-        products = soup.find(id="prodInfo").find_all(class_="infoDetailUnit_02 pc_mb30")
+        product_info = soup.find(id="prodInfo")
+        if not self.is_tag_element(product_info):
+            raise ElementTypeError("product_info is not a tag element")
+
+        products = product_info.find_all(class_="infoDetailUnit_02 pc_mb30")
         logger.info(f"products count: {len(products)}")
 
-        for product in products:
-            product_name = product.find(class_="infoHdWrap00").text
+        if not self.is_tag_elements(products):
+            raise ElementTypeError("products is not a tag element list")
 
-            table_rows = product.find("tbody").find_all("tr")
+        for product in products:
+            product_elm = product.find(class_="infoHdWrap00")
+            if not self.is_tag_element(product_elm):
+                raise ElementTypeError("product_name is not a tag element")
+
+            product_name = product_elm.text.strip()
+
+            table_rows_elm = product.find("tbody")
+            if not self.is_tag_element(table_rows_elm):
+                raise ElementTypeError("table_rows is not a tag element")
+
+            table_rows = table_rows_elm.find_all("tr")
+            if not self.is_tag_elements(table_rows):
+                raise ElementTypeError("table_rows is not a tag element list")
 
             self.assets_info.products[product_name] = DcpAssetsInfoProduct()
 
@@ -115,7 +152,7 @@ class DcpOperationStatusExtractor:
 class DcpOperationStatusTransformer:
     """確定拠出年金の運用状況を変換するクラス"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.operational_indicators = DcpOpsIndicators()
 
     def transform(self, assets_info: DcpAssetsInfo) -> None:
@@ -140,8 +177,8 @@ class DcpOperationStatusTransformer:
 
         # 60歳まで運用した場合の想定受取額, 60歳までの運用年数: 26年とする
         # 計算式: 24万(年積立額) * (((1+利回り)**年数26年 - 1) / 利回り)
-        total_amount_at_60age = int(240000 * (((1 + actual_yield_rate) ** 26 - 1) / actual_yield_rate))
-        total_amount_at_60age = "{:,.0f}".format(total_amount_at_60age) + "円"
+        total_amount_at_60age_int = int(240000 * (((1 + actual_yield_rate) ** 26 - 1) / actual_yield_rate))
+        total_amount_at_60age = f"{total_amount_at_60age_int:,.0f}円"
 
         # 計算した値で運用指標を更新
         self.operational_indicators.operation_years = operation_years
@@ -160,7 +197,7 @@ class DcpOperationStatusTransformer:
 class DcpOperationStatusNotifier:
     """確定拠出年金の運用状況を通知するクラス"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     def make_message(self, assets_info: DcpAssetsInfo, operational_indicators: DcpOpsIndicators) -> str:
@@ -186,7 +223,7 @@ class DcpOperationStatusNotifier:
 
         return message
 
-    def notify(self, message) -> str:
+    def notify(self, message: str) -> None:
         """通知用メッセージを作成する"""
         publish(
             topic_arn=settings.sns_topic_arn,
