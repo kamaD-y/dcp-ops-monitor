@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
-from src.settings.settings import get_logger, get_settings
+from settings.settings import get_logger, get_settings
 
 logger = get_logger()
 settings = get_settings()

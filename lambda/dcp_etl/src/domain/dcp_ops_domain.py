@@ -4,11 +4,11 @@ from typing import Any, TypeGuard
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from src.domain.dcp_value_object import DcpAssetsInfo, DcpAssetsInfoProduct, DcpOpsIndicators
-from src.infrastructure.aws.sns import publish
-from src.infrastructure.aws.ssm import get_parameter
-from src.infrastructure.scraping.dcp_scraping import ScrapingError, scrape
-from src.settings.settings import get_logger, get_settings
+from domain.dcp_value_object import DcpAssetsInfo, DcpAssetsInfoProduct, DcpOpsIndicators
+from infrastructure.aws.sns import publish
+from infrastructure.aws.ssm import get_parameter
+from infrastructure.scraping.dcp_scraping import ScrapingError, scrape
+from settings.settings import get_logger, get_settings
 
 logger = get_logger()
 settings = get_settings()

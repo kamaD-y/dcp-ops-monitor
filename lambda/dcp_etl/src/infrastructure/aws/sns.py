@@ -1,5 +1,5 @@
 import boto3
-from src.settings.settings import get_logger
+from settings.settings import get_logger
 
 logger = get_logger()
 sns_client = boto3.client("sns", region_name="ap-northeast-1")

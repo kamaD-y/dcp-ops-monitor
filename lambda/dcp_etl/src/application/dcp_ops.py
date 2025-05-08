@@ -1,4 +1,4 @@
-from src.domain.dcp_ops_domain import (
+from domain.dcp_ops_domain import (
     DcpOperationsStatusScraper,
     DcpOperationStatusExtractor,
     DcpOperationStatusNotifier,

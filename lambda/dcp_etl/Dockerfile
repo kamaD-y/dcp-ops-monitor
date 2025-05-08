@@ -28,7 +28,7 @@ RUN python3.13 -m pip install -r requirements.txt -t .
 RUN /var/task/selenium/webdriver/common/linux/selenium-manager --browser chrome --cache-path /opt
 
 # 実行用ファイルをコピー
-COPY ./src ./src
+COPY ./src ./
 
 # Command can be overwritten by providing a different command in the template directly.
-CMD ["src.handler.handler"]
+CMD ["handler.handler"]

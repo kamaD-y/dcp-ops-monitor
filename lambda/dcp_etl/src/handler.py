@@ -1,6 +1,6 @@
+from application.dcp_ops import main
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from src.application.dcp_ops import main
-from src.settings.settings import get_logger
+from settings.settings import get_logger
 
 logger = get_logger()
 

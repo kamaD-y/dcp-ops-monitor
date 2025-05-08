@@ -2,7 +2,7 @@ import json
 from typing import Any, Dict
 
 import boto3
-from src.settings.settings import get_logger
+from settings.settings import get_logger
 
 logger = get_logger()
 client = boto3.client("ssm")
