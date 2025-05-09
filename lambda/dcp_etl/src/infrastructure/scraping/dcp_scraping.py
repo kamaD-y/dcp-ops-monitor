@@ -17,8 +17,15 @@ class ScrapingError(Exception):
         self.error_image_path = error_image_path
 
 
-def get_driver() -> WebDriver:
+def get_chrome_driver(
+    chrome_path: str = "/opt/chrome/linux64/*/chrome", driver_path: str = "/opt/chromedriver/linux64/*/chromedriver"
+) -> WebDriver:
     """WebDriverを取得する"""
+    if not glob.glob(chrome_path):
+        raise FileNotFoundError(f"Chrome binary path not found: {chrome_path}")
+    if not glob.glob(driver_path):
+        raise FileNotFoundError(f"ChromeDriver binary not found: {driver_path}")
+
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--disable-gpu")
@@ -37,10 +44,10 @@ def get_driver() -> WebDriver:
     chrome_options.add_argument("--single-process")
     chrome_options.add_argument(f"--user-agent={settings.user_agent}")
 
-    chrome_binary_path = glob.glob("/opt/chrome/linux64/*/chrome")[0]
+    chrome_binary_path = glob.glob(chrome_path)[0]
     chrome_options.binary_location = chrome_binary_path
 
-    driver_path = glob.glob("/opt/chromedriver/linux64/*/chromedriver")[0]
+    driver_path = glob.glob(driver_path)[0]
 
     service = ChromeService(driver_path)
     driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -50,7 +57,7 @@ def get_driver() -> WebDriver:
     return driver
 
 
-def scrape(user_id: str, password: str, birthdate: str, driver: WebDriver = get_driver()) -> str:
+def scrape(user_id: str, password: str, birthdate: str, driver: WebDriver) -> str:
     """NRKページをスクレイピングし、資産情報ページをhtml形式の文字列で返却する"""
     try:
         # NRKログインページへ遷移

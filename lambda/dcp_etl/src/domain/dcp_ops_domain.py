@@ -7,7 +7,7 @@ from bs4.element import Tag
 from domain.dcp_value_object import DcpAssetsInfo, DcpAssetsInfoProduct, DcpOpsIndicators
 from infrastructure.aws.sns import publish
 from infrastructure.aws.ssm import get_parameter
-from infrastructure.scraping.dcp_scraping import ScrapingError, scrape
+from infrastructure.scraping.dcp_scraping import ScrapingError, get_chrome_driver, scrape
 from settings.settings import get_logger, get_settings
 
 logger = get_logger()
@@ -49,7 +49,8 @@ class DcpOperationsStatusScraper:
             if not self.user_id or not self.password or not self.birthdate:
                 raise ScrapingError("user_id, password, and birthdate must be set.")
 
-            self.html_source = scrape(self.user_id, self.password.get_secret_value(), self.birthdate)
+            driver = get_chrome_driver()
+            self.html_source = scrape(self.user_id, self.password.get_secret_value(), self.birthdate, driver)
         except ScrapingError:
             logger.exception("scrape error")
             # TODO: e.error_image_path の画像をS3にアップロードする処理を追加する
