@@ -4,7 +4,7 @@ from typing import Any, Dict, TypeGuard
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from domain.dcp_value_object import DcpAssetsInfo, DcpAssetsInfoProduct, DcpAssetsInfoTotal, DcpOpsIndicators
+from domain.dcp_value_object import DcpAssetsInfo, DcpOpsIndicators, DcpProductAssets, DcpTotalAssets
 from infrastructure.aws.sns import publish
 from infrastructure.aws.ssm import get_parameter
 from infrastructure.scraping.dcp_scraping import ScrapingError, get_chrome_driver, scrape
@@ -96,7 +96,7 @@ class DcpOperationStatusExtractor:
             # TODO: html_sourceをS3にアップロードする処理を追加する
             raise ExtractError("extract_assets error")
 
-    def _extract_total_assets(self, soup: BeautifulSoup) -> DcpAssetsInfoTotal:
+    def _extract_total_assets(self, soup: BeautifulSoup) -> DcpTotalAssets:
         """総評価額を抽出する"""
         logger.info("_extract_total_assets start.")
 
@@ -104,18 +104,18 @@ class DcpOperationStatusExtractor:
         if not self.is_tag_element(total):
             raise ElementTypeError("total is not a tag element")
 
-        assets_total = DcpAssetsInfoTotal(
+        total_assets = DcpTotalAssets(
             cumulative_contributions=total.find_all("dd")[0].text,
             total_gains_or_losses=total.find_all("dd")[1].text,
             total_asset_valuation=total.find_all("dd")[2].text,
         )
         logger.info(
             "_extract_total_assets end.",
-            extra=assets_total.__dict__,
+            extra=total_assets.__dict__,
         )
-        return assets_total
+        return total_assets
 
-    def _extract_product_assets(self, soup: BeautifulSoup) -> Dict[str, DcpAssetsInfoProduct]:
+    def _extract_product_assets(self, soup: BeautifulSoup) -> Dict[str, DcpProductAssets]:
         """商品別の資産評価額を抽出する"""
         logger.info("_extract_product_assets start.")
 
@@ -127,7 +127,7 @@ class DcpOperationStatusExtractor:
         if not self.is_tag_elements(products):
             raise ElementTypeError("products is not a tag element list")
 
-        assets_each_product: Dict[str, DcpAssetsInfoProduct] = {}
+        assets_each_product: Dict[str, DcpProductAssets] = {}
         for product in products:
             table_body = product.find("tbody")
             if not self.is_tag_element(table_body):
@@ -137,7 +137,7 @@ class DcpOperationStatusExtractor:
             if not self.is_tag_elements(table_rows):
                 raise ElementTypeError("table_rows is not a tag element list")
 
-            assets_info_product = DcpAssetsInfoProduct(
+            product_assets = DcpProductAssets(
                 cumulative_acquisition_costs=table_rows[2].find_all("td")[-1].text,
                 gains_or_losses=table_rows[5].find_all("td")[-1].text,
                 asset_valuation=table_rows[2].find_all("td")[2].text,
@@ -148,10 +148,10 @@ class DcpOperationStatusExtractor:
                 raise ElementTypeError("product_info is not a tag element")
 
             product_name = product_info.text.strip()
-            assets_each_product[product_name] = assets_info_product
+            assets_each_product[product_name] = product_assets
             logger.debug(
                 f"product asset info: {product_name}.",
-                extra=assets_info_product.__dict__,
+                extra=product_assets.__dict__,
             )
 
         logger.info(
