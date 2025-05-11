@@ -20,7 +20,15 @@ class ScrapingError(Exception):
 def get_chrome_driver(
     chrome_path: str = "/opt/chrome/linux64/*/chrome", driver_path: str = "/opt/chromedriver/linux64/*/chromedriver"
 ) -> WebDriver:
-    """WebDriverを取得する"""
+    """WebDriverを取得する
+
+    Args:
+        chrome_path (str): Chromeのパス
+        driver_path (str): ChromeDriverのパス
+
+    Returns:
+        WebDriver: ChromeのWebDriver
+    """
     if not glob.glob(chrome_path):
         raise FileNotFoundError(f"Chrome binary path not found: {chrome_path}")
     if not glob.glob(driver_path):
@@ -58,9 +66,19 @@ def get_chrome_driver(
 
 
 def scrape(user_id: str, password: str, birthdate: str, driver: WebDriver) -> str:
-    """NRKページをスクレイピングし、資産情報ページをhtml形式の文字列で返却する"""
+    """日本レコードキーピング(NRK)ページをスクレイピングし、資産情報ページをhtml形式の文字列で返却する
+
+    Args:
+        user_id (str): ログイン用ユーザーID
+        password (str): ログイン用パスワード
+        birthdate (str): ログイン用生年月日
+        driver (WebDriver): ChromeのWebDriver
+
+    Returns:
+        str: 資産情報ページのhtml
+    """
     try:
-        # NRKログインページへ遷移
+        # ログインページへ遷移
         driver.get(settings.login_url)
 
         # ログイン
@@ -97,7 +115,17 @@ def scrape(user_id: str, password: str, birthdate: str, driver: WebDriver) -> st
 
 
 def _try_login(driver: WebDriver, user_id: str, password: str, birthdate: str) -> None:
-    """ログインを試みる"""
+    """ログインを試みる
+
+    Args:
+        driver (WebDriver): ChromeのWebDriver
+        user_id (str): ログイン用ユーザーID
+        password (str): ログイン用パスワード
+        birthdate (str): ログイン用生年月日
+
+    Returns:
+        None
+    """
     logger.info("_try_login start.")
 
     user_id_input = driver.find_element(By.NAME, "userId")
@@ -114,7 +142,14 @@ def _try_login(driver: WebDriver, user_id: str, password: str, birthdate: str) -
 
 
 def _try_goto_assets_page(driver: WebDriver) -> None:
-    """資産評価額照会ページへ遷移する"""
+    """資産評価額照会ページへ遷移する
+
+    Args:
+        driver (WebDriver): ChromeのWebDriver
+
+    Returns:
+        None
+    """
     logger.info("_try_goto_assets_page start.")
 
     menu01 = driver.find_element(By.ID, "mainMenu01")
@@ -127,7 +162,14 @@ def _try_goto_assets_page(driver: WebDriver) -> None:
 
 
 def _try_logout(driver: WebDriver) -> None:
-    """ログアウトを試みる"""
+    """ログアウトを試みる
+
+    Args:
+        driver (WebDriver): ChromeのWebDriver
+
+    Returns:
+        None
+    """
     logger.info("_try_logout start.")
 
     logout_a = driver.find_element(By.LINK_TEXT, "ログアウト")

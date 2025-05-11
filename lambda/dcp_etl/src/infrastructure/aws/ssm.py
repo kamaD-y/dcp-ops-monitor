@@ -9,11 +9,10 @@ client = boto3.client("ssm")
 
 
 def get_parameter(parameter_arn: str) -> Dict[str, Any]:
-    """
-    Parameter Storeから設定を読み込む
+    """Parameter Storeから設定を読み込む
 
     Args:
-        parameter_arn: Parameter StoreのARN
+        parameter_arn (str): Parameter StoreのARN
 
     Returns:
         Dict[str, Any]: 読み込んだパラメータ、失敗時は空辞書

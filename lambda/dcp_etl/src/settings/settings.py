@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from aws_lambda_powertools import Logger
 from pydantic import Field, SecretStr
@@ -6,7 +6,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 def get_logger(logger: Logger = Logger()) -> Logger:
-    """Loggerのインスタンスを取得する"""
+    """Loggerのインスタンスを取得する
+
+    Args:
+        logger (Logger, optional): Loggerのインスタンス. Defaults to Logger().
+
+    Returns:
+        Logger: Loggerのインスタンス
+    """
     return logger
 
 
@@ -43,9 +50,14 @@ class ScrapingSettings(BaseSettings):
 
 # TODO: Anyを具体的な型への置き換えを検討
 def get_settings(settings_instance: ScrapingSettings = ScrapingSettings(), **kwargs: Any) -> ScrapingSettings:
-    """
-    設定インスタンスを取得する
-    初回呼び出し時にParameter Storeからの設定読み込みも行う
+    """設定インスタンスを取得する
+
+    Args:
+        settings_instance (ScrapingSettings, optional): 設定インスタンス. Defaults to ScrapingSettings().
+        **kwargs (Any): その他のキーワード引数
+
+    Returns:
+        ScrapingSettings: 設定インスタンス
     """
     if kwargs:
         settings_instance = ScrapingSettings(**kwargs)
