@@ -168,9 +168,9 @@ class DcpOperationStatusTransformer:
     """確定拠出年金の運用状況を変換するクラス"""
 
     def __init__(self) -> None:
-        self.operational_indicators = DcpOpsIndicators()
+        pass
 
-    def transform(self, assets_info: DcpAssetsInfo) -> None:
+    def transform(self, assets_info: DcpAssetsInfo) -> DcpOpsIndicators:
         """資産情報を変換する"""
 
         if not assets_info.total:
@@ -195,14 +195,16 @@ class DcpOperationStatusTransformer:
         total_amount_at_60age_int = int(240000 * (((1 + actual_yield_rate) ** 26 - 1) / actual_yield_rate))
         total_amount_at_60age = f"{total_amount_at_60age_int:,.0f}円"
 
-        # 計算した値で運用指標を更新
-        self.operational_indicators.operation_years = operation_years
-        self.operational_indicators.actual_yield_rate = actual_yield_rate
-        self.operational_indicators.total_amount_at_60age = total_amount_at_60age
-        logger.info(
-            "operational_indicators",
-            operational_indicators=self.operational_indicators,
+        # 計算した値で運用指標オブジェクトを作成
+        operational_indicators = DcpOpsIndicators(
+            operation_years=operation_years,
+            actual_yield_rate=actual_yield_rate,
+            expected_yield_rate=0.06,
+            total_amount_at_60age=total_amount_at_60age,
         )
+        logger.info("operational_indicators.", extra=operational_indicators.__dict__)
+
+        return operational_indicators
 
     def yen_to_int(self, yen: str) -> int:
         """円表記の文字列を数値に変換する"""
