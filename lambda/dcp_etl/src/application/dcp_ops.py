@@ -16,7 +16,7 @@ def main() -> None:
 
     transformer = DcpOperationStatusTransformer()
     operational_indicators = transformer.transform(assets_info)
+    message = transformer.make_message(assets_info, operational_indicators)
 
     notifier = DcpOperationStatusNotifier()
-    message = notifier.make_message(assets_info, operational_indicators)
     notifier.notify(message)

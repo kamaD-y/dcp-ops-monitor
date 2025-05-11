@@ -10,7 +10,7 @@ from src.domain.dcp_ops_domain import (
     DcpOperationStatusTransformer,
     ExtractError,
 )
-from src.domain.dcp_value_object import DcpAssetsInfo
+from src.domain.dcp_value_object import DcpAssetsInfo, DcpOpsIndicators
 
 """
 Scraperのテスト
@@ -167,3 +167,17 @@ def test_yen_to_int__invalid_str(yen_str: str) -> None:
     # when, then
     with pytest.raises(ValueError):
         transformer.yen_to_int(yen_str)
+
+
+def test_make_message__valid_args(valid_assets_info: DcpAssetsInfo, valid_ops_indicators: DcpOpsIndicators) -> None:
+    # given
+    transformer = DcpOperationStatusTransformer()
+
+    # when
+    message = transformer.make_message(valid_assets_info, valid_ops_indicators)
+
+    # then
+    assert isinstance(message, str)
+    assert message.startswith("確定拠出年金 運用状況通知Bot")
+    assert "総評価" in message
+    assert "商品別" in message

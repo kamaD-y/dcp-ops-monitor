@@ -274,13 +274,6 @@ class DcpOperationStatusTransformer:
         """
         return int(yen.replace("円", "").replace(",", ""))
 
-
-class DcpOperationStatusNotifier:
-    """確定拠出年金の運用状況を通知するクラス"""
-
-    def __init__(self) -> None:
-        pass
-
     def make_message(self, assets_info: DcpAssetsInfo, operational_indicators: DcpOpsIndicators) -> str:
         """通知用メッセージを作成する
 
@@ -312,6 +305,13 @@ class DcpOperationStatusNotifier:
             message += "\n"
 
         return message
+
+
+class DcpOperationStatusNotifier:
+    """確定拠出年金の運用状況を通知するクラス"""
+
+    def __init__(self) -> None:
+        pass
 
     def notify(self, message: str) -> None:
         """通知用メッセージを作成する"""
