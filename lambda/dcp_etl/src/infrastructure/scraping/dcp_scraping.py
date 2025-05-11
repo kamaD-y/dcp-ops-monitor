@@ -61,15 +61,12 @@ def scrape(user_id: str, password: str, birthdate: str, driver: WebDriver) -> st
     """NRKページをスクレイピングし、資産情報ページをhtml形式の文字列で返却する"""
     try:
         # NRKログインページへ遷移
-        logger.info("try goto login page...")
         driver.get(settings.login_url)
 
         # ログイン
-        logger.info("try login...")
         _try_login(driver, user_id, password, birthdate)
 
         # 資産評価額照会ページへ遷移
-        logger.info("try goto assets page...")
         _try_goto_assets_page(driver)
 
         # 資産評価額照会ページをhtmlに出力
@@ -77,7 +74,6 @@ def scrape(user_id: str, password: str, birthdate: str, driver: WebDriver) -> st
 
         try:
             # ログアウト
-            logger.info("try logout...")
             _try_logout(driver)
         except Exception:
             # スクレイピングの目的は達成している為、ログアウトに失敗してもエラー通知のみとし処理を続行する
@@ -102,6 +98,8 @@ def scrape(user_id: str, password: str, birthdate: str, driver: WebDriver) -> st
 
 def _try_login(driver: WebDriver, user_id: str, password: str, birthdate: str) -> None:
     """ログインを試みる"""
+    logger.info("_try_login start.")
+
     user_id_input = driver.find_element(By.NAME, "userId")
     password_input = driver.find_element(By.NAME, "password")
     birthdate_input = driver.find_element(By.NAME, "birthDate")
@@ -112,17 +110,27 @@ def _try_login(driver: WebDriver, user_id: str, password: str, birthdate: str) -
     login_btn = driver.find_element(By.ID, "btnLogin")
     login_btn.submit()
 
+    logger.info("_try_login end.")
+
 
 def _try_goto_assets_page(driver: WebDriver) -> None:
     """資産評価額照会ページへ遷移する"""
+    logger.info("_try_goto_assets_page start.")
+
     menu01 = driver.find_element(By.ID, "mainMenu01")
     menu01.click()
 
     # class=totalの要素が表示されるまで待機.暗黙的に待機時間を設定している為、ここでは明示的に待機処理は不要
     driver.find_element(By.CLASS_NAME, "total")
 
+    logger.info("_try_goto_assets_page end.")
+
 
 def _try_logout(driver: WebDriver) -> None:
     """ログアウトを試みる"""
+    logger.info("_try_logout start.")
+
     logout_a = driver.find_element(By.LINK_TEXT, "ログアウト")
     logout_a.click()
+
+    logger.info("_try_logout end.")
