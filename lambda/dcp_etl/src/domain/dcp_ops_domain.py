@@ -26,31 +26,30 @@ class DcpOperationsStatusScraper:
     """確定拠出年金の運用状況をスクレイピングするクラス"""
 
     def __init__(self) -> None:
-        self.html_source = None
-        self.user_id = None
-        self.password = None
-        self.birthdate = None
+        self.user_id = settings.user_id
+        self.password = settings.password
+        self.birthdate = settings.birthdate
 
         if os.getenv("LOGIN_PARAMETER_ARN"):
             parameters = get_parameter(os.getenv("LOGIN_PARAMETER_ARN"))
             if parameters:
                 os.environ["USER_ID"] = parameters.get("USER_ID")
                 os.environ["PASSWORD"] = parameters.get("PASSWORD")
-            settings = get_settings(
+            updated_settings = get_settings(
                 user_id=os.getenv("USER_ID"), password=os.getenv("PASSWORD"), birthdate=os.getenv("BIRTHDATE")
             )
-            self.user_id = settings.user_id
-            self.password = settings.password
-            self.birthdate = settings.birthdate
+            self.user_id = updated_settings.user_id
+            self.password = updated_settings.password
+            self.birthdate = updated_settings.birthdate
 
-    def scrape(self) -> None:
+    def scrape(self) -> str:
         """スクレイピングを実行する"""
         try:
             if not self.user_id or not self.password or not self.birthdate:
                 raise ScrapingError("user_id, password, and birthdate must be set.")
 
             driver = get_chrome_driver()
-            self.html_source = scrape(self.user_id, self.password.get_secret_value(), self.birthdate, driver)
+            return scrape(self.user_id, self.password.get_secret_value(), self.birthdate, driver)
         except ScrapingError:
             logger.exception("scrape error")
             # TODO: e.error_image_path の画像をS3にアップロードする処理を追加する

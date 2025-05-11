@@ -9,10 +9,10 @@ from domain.dcp_ops_domain import (
 def main() -> None:
     """確定拠出年金 Web ページをスクレイピングし、結果を整形し通知する"""
     scraper = DcpOperationsStatusScraper()
-    scraper.scrape()
+    html_source = scraper.scrape()
 
     extractor = DcpOperationStatusExtractor()
-    assets_info = extractor.extract(scraper.html_source)
+    assets_info = extractor.extract(html_source)
 
     transformer = DcpOperationStatusTransformer()
     operational_indicators = transformer.transform(assets_info)
