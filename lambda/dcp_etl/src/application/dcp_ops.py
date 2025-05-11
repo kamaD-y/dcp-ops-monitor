@@ -12,11 +12,11 @@ def main() -> None:
     scraper.scrape()
 
     extractor = DcpOperationStatusExtractor()
-    extractor.extract(scraper.html_source)
+    assets_info = extractor.extract(scraper.html_source)
 
     transformer = DcpOperationStatusTransformer()
-    transformer.transform(extractor.assets_info)
+    transformer.transform(assets_info)
 
     notifier = DcpOperationStatusNotifier()
-    message = notifier.make_message(extractor.assets_info, transformer.operational_indicators)
+    message = notifier.make_message(assets_info, transformer.operational_indicators)
     notifier.notify(message)

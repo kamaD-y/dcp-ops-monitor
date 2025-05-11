@@ -1,10 +1,10 @@
 import os
 from datetime import datetime, timedelta
-from typing import Any, TypeGuard
+from typing import Any, Dict, TypeGuard
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from domain.dcp_value_object import DcpAssetsInfo, DcpAssetsInfoProduct, DcpOpsIndicators
+from domain.dcp_value_object import DcpAssetsInfo, DcpAssetsInfoProduct, DcpAssetsInfoTotal, DcpOpsIndicators
 from infrastructure.aws.sns import publish
 from infrastructure.aws.ssm import get_parameter
 from infrastructure.scraping.dcp_scraping import ScrapingError, get_chrome_driver, scrape
@@ -61,7 +61,7 @@ class DcpOperationStatusExtractor:
     """確定拠出年金の運用状況を抽出するクラス"""
 
     def __init__(self) -> None:
-        self.assets_info = DcpAssetsInfo()
+        pass
 
     def is_tag_element(self, element: Any) -> TypeGuard[Tag]:
         """要素がタグ要素かどうかを判定する型ガード"""
@@ -75,79 +75,93 @@ class DcpOperationStatusExtractor:
             return True
         return False
 
-    def extract(self, html_source: str) -> None:
+    def extract(self, html_source: str) -> DcpAssetsInfo:
         """スクレイピング結果から資産情報を抽出する"""
         try:
             soup = BeautifulSoup(html_source, "html.parser")
 
             # 総評価額を取得
-            logger.info("extract total...")
-            self._extract_assets_total(soup)
-            logger.debug("asset_info total.", total=self.assets_info.total)
+            total_assets = self._extract_total_assets(soup)
 
             # 商品別
-            logger.info("extract products...")
-            self._extract_assets_products(soup)
-            logger.debug("asset_info products.", products=self.assets_info.products)
+            assets_each_product = self._extract_product_assets(soup)
+
+            return DcpAssetsInfo(
+                total=total_assets,
+                products=assets_each_product,
+            )
 
         except Exception:
             logger.exception("extract_assets error")
             # TODO: html_sourceをS3にアップロードする処理を追加する
             raise ExtractError("extract_assets error")
 
-    def _extract_assets_total(self, soup: BeautifulSoup) -> None:
+    def _extract_total_assets(self, soup: BeautifulSoup) -> DcpAssetsInfoTotal:
         """総評価額を抽出する"""
+        logger.info("_extract_total_assets start.")
+
         total = soup.find(class_="total")
         if not self.is_tag_element(total):
             raise ElementTypeError("total is not a tag element")
 
-        # 拠出金額累計
-        self.assets_info.total.cumulative_contributions = total.find_all("dd")[0].text
-        # 評価損益
-        self.assets_info.total.total_gains_or_losses = total.find_all("dd")[1].text
-        # 資産評価額
-        self.assets_info.total.total_asset_valuation = total.find_all("dd")[2].text
+        assets_total = DcpAssetsInfoTotal(
+            cumulative_contributions=total.find_all("dd")[0].text,
+            total_gains_or_losses=total.find_all("dd")[1].text,
+            total_asset_valuation=total.find_all("dd")[2].text,
+        )
+        logger.info(
+            "_extract_total_assets end.",
+            extra=assets_total.__dict__,
+        )
+        return assets_total
 
-    def _extract_assets_products(self, soup: BeautifulSoup) -> None:
+    def _extract_product_assets(self, soup: BeautifulSoup) -> Dict[str, DcpAssetsInfoProduct]:
         """商品別の資産評価額を抽出する"""
+        logger.info("_extract_product_assets start.")
+
         product_info = soup.find(id="prodInfo")
         if not self.is_tag_element(product_info):
             raise ElementTypeError("product_info is not a tag element")
 
         products = product_info.find_all(class_="infoDetailUnit_02 pc_mb30")
-        logger.info(f"products count: {len(products)}")
-
         if not self.is_tag_elements(products):
             raise ElementTypeError("products is not a tag element list")
 
+        assets_each_product: Dict[str, DcpAssetsInfoProduct] = {}
         for product in products:
-            product_elm = product.find(class_="infoHdWrap00")
-            if not self.is_tag_element(product_elm):
-                raise ElementTypeError("product_name is not a tag element")
+            table_body = product.find("tbody")
+            if not self.is_tag_element(table_body):
+                raise ElementTypeError("table_body is not a tag element")
 
-            product_name = product_elm.text.strip()
-
-            table_rows_elm = product.find("tbody")
-            if not self.is_tag_element(table_rows_elm):
-                raise ElementTypeError("table_rows is not a tag element")
-
-            table_rows = table_rows_elm.find_all("tr")
+            table_rows = table_body.find_all("tr")
             if not self.is_tag_elements(table_rows):
                 raise ElementTypeError("table_rows is not a tag element list")
 
-            self.assets_info.products[product_name] = DcpAssetsInfoProduct()
-
-            # 取得価額累計 テーブル3行目の最終列の要素
-            self.assets_info.products[product_name].cumulative_acquisition_costs = table_rows[2].find_all("td")[-1].text
-            # 損益 テーブル6行目の最終列の要素
-            self.assets_info.products[product_name].gains_or_losses = table_rows[5].find_all("td")[-1].text
-            # 資産評価額 テーブル3行目の3列目の要素
-            self.assets_info.products[product_name].asset_valuation = table_rows[2].find_all("td")[2].text
-
-            logger.debug(
-                f"product_info {product_name}.",
-                product_info=self.assets_info.products[product_name],
+            assets_info_product = DcpAssetsInfoProduct(
+                cumulative_acquisition_costs=table_rows[2].find_all("td")[-1].text,
+                gains_or_losses=table_rows[5].find_all("td")[-1].text,
+                asset_valuation=table_rows[2].find_all("td")[2].text,
             )
+
+            product_info = product.find(class_="infoHdWrap00")
+            if not self.is_tag_element(product_info):
+                raise ElementTypeError("product_info is not a tag element")
+
+            product_name = product_info.text.strip()
+            assets_each_product[product_name] = assets_info_product
+            logger.debug(
+                f"product asset info: {product_name}.",
+                extra=assets_info_product.__dict__,
+            )
+
+        logger.info(
+            "_extract_product_assets end.",
+            extra={
+                "product_count": len(assets_each_product),
+                "product_names": list(assets_each_product.keys()),
+            },
+        )
+        return assets_each_product
 
 
 class DcpOperationStatusTransformer:
