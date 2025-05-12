@@ -35,6 +35,7 @@ class DcpOperationsStatusScraper:
             if parameters:
                 os.environ["USER_ID"] = parameters.get("USER_ID")
                 os.environ["PASSWORD"] = parameters.get("PASSWORD")
+                os.environ["BIRTHDATE"] = parameters.get("BIRTHDATE")
             updated_settings = get_settings(
                 user_id=os.getenv("USER_ID"), password=os.getenv("PASSWORD"), birthdate=os.getenv("BIRTHDATE")
             )
