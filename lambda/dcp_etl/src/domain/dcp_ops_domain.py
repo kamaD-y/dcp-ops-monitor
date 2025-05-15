@@ -5,6 +5,7 @@ from typing import Any, Dict, TypeGuard
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from domain.dcp_value_object import DcpAssetsInfo, DcpOpsIndicators, DcpProductAssets, DcpTotalAssets
+from infrastructure.aws.s3 import upload_file
 from infrastructure.aws.sns import publish
 from infrastructure.aws.ssm import get_parameter
 from infrastructure.scraping.dcp_scraping import ScrapingError, get_chrome_driver, scrape
@@ -58,9 +59,15 @@ class DcpOperationsStatusScraper:
 
             driver = get_chrome_driver()
             return scrape(self.user_id, self.password.get_secret_value(), self.birthdate, driver)
-        except ScrapingError:
-            logger.exception("scrape error")
-            # TODO: e.error_image_path の画像をS3にアップロードする処理を追加する
+        except ScrapingError as e:
+            key = "error_image.png"
+            s3_uri = f"s3://{settings.s3_bucket_name}/{key}"
+            logger.exception(f"An error occurred during the scraping process. Please check {s3_uri} for error details.")
+            upload_file(
+                bucket=settings.s3_bucket_name,
+                key=key,
+                file_path=e.error_image_path,
+            )
             raise
 
 

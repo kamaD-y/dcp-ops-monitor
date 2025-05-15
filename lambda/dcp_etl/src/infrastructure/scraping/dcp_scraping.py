@@ -98,7 +98,7 @@ def scrape(user_id: str, password: str, birthdate: str, driver: WebDriver) -> st
             logger.exception("logout error")
             error_image = "/tmp/error.png"
             driver.save_screenshot(error_image)
-            # TODO: S3にエラー画像をアップロードする
+            raise ScrapingError(error_image_path=error_image)
 
         return page_source
 
@@ -106,7 +106,6 @@ def scrape(user_id: str, password: str, birthdate: str, driver: WebDriver) -> st
         logger.exception("scrape_nrk error")
         error_image = "/tmp/error.png"
         driver.save_screenshot(error_image)
-        # TODO: S3にエラー画像をアップロードする
         raise ScrapingError(error_image_path=error_image)
 
     finally:
