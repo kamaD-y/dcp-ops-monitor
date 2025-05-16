@@ -24,6 +24,7 @@ def test_scrape__get_parameter_called_when_login_parameter_arn_set(mocker: Mocke
     mock_get_parameter.return_value = {
         "USER_ID": "dummy_user_id",
         "PASSWORD": "dummy_password",
+        "BIRTHDATE": "20200101",
     }
 
     # when
@@ -33,6 +34,7 @@ def test_scrape__get_parameter_called_when_login_parameter_arn_set(mocker: Mocke
     mock_get_parameter.assert_called_once_with("arn:aws:ssm:us-east-1:123456789012:parameter/test")
     assert scraper.user_id == "dummy_user_id"
     assert scraper.password.get_secret_value() == "dummy_password"
+    assert scraper.birthdate == "20200101"
 
 
 def test_scrape__get_parameter_not_called_when_login_parameter_arn_not_set(mocker: MockerFixture) -> None:
