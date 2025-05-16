@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import { DcpOpsMonitorStack } from '../lib/dcp-ops-status-notification-stack';
+import { DcpOpsMonitorStack } from '../lib/dcp-ops-monitor-stack';
 
 const app = new cdk.App();
 new DcpOpsMonitorStack(app, 'DcpOpsMonitorStack', {

@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest",
+    "test:cdk": "jest --testPathPattern ./test/cdk/*.test.ts",
     "cdk": "cdk",
     "lint": "eslint . --fix",
     "lint:ci": "eslint .",
