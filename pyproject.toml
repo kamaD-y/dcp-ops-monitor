@@ -11,6 +11,7 @@ packages = [
 
 [tool.ruff]
 line-length = 120
+include = ["**/*.py"]
 exclude = [".venv", "tests"]
 target-version = "py313"
 

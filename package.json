@@ -8,11 +8,12 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test:cdk": "jest --testPathPattern ./test/cdk/*.test.ts",
+    "test:unit": "cd lambda/dcp_etl && uv run pytest -v --tb=short --disable-warnings --maxfail=1",
     "cdk": "cdk",
-    "lint": "eslint . --fix",
-    "lint:ci": "eslint .",
-    "format": "prettier --write .",
-    "format:ci": "prettier --check ."
+    "lint": "eslint . --fix && uvx ruff check",
+    "lint:ci": "eslint . && uvx ruff check --no-fix",
+    "format": "prettier --write . && uvx ruff format",
+    "format:ci": "prettier --check . && uvx ruff format --check"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
