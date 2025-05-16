@@ -9,7 +9,6 @@
 
 ![Architecture](docs/images/dcp-ops-status-notification.png)
 
-
 ## Development
 
 ### cdk 開発環境の構築 (初回のみ)

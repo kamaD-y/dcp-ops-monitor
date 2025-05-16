@@ -10,7 +10,5 @@
   "editor.formatOnSave": true,
   "ruff.configuration": "pyproject.toml",
   "ruff.configurationPreference": "filesystemFirst",
-  "mypy-type-checker.args": [
-    "--config-file=pyproject.toml"
-  ]
+  "mypy-type-checker.args": ["--config-file=pyproject.toml"]
 }
