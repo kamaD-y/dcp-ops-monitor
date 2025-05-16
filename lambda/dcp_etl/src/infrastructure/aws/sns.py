@@ -1,11 +1,12 @@
 import boto3
 from settings.settings import get_logger
 
+from .get_client import get_client
+
 logger = get_logger()
-sns_client = boto3.client("sns", region_name="ap-northeast-1")
 
 
-def publish(topic_arn: str, message: str, subject: str) -> None:
+def publish(topic_arn: str, message: str, subject: str, client: boto3.client = None) -> None:
     """SNSトピックにメッセージを公開する
 
     Args:
@@ -16,8 +17,11 @@ def publish(topic_arn: str, message: str, subject: str) -> None:
     Returns:
         None
     """
+    if not client:
+        client = get_client("sns")
+
     try:
-        response = sns_client.publish(
+        response = client.publish(
             TopicArn=topic_arn,
             Message=message,
             Subject=subject,

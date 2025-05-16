@@ -4,11 +4,12 @@ from typing import Any, Dict
 import boto3
 from settings.settings import get_logger
 
+from .get_client import get_client
+
 logger = get_logger()
-client = boto3.client("ssm")
 
 
-def get_parameter(parameter_arn: str) -> Dict[str, Any]:
+def get_parameter(parameter_arn: str, client: boto3.client = None) -> Dict[str, Any]:
     """Parameter Storeから設定を読み込む
 
     Args:
@@ -17,6 +18,9 @@ def get_parameter(parameter_arn: str) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: 読み込んだパラメータ、失敗時は空辞書
     """
+    if not client:
+        client = get_client("s3")
+
     try:
         response = client.get_parameter(Name=parameter_arn)
         parameters_json = response["Parameter"]["Value"]
