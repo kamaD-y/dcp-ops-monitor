@@ -15,7 +15,7 @@ def main() -> None:
     assets_info = extractor.extract(html_source)
 
     transformer = DcpOperationStatusTransformer()
-    operational_indicators = transformer.transform(assets_info)
+    operational_indicators = transformer.transform(assets_info.total)
     message = transformer.make_message(assets_info, operational_indicators)
 
     notifier = DcpOperationStatusNotifier()

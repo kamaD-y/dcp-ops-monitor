@@ -118,7 +118,7 @@ def test_transform__valid_assets_info(valid_assets_info: DcpAssetsInfo, dcp_oper
     transformer = DcpOperationStatusTransformer()
 
     # when
-    operational_indicators = transformer.transform(valid_assets_info)
+    operational_indicators = transformer.transform(valid_assets_info.total)
 
     # then
     # 運用年数が正しいこと

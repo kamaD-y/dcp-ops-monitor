@@ -222,19 +222,15 @@ class DcpOperationStatusTransformer:
     def __init__(self) -> None:
         pass
 
-    def transform(self, assets_info: DcpAssetsInfo) -> DcpOpsIndicators:
+    def transform(self, total_assets: DcpTotalAssets) -> DcpOpsIndicators:
         """資産情報を変換する
 
         Args:
-            assets_info (DcpAssetsInfo): 資産情報
+            total_assets (DcpTotalAssets): 資産情報
 
         Returns:
             DcpOpsIndicators: 運用指標情報
         """
-
-        if not assets_info.total:
-            return
-
         # 運用年数の算出
         today = datetime.today()
         # 運用開始日: 2016/10/01
@@ -243,11 +239,15 @@ class DcpOperationStatusTransformer:
         operation_years = round(operation_years, 2)
 
         # 年間利回りの算出
-        cumulative_contributions = self.yen_to_int(assets_info.total.cumulative_contributions)
-        total_gains_or_losses = self.yen_to_int(assets_info.total.total_gains_or_losses)
-        # 年間利回りの計算式: 利回り = 利益 / 拠出額 / 運用年数 × 100
-        actual_yield_rate = total_gains_or_losses / cumulative_contributions / operation_years * 100
-        actual_yield_rate = round((actual_yield_rate / 100), 3)
+        cumulative_contributions = self.yen_to_int(total_assets.cumulative_contributions)
+        total_gains_or_losses = self.yen_to_int(total_assets.total_gains_or_losses)
+        try:
+            # 年間利回りの計算式: 利回り = 利益 / 拠出額 / 運用年数 × 100
+            actual_yield_rate = total_gains_or_losses / cumulative_contributions / operation_years * 100
+            actual_yield_rate = round((actual_yield_rate / 100), 3)
+        except ZeroDivisionError:
+            logger.error("ZeroDivisionError: Error in yield calculation.", extra=total_assets.__dict__)
+            raise
 
         # 60歳まで運用した場合の想定受取額, 60歳までの運用年数: 26年とする
         # 計算式: 24万(年積立額) * (((1+利回り)**年数26年 - 1) / 利回り)
