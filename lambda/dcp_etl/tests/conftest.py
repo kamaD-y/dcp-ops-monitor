@@ -12,6 +12,8 @@ def local_stack_container() -> LocalStackContainer:
     """
     with LocalStackContainer(region_name="ap-northeast-1") as container:
         os.environ["LOCAL_STACK_CONTAINER_URL"] = container.get_url()
+        os.environ["AWS_ACCESS_KEY_ID"] = "dummy"
+        os.environ["AWS_SECRET_ACCESS_KEY"] = "dummy"
         yield container
         print("Cleaning up LocalStack container...")
 
