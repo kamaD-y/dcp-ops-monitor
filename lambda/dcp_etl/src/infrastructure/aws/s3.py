@@ -1,26 +1,27 @@
+import os
+
 import boto3
 from settings.settings import get_logger
 
-from .get_client import get_client
-
 logger = get_logger()
 
+if os.environ.get("ENV") == "test":
+    client = boto3.client("s3", endpoint_url=os.environ["LOCAL_STACK_CONTAINER_URL"])
+else:
+    client = boto3.client("s3")
 
-def upload_file(bucket: str, key: str, file_path: str, client: boto3.client = None) -> None:
+
+def upload_file(bucket: str, key: str, file_path: str) -> None:
     """S3バケットにファイルをアップロードする
 
     Args:
         bucket (str): S3バケット名
         key (str): S3オブジェクトのキー
         file_path (str): アップロードするファイルのパス
-        client (boto3.client): S3クライアント
 
     Returns:
         None
     """
-    if not client:
-        client = get_client("s3")
-
     try:
         client.upload_file(file_path, bucket, key)
         logger.info(f"File {file_path} uploaded to bucket {bucket} with key {key}")

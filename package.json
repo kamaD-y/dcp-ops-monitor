@@ -8,7 +8,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test:cdk": "jest --testPathPattern ./test/cdk/*.test.ts",
-    "test:unit": "cd lambda/dcp_etl && uv run pytest -v --tb=short --disable-warnings --maxfail=1",
+    "test:unit": "cd lambda/dcp_etl && ENV=test uv run pytest -v --tb=short --disable-warnings --maxfail=1",
     "cdk": "cdk",
     "lint": "eslint . --fix && uvx ruff check",
     "lint:ci": "eslint . && uvx ruff check --no-fix",

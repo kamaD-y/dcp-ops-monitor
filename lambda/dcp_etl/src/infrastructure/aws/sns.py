@@ -1,12 +1,17 @@
+import os
+
 import boto3
 from settings.settings import get_logger
 
-from .get_client import get_client
-
 logger = get_logger()
 
+if os.environ.get("ENV") == "test":
+    client = boto3.client("sns", region_name="ap-northeast-1", endpoint_url=os.environ["LOCAL_STACK_CONTAINER_URL"])
+else:
+    client = boto3.client("sns", region_name="ap-northeast-1")
 
-def publish(topic_arn: str, message: str, subject: str, client: boto3.client = None) -> None:
+
+def publish(topic_arn: str, message: str, subject: str) -> None:
     """SNSトピックにメッセージを公開する
 
     Args:
@@ -17,9 +22,6 @@ def publish(topic_arn: str, message: str, subject: str, client: boto3.client = N
     Returns:
         None
     """
-    if not client:
-        client = get_client("sns")
-
     try:
         response = client.publish(
             TopicArn=topic_arn,
