@@ -4,12 +4,7 @@ import re
 import pytest
 from bs4.element import Tag
 from pytest_mock import MockerFixture
-from src.domain.dcp_ops_domain import (
-    DcpOperationsStatusScraper,
-    DcpOperationStatusExtractor,
-    DcpOperationStatusTransformer,
-    ExtractError,
-)
+
 from src.domain.dcp_value_object import DcpAssetsInfo, DcpOpsIndicators
 
 """
@@ -19,6 +14,7 @@ Scraperのテスト
 
 def test_scrape__get_parameter_called_when_login_parameter_arn_set(mocker: MockerFixture) -> None:
     # given
+    from src.domain.dcp_ops_domain import DcpOperationsStatusScraper
     os.environ["LOGIN_PARAMETER_ARN"] = "arn:aws:ssm:us-east-1:123456789012:parameter/test"
     mock_get_parameter = mocker.patch("src.domain.dcp_ops_domain.get_parameter")
     mock_get_parameter.return_value = {
@@ -39,6 +35,7 @@ def test_scrape__get_parameter_called_when_login_parameter_arn_set(mocker: Mocke
 
 def test_scrape__get_parameter_not_called_when_login_parameter_arn_not_set(mocker: MockerFixture) -> None:
     # given
+    from src.domain.dcp_ops_domain import DcpOperationsStatusScraper
     os.environ.pop("LOGIN_PARAMETER_ARN", None)
     mock_get_parameter = mocker.patch("src.domain.dcp_ops_domain.get_parameter")
 
@@ -55,6 +52,7 @@ Extractorのテスト
 
 
 def test_extract__valid_assets_page(valid_assets_page: str) -> None:
+    from src.domain.dcp_ops_domain import DcpOperationStatusExtractor
     # given
     extractor = DcpOperationStatusExtractor()
 
@@ -76,6 +74,7 @@ def test_extract__valid_assets_page(valid_assets_page: str) -> None:
 
 
 def test_extract__invalid_assets_page(invalid_assets_page: str) -> None:
+    from src.domain.dcp_ops_domain import DcpOperationStatusExtractor, ExtractError
     # given
     extractor = DcpOperationStatusExtractor()
 
@@ -85,6 +84,7 @@ def test_extract__invalid_assets_page(invalid_assets_page: str) -> None:
 
 
 def test_is_tag_element__tag() -> None:
+    from src.domain.dcp_ops_domain import DcpOperationStatusExtractor
     # given
     extractor = DcpOperationStatusExtractor()
 
@@ -96,6 +96,7 @@ def test_is_tag_element__tag() -> None:
 
 
 def test_is_tag_element__not_tag() -> None:
+    from src.domain.dcp_ops_domain import DcpOperationStatusExtractor
     # given
     extractor = DcpOperationStatusExtractor()
 
@@ -112,6 +113,7 @@ Transformerのテスト
 
 
 def test_transform__valid_assets_info(valid_assets_info: DcpAssetsInfo, dcp_operation_days: int) -> None:
+    from src.domain.dcp_ops_domain import DcpOperationStatusTransformer
     # given
     transformer = DcpOperationStatusTransformer()
 
@@ -144,6 +146,7 @@ def test_transform__valid_assets_info(valid_assets_info: DcpAssetsInfo, dcp_oper
     ],
 )
 def test_yen_to_int__valid_str(yen_str: str, expected: int) -> None:
+    from src.domain.dcp_ops_domain import DcpOperationStatusTransformer
     # given
     transformer = DcpOperationStatusTransformer()
 
@@ -163,6 +166,7 @@ def test_yen_to_int__valid_str(yen_str: str, expected: int) -> None:
     ],
 )
 def test_yen_to_int__invalid_str(yen_str: str) -> None:
+    from src.domain.dcp_ops_domain import DcpOperationStatusTransformer
     # given
     transformer = DcpOperationStatusTransformer()
 
@@ -172,6 +176,7 @@ def test_yen_to_int__invalid_str(yen_str: str) -> None:
 
 
 def test_make_message__valid_args(valid_assets_info: DcpAssetsInfo, valid_ops_indicators: DcpOpsIndicators) -> None:
+    from src.domain.dcp_ops_domain import DcpOperationStatusTransformer
     # given
     transformer = DcpOperationStatusTransformer()
 

@@ -1,10 +1,10 @@
 import pytest
 from pytest_mock import MockerFixture
-from src.application.dcp_ops import main
 
 
 def test_main__success(mocker: MockerFixture, valid_assets_page: str) -> None:
     """main()が正常に動作することを確認するテスト"""
+    from src.application.dcp_ops import main
     # given
     mock_scraper = mocker.patch("src.application.dcp_ops.DcpOperationsStatusScraper")
     mock_scraper.return_value.scrape.return_value = valid_assets_page
@@ -22,6 +22,7 @@ def test_main__success(mocker: MockerFixture, valid_assets_page: str) -> None:
 
 def test_main__failed(mocker: MockerFixture, invalid_assets_page: str) -> None:
     """main()がエラー発生時に異常終了することを確認するテスト"""
+    from src.application.dcp_ops import main
     # given
     mock_scraper = mocker.patch("src.application.dcp_ops.DcpOperationsStatusScraper")
     mock_scraper.return_value.scrape.return_value = invalid_assets_page

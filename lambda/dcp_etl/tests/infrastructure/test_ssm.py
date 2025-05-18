@@ -1,54 +1,28 @@
 import pytest
-import boto3
-from src.infrastructure.aws import ssm
 from testcontainers.localstack import LocalStackContainer
 
 
 parameter_name = "/test/parameter"
 parameter_value = '{"USER_ID": "test-user", "PASSWORD": "test-password", "BIRTHDATE": "19800101"}'
-parameter_arn = ""
-endpoint_url = ""
 
 
 @pytest.fixture(scope="module", autouse=True)
-def setup() -> LocalStackContainer:
-    """LocalStackのコンテナを起動し、SSMクライアントを取得する。
-    パラメータを一つ作成し、テスト終了後にクリーンアップする。
-
-    Returns:
-        LocalStackContainer: LocalStackのコンテナ
-    """
-    global endpoint_url, parameter_arn
-
-    with LocalStackContainer() as container:
-        endpoint_url = container.get_url()
-        client = container.get_client("ssm")
-        client.put_parameter(
-            Name=parameter_name,
-            Value=parameter_value,
-            Type="String",
-            Overwrite=True
-        )
-        parameter_arn = f"arn:aws:ssm:{container.region_name}:000000000000:parameter{parameter_name}"
-        yield container
-        print("Cleaning up LocalStack container...")
+def setup(local_stack_container: LocalStackContainer) -> None:
+    client = local_stack_container.get_client("ssm")
+    client.put_parameter(
+        Name=parameter_name,
+        Value=parameter_value,
+        Type="String",
+        Overwrite=True
+    )
 
 
-@pytest.fixture(scope="module")
-def ssm_client() -> boto3.client:
-    """SSMクライアントを取得する。
-
-    Returns:
-        boto3.client: SSMクライアント
-    """
-    return ssm.get_client("ssm", endpoint_url=endpoint_url)
-
-
-def test_get_parameter(ssm_client: boto3.client) -> None:
+def test_get_parameter() -> None:
     """SSMパラメータストアからパラメータを取得するテスト"""
+    from src.infrastructure.aws import ssm
     try:
         # when
-        parameters = ssm.get_parameter(parameter_name, client=ssm_client)
+        parameters = ssm.get_parameter(parameter_name)
         
         # then
         assert parameters is not None

@@ -1,44 +1,20 @@
 import os
 import pytest
-import boto3
-from src.infrastructure.aws import s3
 from testcontainers.localstack import LocalStackContainer
 
 
 bucket_name = "test-bucket"
-endpoint_url = ""
-
 
 @pytest.fixture(scope="module", autouse=True)
-def setup() -> LocalStackContainer:
-    """LocalStackのコンテナを起動し、S3クライアントを取得する。
-    バケットを一つ作成し、テスト終了後にクリーンアップする。
-
-    Returns:
-        LocalStackContainer: LocalStackのコンテナ
-    """
-    global endpoint_url
-
-    with LocalStackContainer() as container:
-        endpoint_url = container.get_url()
-        client = container.get_client("s3")
-        client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={"LocationConstraint": container.region_name})
-        yield container
-        print("Cleaning up LocalStack container...")
+def setup(local_stack_container: LocalStackContainer) -> None:
+    client = local_stack_container.get_client("s3")
+    client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={"LocationConstraint": local_stack_container.region_name})
 
 
-@pytest.fixture(scope="module")
-def s3_client() -> boto3.client:
-    """S3クライアントを取得する。
-
-    Returns:
-        boto3.client: S3クライアント
-    """
-    return s3.get_client("s3", endpoint_url=endpoint_url)
-
-
-def test_upload_file(s3_client: boto3.client) -> None:
+def test_upload_file() -> None:
     """S3バケットにファイルをアップロードするテスト"""
+    from src.infrastructure.aws import s3
+
     # given
     test_file_path = "test-file.txt"
     with open(test_file_path, "w") as f:
@@ -46,7 +22,8 @@ def test_upload_file(s3_client: boto3.client) -> None:
 
     try:
         # when
-        s3.upload_file(bucket_name, "test-file-key", test_file_path, s3_client)
+        s3.upload_file(bucket_name, "test-file-key", test_file_path)
+
         # then
         assert True
     except Exception as e:
