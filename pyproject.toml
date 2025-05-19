@@ -9,6 +9,10 @@ packages = [
     { include = "notifications", from = "lambda" },
 ]
 
+[tool.uv.workspace]
+members = ["lambda/*"]
+exclude = ["lambda/notification"]
+
 [tool.ruff]
 line-length = 120
 include = ["**/*.py"]
