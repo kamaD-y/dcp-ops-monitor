@@ -1,13 +1,50 @@
-# dcp-ops-status-notification
+# dcp-ops-monitor
 
 ## Description
 
 確定拠出年金 (Defined Contribution Plan) の運用状況を確認する為、
-日本レコードキーピング (NRK) が提供する Web ページをスクレイピングし、サマリした情報を通知します。
+日本レコードキーピング (NRK) が提供する Web ページをスクレイピングし、サマリした情報を通知する。
 
 ## Architecture
 
+### Architecture Diagram
+
 ![Architecture](docs/images/dcp-ops-status-notification.png)
+
+### Directory
+
+レイヤードアーキテクチャを採用している
+
+```
+|- bin
+|- lib
+|- lambda
+|  |- dcp_etl             # ETL 機能
+|    |- src
+|      |- application     # アプリケーション層
+|      |- domain          # ドメイン層
+|      |- infrastructure  # インフラ層
+|      |   |- aws           # AWS リソース
+|      |   |- scraping      # スクレイピング
+|      |- settings        # 設定
+|  |- dcp_notification    # 通知機能
+```
+
+### Flow
+
+- dcp_etl
+
+  1. 対象ページをスクレイピング・ HTML データ抽出処理<br>
+     エラー発生時は、エラー画面を PNG 形式で S3 に保存
+  2. HTML データ加工処理
+  3. 結果を通知
+     SNS Topic (Success) へ送信
+
+- dcp_notification
+
+  1. SNS Topic (Success/Failure) からトリガー・バリデーション<br>
+     Failure からの場合、SNS から受信した Event から対象のエラーログメッセージを取得する (https://qiita.com/onooooo/items/f59c69e30dc5b477f9fd)
+  2. Message Event を LINE に通知
 
 ## Development
 
@@ -21,20 +58,14 @@
 $ cdk bootstrap aws://ACCOUNT-NUMBER/REGION --profile xxx
 ```
 
-- アプリケーションの作成
-
-```
-$ cdk init app --language typescript
-```
-
 ### 開発環境の準備
 
 #### 前提条件
 
 以下のソフトウェアがインストールされていること
 
-- `Node.js`: v18.16.0 以上
-- `Python`: 3.12 以上
+- `Node.js`: v21.7.0 以上
+- `Python`: 3.13 以上
 - `uv`
 - `Docker`
 
@@ -55,16 +86,11 @@ $ cp .env.example .env
 - `LOGIN_URL`: スクレイピング対象サイトのログインページ
 - `USER_ID`: ログイン用ユーザ ID
 - `PASSWORD`: ログイン用パスワード
+- `BIRTHDATE`: ログイン用生年月日
 - `USER_AGENT`: スクレイピングで使用するユーザーエージェント
 - 以下は LINE 通知関数用 (line_notification) 設定の設定
   - `LINE_NOTIFY_URL`: LINE Messaging API の URL
   - `LINE_NOTIFY_TOKEN`: LINE Messaging API の TOKEN
-- 以下は開発環境での実行時に、Amazon SNS へ実行結果を通知する場合のみ指定
-- ※本番環境で使用する場合は、2 通りを検討する。既存 SNS を使用する場合は開発環境と同じく環境変数を使用し、新規 SNS を作成する場合はスタックに追加する。
-  - `SNS_TOPIC_ARN`: Amazon SNS の ARN
-  - `AWS_ACCESS_KEY_ID`: 開発環境の Lambda コンテナで使用する IAM ユーザーの認証情報 (アクセスキー)
-  - `AWS_SECRET_ACCESS_KEY`: 開発環境の Lambda コンテナで使用する IAM ユーザーの認証情報 (シークレットキー)
-  - `AWS_DEFAULT_REGION`: 開発環境の Lambda コンテナで使用する IAM ユーザーのリージョン
 
 #### Node 環境のセットアップ
 
@@ -74,29 +100,28 @@ $ npm ci
 
 #### Python 実行環境のセットアップ
 
-1. poetry インストール
+1. uv インストール
 
 - 仮想環境を使用している場合、仮想環境へ切り替え (Pyenv の例)
   - 仮想環境を使用しない場合は手順スキップ
 
 ```bash
-$ pyenv install 3.12
+$ pyenv install 3.13
 $ pyenv versions
 # インストールされた Python バージョンへ切り替え
-$ pyenv local 3.12.xx
+$ pyenv local 3.13.xx
 ```
 
-- poetry インストール
+- uv インストール
 
 ```bash
-$ pip install poetry
+$ pip install uv
 ```
 
 2. 依存関係のインストール
 
 ```bash
-$ cd lambda/scraping_nrk
-$ poetry install
+$ uv sync --package dcp_etl
 ```
 
 ### ローカルでの開発手順
@@ -119,8 +144,7 @@ $ docker run -d -p 4444:4444 -p 7900:7900 --shm-size="2g" selenium/standalone-ch
 3. Python インタプリタから driver を操作
 
 ```bash
-$ cd lambda/dcp_etl
-$ uv sync
+$ python
 
 >>> import os
 >>> from dotenv import load_dotenv
@@ -143,7 +167,7 @@ $ uv sync
 #### スナップショット
 
 ```bash
-$ npm run test:snapshot
+$ npm run test:cdk
 ```
 
 #### ユニットテスト
@@ -181,11 +205,11 @@ $ docker compose down
 ### デプロイ
 
 ```bash
-$ cdk deploy --profile xxx
+$ npx cdk deploy --profile xxx
 ```
 
 ### デストロイ
 
 ```bash
-$ cdk destroy --profile xxx
+$ npx cdk destroy --profile xxx
 ```
