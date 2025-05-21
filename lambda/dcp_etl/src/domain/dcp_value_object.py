@@ -60,8 +60,8 @@ class DcpAssetsInfo:
     """確定拠出年金の資産評価を扱う値クラス
 
     Attributes:
-        total (DcpAssetsInfoTotal): 総資産評価情報
-        products (Dict[str, DcpAssetsInfoProduct]): 商品別の資産評価情報
+        total (DcpTotalAssets): 総資産評価情報
+        products (Dict[str, DcpProductAssets]): 商品別の資産評価情報
     """
 
     total: DcpTotalAssets = dataclasses.field(default_factory=DcpTotalAssets)
