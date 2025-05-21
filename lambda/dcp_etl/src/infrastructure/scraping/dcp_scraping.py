@@ -103,7 +103,7 @@ def scrape(user_id: str, password: str, birthdate: str, driver: WebDriver) -> st
         return page_source
 
     except Exception:
-        logger.exception("scrape_nrk error")
+        logger.exception("An error occurred during the scraping process.")
         error_image = "/tmp/error.png"
         driver.save_screenshot(error_image)
         raise ScrapingError(error_image_path=error_image)

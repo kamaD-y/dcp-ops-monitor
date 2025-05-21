@@ -62,7 +62,7 @@ class DcpOperationsStatusScraper:
         except ScrapingError as e:
             key = "error_image.png"
             s3_uri = f"s3://{settings.s3_bucket_name}/{key}"
-            logger.exception(f"An error occurred during the scraping process. Please check {s3_uri} for error details.")
+            logger.info(f"An error occurred during the scraping process. Please check {s3_uri} for error details.")
             upload_file(
                 bucket=settings.s3_bucket_name,
                 key=key,

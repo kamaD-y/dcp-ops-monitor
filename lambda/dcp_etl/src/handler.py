@@ -8,8 +8,5 @@ logger = get_logger()
 @logger.inject_lambda_context
 def handler(event: dict, context: LambdaContext) -> str:
     """Lambda handler エントリーポイント"""
-    try:
-        main()
-        return "Success"
-    except Exception:
-        raise
+    main()
+    return "Success"
