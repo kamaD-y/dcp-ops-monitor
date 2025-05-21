@@ -1,7 +1,7 @@
 [project]
 name = "dcp_etl"
 version = "0.1.0"
-description = "Add your description here"
+description = "To check the operation status of defined contribution pension plans, scrape web pages and provide summary information."
 readme = "README.md"
 requires-python = ">=3.13.1"
 dependencies = [
