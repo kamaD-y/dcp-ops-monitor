@@ -252,9 +252,8 @@ class DcpOperationStatusTransformer:
         cumulative_contributions = self.yen_to_int(total_assets.cumulative_contributions)
         total_gains_or_losses = self.yen_to_int(total_assets.total_gains_or_losses)
         try:
-            # 年間利回りの計算式: 利回り = 利益 / 拠出額 / 運用年数 × 100
-            actual_yield_rate = total_gains_or_losses / cumulative_contributions / operation_years * 100
-            actual_yield_rate = round((actual_yield_rate / 100), 3)
+            # 年間利回りの計算式: 利回り = 利益 / 拠出額 / 運用年数
+            actual_yield_rate = round(total_gains_or_losses / cumulative_contributions / operation_years, 3)
         except ZeroDivisionError:
             logger.error("ZeroDivisionError: Error in yield calculation.", extra=total_assets.__dict__)
             raise
