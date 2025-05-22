@@ -1,0 +1,28 @@
+[project]
+name = "dcp_etl"
+version = "0.1.0"
+description = "To check the operation status of defined contribution pension plans, scrape web pages and provide summary information."
+readme = "README.md"
+requires-python = ">=3.13.1"
+dependencies = [
+    "aws-lambda-powertools>=3.11.0",
+    "boto3>=1.38.8",
+    "bs4>=0.0.2",
+    "pydantic>=2.11.4",
+    "pydantic-settings>=2.9.1",
+    "selenium>=4.32.0",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "pytest>=8.3.5",
+    "pytest-mock>=3.14.0",
+    "python-dotenv>=1.1.0",
+    "ruff>=0.11.8",
+    "testcontainers>=4.10.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src/../", "src"]
+testpaths = ["tests",]

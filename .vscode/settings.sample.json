@@ -1,0 +1,14 @@
+{
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit"
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "flake8.enabled": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "ruff.configuration": "pyproject.toml",
+  "ruff.configurationPreference": "filesystemFirst",
+  "mypy-type-checker.args": ["--config-file=pyproject.toml"]
+}

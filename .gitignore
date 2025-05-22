@@ -2,7 +2,18 @@
 !jest.config.js
 *.d.ts
 node_modules
+.vscode/*
+!.vscode/settings.sample.json
+!.vscode/extensions.json
 
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+
+# python
+.venv
+__pycache__/
+
+
+# Environment
+.env
