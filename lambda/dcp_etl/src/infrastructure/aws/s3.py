@@ -28,3 +28,22 @@ def upload_file(bucket: str, key: str, file_path: str) -> None:
     except Exception:
         logger.exception(f"Failed to upload file {file_path} to bucket {bucket}")
         raise
+
+
+def put_object(bucket: str, key: str, body: str) -> None:
+    """S3バケットにオブジェクトをアップロードする
+
+    Args:
+        bucket (str): S3バケット名
+        key (str): S3オブジェクトのキー
+        body (str): アップロードするオブジェクトの内容
+
+    Returns:
+        None
+    """
+    try:
+        client.put_object(Bucket=bucket, Key=key, Body=body)
+        logger.info(f"Object with key {key} uploaded to bucket {bucket}")
+    except Exception:
+        logger.exception(f"Failed to upload object with key {key} to bucket {bucket}")
+        raise

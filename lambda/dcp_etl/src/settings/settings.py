@@ -35,6 +35,9 @@ class ScrapingSettings(BaseSettings):
         )
     )
 
+    # S3関連設定
+    error_bucket_name: str = Field(default="dummy-bucket")
+
     # Parameter Store関連設定
     login_parameter_arn: Optional[str] = None
 

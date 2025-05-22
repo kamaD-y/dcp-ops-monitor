@@ -5,7 +5,7 @@ from typing import Any, Dict, TypeGuard
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from domain.dcp_value_object import DcpAssetsInfo, DcpOpsIndicators, DcpProductAssets, DcpTotalAssets
-from infrastructure.aws.s3 import upload_file
+from infrastructure.aws.s3 import put_object, upload_file
 from infrastructure.aws.sns import publish
 from infrastructure.aws.ssm import get_parameter
 from infrastructure.scraping.dcp_scraping import ScrapingError, get_chrome_driver, scrape
@@ -61,13 +61,13 @@ class DcpOperationsStatusScraper:
             return scrape(self.user_id, self.password.get_secret_value(), self.birthdate, driver)
         except ScrapingError as e:
             key = "error_image.png"
-            s3_uri = f"s3://{settings.s3_bucket_name}/{key}"
-            logger.info(f"An error occurred during the scraping process. Please check {s3_uri} for error details.")
+            s3_uri = f"s3://{settings.error_bucket_name}/{key}"
             upload_file(
-                bucket=settings.s3_bucket_name,
+                bucket=settings.error_bucket_name,
                 key=key,
                 file_path=e.error_image_path,
             )
+            logger.info(f"An error occurred during the scraping process. Please check {s3_uri} for error details.")
             raise
 
 
@@ -130,9 +130,19 @@ class DcpOperationStatusExtractor:
             )
 
         except Exception:
-            logger.exception("extract_assets error")
-            # TODO: html_sourceをS3にアップロードする処理を追加する
-            raise ExtractError("extract_assets error")
+            logger.exception("An error occurred during the extracting process.")
+
+            key = "error_html.html"
+            s3_uri = f"s3://{settings.error_bucket_name}/{key}"
+            body = html_source.encode("utf-8")
+            put_object(
+                bucket=settings.error_bucket_name,
+                key=key,
+                body=body,
+            )
+            logger.info(f"An error occurred during the extracting process. Please check {s3_uri} for error details.")
+
+            raise ExtractError()
 
     def _extract_total_assets(self, soup: BeautifulSoup) -> DcpTotalAssets:
         """総評価額を抽出する

@@ -1,14 +1,7 @@
 import os
 import pytest
-from testcontainers.localstack import LocalStackContainer
-
 
 bucket_name = "test-bucket"
-
-@pytest.fixture(scope="module", autouse=True)
-def setup(local_stack_container: LocalStackContainer) -> None:
-    client = local_stack_container.get_client("s3")
-    client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={"LocationConstraint": local_stack_container.region_name})
 
 
 def test_upload_file() -> None:
@@ -30,3 +23,21 @@ def test_upload_file() -> None:
         pytest.fail(f"Failed to upload file: {e}")
     finally:
         os.remove(test_file_path)
+
+
+def test_put_object() -> None:
+    """S3バケットにオブジェクトをアップロードするテスト"""
+    from src.infrastructure.aws import s3
+
+    # given
+    test_object_key = "test-object-key"
+    test_object_body = "This is a test object."
+
+    try:
+        # when
+        s3.put_object(bucket_name, test_object_key, test_object_body)
+
+        # then
+        assert True
+    except Exception as e:
+        pytest.fail(f"Failed to put object: {e}")

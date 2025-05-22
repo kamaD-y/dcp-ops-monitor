@@ -3,6 +3,9 @@ import pytest
 from testcontainers.localstack import LocalStackContainer
 
 
+bucket_name = "test-bucket"
+
+
 @pytest.fixture(scope="package", autouse=True)
 def local_stack_container() -> LocalStackContainer:
     """LocalStackのコンテナを起動する
@@ -16,6 +19,13 @@ def local_stack_container() -> LocalStackContainer:
         os.environ["AWS_SECRET_ACCESS_KEY"] = "dummy"
         yield container
         print("Cleaning up LocalStack container...")
+
+
+@pytest.fixture(scope="package", autouse=True)
+def create_test_bucket(local_stack_container: LocalStackContainer) -> None:
+    os.environ["error_bucket_name"] = bucket_name
+    client = local_stack_container.get_client("s3")
+    client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={"LocationConstraint": local_stack_container.region_name})
 
 
 @pytest.fixture
