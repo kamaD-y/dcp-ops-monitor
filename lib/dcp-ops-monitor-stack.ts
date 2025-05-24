@@ -1,18 +1,18 @@
+import * as path from 'node:path';
+import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as cw_actions from 'aws-cdk-lib/aws-cloudwatch-actions';
-import * as logs from 'aws-cdk-lib/aws-logs';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as sns_subs from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as targets from 'aws-cdk-lib/aws-events-targets';
-import { Construct } from 'constructs';
-import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
-import * as path from 'path';
+import type { Construct } from 'constructs';
 
 export interface DcpOpsMonitorStackProps extends cdk.StackProps {
   logLevel: string;
@@ -57,7 +57,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     const etlFunction = new lambda.DockerImageFunction(this, 'EtlFunction', {
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../lambda/dcp_etl'), {
         file: 'Dockerfile',
-        extraHash: props.env!.region,
+        extraHash: props.env?.region,
       }),
       memorySize: 1024,
       timeout: cdk.Duration.seconds(60),
@@ -77,13 +77,13 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       new iam.PolicyStatement({
         actions: ['ssm:GetParameter'],
         resources: [loginParametersForScraping.parameterArn],
-      })
+      }),
     );
     etlFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['sns:Publish'],
         resources: [successTopic.topicArn],
-      })
+      }),
     );
 
     // LINE通知用Lambda Function

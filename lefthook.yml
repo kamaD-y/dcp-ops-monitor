@@ -1,0 +1,25 @@
+pre-commit:
+  parallel: true
+  commands:
+    check:
+      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
+      run: npx biome check --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
+
+    test:cdk:
+      include:
+        - "bin/**/*"
+        - "lib/**/*"
+        - "lambda/**/*"
+      run: npm run test:cdk
+
+    lint:lambda:
+      glob: "*.py"
+      run: uvx ruff check --no-fix
+
+    format:lambda:
+      glob: "*.py"
+      run: uvx ruff format --check
+
+    test:lambda:
+      glob: "*.py"
+      run: cd lambda/dcp_etl && ENV=test uv run pytest -v --tb=short --disable-warnings --maxfail=1
