@@ -1,5 +1,5 @@
 {
-  "**/*.{ts,tsx}": ["eslint .", "prettier --check .", "npm run test:cdk"],
+  "**/*.{ts,tsx}": ["npx biome check", "npm run test:cdk"],
   "**/*.py": [
     "sh -c 'uvx ruff check --no-fix'",
     "sh -c 'uvx ruff format --check'",
