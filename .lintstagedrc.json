@@ -1,8 +1,0 @@
-{
-  "**/*.{ts,tsx}": ["npx biome check", "npm run test:cdk"],
-  "**/*.py": [
-    "sh -c 'uvx ruff check --no-fix'",
-    "sh -c 'uvx ruff format --check'",
-    "sh -c 'cd lambda/dcp_etl && ENV=test uv run pytest -v --tb=short --disable-warnings --maxfail=1'"
-  ]
-}
