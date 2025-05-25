@@ -35,7 +35,7 @@
 
 #### dcp_etl
 
-1. 対象ページをスクレイピング・ HTML データ抽出処理<br>
+1. 対象ページをスクレイピング・ HTML データ抽出処理  
    エラー発生時は、エラー画面を PNG 形式で S3 に保存
 2. HTML データ加工処理
 3. 結果を通知
@@ -43,7 +43,7 @@
 
 #### dcp_notification
 
-1. SNS Topic (Success/Failure) からトリガー・バリデーション<br>
+1. SNS Topic (Success/Failure) からトリガー・バリデーション  
    Failure からの場合、SNS から受信した Event から対象のエラーログメッセージを取得する (https://qiita.com/onooooo/items/f59c69e30dc5b477f9fd)
 2. Message Event を LINE に通知
 
@@ -80,7 +80,7 @@ $ cp .env.example .env
 
 2. テキストエディタで`.env`ファイルを開きます
 
-3. 以下の環境変数を適切な値で設定します<br>
+3. 以下の環境変数を適切な値で設定します  
   本番環境へのデプロイは GitHub Actions を介して行う為、GitHub に変数を設定しておくこと
 
 - `LOG_LEVEL`: アプリケーションのログレベル
@@ -101,7 +101,7 @@ $ npm ci
 
 #### Python 実行環境のセットアップ
 
-1. uv インストール<br>
+1. uv インストール  
   仮想環境を使用している場合、仮想環境へ切り替え (Pyenv の例)
   仮想環境を使用しない場合は手順スキップ
 
@@ -118,7 +118,7 @@ $ pyenv local 3.13.xx
 $ pip install uv
 ```
 
-2. 依存関係のインストール<br>
+2. 依存関係のインストール  
   各プロジェクト毎に依存関係を管理、分離しています
 
 ```bash
@@ -137,8 +137,8 @@ $ uv sync
 $ docker run -d -p 4444:4444 -p 7900:7900 --shm-size="2g" selenium/standalone-chrome:latest
 ```
 
-2. ブラウザに接続<br>
-  http://localhost:7900 に接続<br>
+2. ブラウザに接続  
+  http://localhost:7900 に接続  
   パスワードは`secret`を入力
 
 3. Python インタプリタから driver を操作
