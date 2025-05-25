@@ -22,7 +22,7 @@ def valid_assets_info() -> DcpAssetsInfo:
 
 
 @pytest.fixture
-def valid_ops_indicators() -> dict:
+def valid_ops_indicators() -> DcpOpsIndicators:
     """テスト用の運用指標を生成する"""
     return DcpOpsIndicators(
         operation_years=5.0,
