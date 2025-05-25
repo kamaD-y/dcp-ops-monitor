@@ -28,24 +28,24 @@
 |      |   |- scraping      # スクレイピング
 |      |- settings        # 設定
 |  |- dcp_notification    # 通知機能
-|- pyproject.toml         # 各機能共通設定(mypy, ruffなど)
+|- pyproject.toml         # 各機能共通設定 (mypy, ruff など)
 ```
 
 ### Flow
 
-- dcp_etl
+#### dcp_etl
 
-  1. 対象ページをスクレイピング・ HTML データ抽出処理<br>
-     エラー発生時は、エラー画面を PNG 形式で S3 に保存
-  2. HTML データ加工処理
-  3. 結果を通知
-     SNS Topic (Success) へ送信
+1. 対象ページをスクレイピング・ HTML データ抽出処理  
+   エラー発生時は、エラー画面を PNG 形式で S3 に保存
+2. HTML データ加工処理
+3. 結果を通知
+   SNS Topic (Success) へ送信
 
-- dcp_notification
+#### dcp_notification
 
-  1. SNS Topic (Success/Failure) からトリガー・バリデーション<br>
-     Failure からの場合、SNS から受信した Event から対象のエラーログメッセージを取得する (https://qiita.com/onooooo/items/f59c69e30dc5b477f9fd)
-  2. Message Event を LINE に通知
+1. SNS Topic (Success/Failure) からトリガー・バリデーション  
+   Failure からの場合、SNS から受信した Event から対象のエラーログメッセージを取得する (https://qiita.com/onooooo/items/f59c69e30dc5b477f9fd)
+2. Message Event を LINE に通知
 
 ## Development
 
@@ -80,8 +80,8 @@ $ cp .env.example .env
 
 2. テキストエディタで`.env`ファイルを開きます
 
-3. 以下の環境変数を適切な値で設定します
-   本番環境へのデプロイは GitHub Actions を介して行う為、GitHub に変数を設定しておくこと
+3. 以下の環境変数を適切な値で設定します  
+  本番環境へのデプロイは GitHub Actions を介して行う為、GitHub に変数を設定しておくこと
 
 - `LOG_LEVEL`: アプリケーションのログレベル
 - `LOGIN_URL`: スクレイピング対象サイトのログインページ
@@ -101,10 +101,9 @@ $ npm ci
 
 #### Python 実行環境のセットアップ
 
-1. uv インストール
-
-- 仮想環境を使用している場合、仮想環境へ切り替え (Pyenv の例)
-  - 仮想環境を使用しない場合は手順スキップ
+1. uv インストール  
+  仮想環境を使用している場合、仮想環境へ切り替え (Pyenv の例)
+  仮想環境を使用しない場合は手順スキップ
 
 ```bash
 $ pyenv install 3.13
@@ -113,16 +112,14 @@ $ pyenv versions
 $ pyenv local 3.13.xx
 ```
 
-- uv インストール
+  uv インストール
 
 ```bash
 $ pip install uv
 ```
 
-2. 依存関係のインストール
-
-- 依存関係をインストール
-  - 各プロジェクト毎に依存関係を管理、分離しています
+2. 依存関係のインストール  
+  各プロジェクト毎に依存関係を管理、分離しています
 
 ```bash
 $ cd lambda/{specific_project_name}
@@ -140,11 +137,9 @@ $ uv sync
 $ docker run -d -p 4444:4444 -p 7900:7900 --shm-size="2g" selenium/standalone-chrome:latest
 ```
 
-2. ブラウザに接続
-
-- http://localhost:7900 に接続
-
-  - パスワードは`secret`を入力
+2. ブラウザに接続  
+  http://localhost:7900 に接続  
+  パスワードは`secret`を入力
 
 3. Python インタプリタから driver を操作
 
