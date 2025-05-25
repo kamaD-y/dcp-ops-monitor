@@ -125,7 +125,7 @@ $ pip install uv
   - 各プロジェクト毎に依存関係を管理、分離しています
 
 ```bash
-$ cd lambda/{project}
+$ cd lambda/{specific_project_name}
 $ uv sync
 ```
 
