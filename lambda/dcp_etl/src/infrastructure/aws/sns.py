@@ -1,6 +1,7 @@
 import os
 
 import boto3
+
 from settings.settings import get_logger
 
 logger = get_logger()

@@ -23,6 +23,12 @@ dev = [
     "testcontainers>=4.10.0",
 ]
 
+[tool.ruff]
+extend = "../../pyproject.toml"
+
+[tool.mypy]
+config_file = "../../pyproject.toml"
+
 [tool.pytest.ini_options]
 pythonpath = ["src/../", "src"]
 testpaths = ["tests",]
