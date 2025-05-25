@@ -3,6 +3,7 @@ import os
 from typing import Any, Dict
 
 import boto3
+
 from settings.settings import get_logger
 
 logger = get_logger()
