@@ -28,6 +28,7 @@
 |      |   |- scraping      # スクレイピング
 |      |- settings        # 設定
 |  |- dcp_notification    # 通知機能
+|- pyproject.toml         # 各機能共通設定(mypy, ruffなど)
 ```
 
 ### Flow
@@ -120,8 +121,12 @@ $ pip install uv
 
 2. 依存関係のインストール
 
+- 依存関係をインストール
+  - 各プロジェクト毎に依存関係を管理、分離しています
+
 ```bash
-$ uv sync --package dcp_etl
+$ cd lambda/{project}
+$ uv sync
 ```
 
 ### ローカルでの開発手順
