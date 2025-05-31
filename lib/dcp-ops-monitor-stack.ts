@@ -21,6 +21,8 @@ export interface DcpOpsMonitorStackProps extends cdk.StackProps {
   password: string;
   birthdate: string;
   userAgent: string;
+  line_message_api_url: string;
+  line_message_api_token: string;
 }
 
 export class DcpOpsMonitorStack extends cdk.Stack {
@@ -94,6 +96,11 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       handler: 'handler',
       bundling: {
         assetExcludes: ['.venv'],
+      },
+      environment: {
+        POWERTOOLS_LOG_LEVEL: props.logLevel,
+        LINE_MESSAGE_API_URL: props.line_message_api_url,
+        LINE_MESSAGE_API_TOKEN: props.line_message_api_token,
       },
     });
 
