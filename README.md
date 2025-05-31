@@ -9,7 +9,7 @@
 
 ### Architecture Diagram
 
-![Architecture](docs/images/dcp-ops-status-notification.png)
+![Architecture](docs/images/dcp-ops-monitor.png)
 
 ### Directory
 

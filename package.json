@@ -1,8 +1,8 @@
 {
-  "name": "dcp-ops-status-notification",
+  "name": "dcp-ops-monitor",
   "version": "0.1.0",
   "bin": {
-    "dcp-ops-status-notification": "bin/dcp-ops-status-notification.js"
+    "dcp-ops-monitor": "bin/dcp-ops-monitor.js"
   },
   "scripts": {
     "build": "tsc",
