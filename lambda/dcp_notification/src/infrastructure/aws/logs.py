@@ -28,6 +28,8 @@ def describe_metric_filters(metric_name: str, metric_namespace: str) -> Describe
             metricName=metric_name, metricNamespace=metric_namespace
         )
         logger.info(f"Metric filters for {metric_name} in {metric_namespace}.", response=response)
+        if len(response["metricFilters"]) == 0:
+            raise ValueError("No metric filters found matching the provided metric name and namespace.")
         return response
     except Exception as e:
         logger.exception(f"Failed to describe metric filters for {metric_name} in {metric_namespace}: {e}")
@@ -60,6 +62,8 @@ def filter_log_events(
             end_time=end_time,
             response=response,
         )
+        if len(response["events"]) == 0:
+            raise ValueError("No log events found matching the provided filter pattern and time range.")
         return response
     except Exception as e:
         logger.exception(f"Failed to filter log events in {log_group_name}: {e}")
