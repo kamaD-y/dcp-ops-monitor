@@ -12,5 +12,7 @@ logger = get_logger()
 def handler(event: SNSEvent, context: LambdaContext) -> str:
     """Lambda handler エントリーポイント"""
     for record in event.records:
-        main(record.sns.message)
+        logger.info("Received SNS message", record=record)
+        main(record.sns)
+        logger.info("Processed SNS message successfully", record=record)
     return "Success"
