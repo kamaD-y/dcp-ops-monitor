@@ -96,7 +96,10 @@ $ cp .env.example .env
 #### Node 環境のセットアップ
 
 ```bash
+# 依存関係のインストール
 $ npm ci
+# pre-commitの有効化
+$ npx lefthook install
 ```
 
 #### Python 実行環境のセットアップ
