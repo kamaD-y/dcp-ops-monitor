@@ -1,5 +1,5 @@
 from src.domain.interface import Notification, NotificationError
-from src.infrastructure.line_notification import LineNotification
+from src.infrastructure.notification.line_notification import LineNotification
 from src.settings.settings import get_settings
 
 settings = get_settings()

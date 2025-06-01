@@ -104,6 +104,20 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       },
     });
 
+    notificationFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:DescribeMetricFilters'],
+        resources: ['*'],
+      }),
+    );
+
+    notificationFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:FilterLogEvents'],
+        resources: [logGroup.logGroupArn],
+      }),
+    );
+
     // SNS Topic に LINE通知用Lambda Function をサブスクライブ
     successTopic.addSubscription(new sns_subs.LambdaSubscription(notificationFunction));
     failureTopic.addSubscription(new sns_subs.LambdaSubscription(notificationFunction));
