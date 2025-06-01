@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
+import * as dotenv from 'dotenv';
 import { DcpOpsMonitorStack } from '../lib/dcp-ops-monitor-stack';
+
+dotenv.config({ path: '.env' });
 
 const app = new cdk.App();
 new DcpOpsMonitorStack(app, 'DcpOpsMonitorStack', {
