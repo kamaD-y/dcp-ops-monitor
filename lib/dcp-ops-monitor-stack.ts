@@ -21,6 +21,8 @@ export interface DcpOpsMonitorStackProps extends cdk.StackProps {
   password: string;
   birthdate: string;
   userAgent: string;
+  line_message_api_url: string;
+  line_message_api_token: string;
 }
 
 export class DcpOpsMonitorStack extends cdk.Stack {
@@ -89,13 +91,32 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     // LINE通知用Lambda Function
     const notificationFunction = new PythonFunction(this, 'NotificationFunction', {
       runtime: lambda.Runtime.PYTHON_3_13,
-      entry: path.join(__dirname, '../lambda/notification'),
+      entry: path.join(__dirname, '../lambda/dcp_notification'),
       index: 'src/handler.py',
       handler: 'handler',
       bundling: {
         assetExcludes: ['.venv'],
       },
+      environment: {
+        POWERTOOLS_LOG_LEVEL: props.logLevel,
+        LINE_MESSAGE_API_URL: props.line_message_api_url,
+        LINE_MESSAGE_API_TOKEN: props.line_message_api_token,
+      },
     });
+
+    notificationFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:DescribeMetricFilters'],
+        resources: ['*'],
+      }),
+    );
+
+    notificationFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:FilterLogEvents'],
+        resources: [logGroup.logGroupArn],
+      }),
+    );
 
     // SNS Topic に LINE通知用Lambda Function をサブスクライブ
     successTopic.addSubscription(new sns_subs.LambdaSubscription(notificationFunction));
