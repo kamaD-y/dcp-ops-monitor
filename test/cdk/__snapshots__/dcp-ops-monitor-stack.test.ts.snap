@@ -2,136 +2,6 @@
 
 exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
 {
-  "Mappings": {
-    "LatestNodeRuntimeMap": {
-      "af-south-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-east-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-east-2": {
-        "value": "nodejs20.x",
-      },
-      "ap-northeast-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-northeast-2": {
-        "value": "nodejs20.x",
-      },
-      "ap-northeast-3": {
-        "value": "nodejs20.x",
-      },
-      "ap-south-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-south-2": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-1": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-2": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-3": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-4": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-5": {
-        "value": "nodejs20.x",
-      },
-      "ap-southeast-7": {
-        "value": "nodejs20.x",
-      },
-      "ca-central-1": {
-        "value": "nodejs20.x",
-      },
-      "ca-west-1": {
-        "value": "nodejs20.x",
-      },
-      "cn-north-1": {
-        "value": "nodejs20.x",
-      },
-      "cn-northwest-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-central-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-central-2": {
-        "value": "nodejs20.x",
-      },
-      "eu-isoe-west-1": {
-        "value": "nodejs18.x",
-      },
-      "eu-north-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-south-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-south-2": {
-        "value": "nodejs20.x",
-      },
-      "eu-west-1": {
-        "value": "nodejs20.x",
-      },
-      "eu-west-2": {
-        "value": "nodejs20.x",
-      },
-      "eu-west-3": {
-        "value": "nodejs20.x",
-      },
-      "il-central-1": {
-        "value": "nodejs20.x",
-      },
-      "me-central-1": {
-        "value": "nodejs20.x",
-      },
-      "me-south-1": {
-        "value": "nodejs20.x",
-      },
-      "mx-central-1": {
-        "value": "nodejs20.x",
-      },
-      "sa-east-1": {
-        "value": "nodejs20.x",
-      },
-      "us-east-1": {
-        "value": "nodejs20.x",
-      },
-      "us-east-2": {
-        "value": "nodejs20.x",
-      },
-      "us-gov-east-1": {
-        "value": "nodejs20.x",
-      },
-      "us-gov-west-1": {
-        "value": "nodejs20.x",
-      },
-      "us-iso-east-1": {
-        "value": "nodejs18.x",
-      },
-      "us-iso-west-1": {
-        "value": "nodejs18.x",
-      },
-      "us-isob-east-1": {
-        "value": "nodejs18.x",
-      },
-      "us-isob-west-1": {
-        "value": "nodejs18.x",
-      },
-      "us-west-1": {
-        "value": "nodejs20.x",
-      },
-      "us-west-2": {
-        "value": "nodejs20.x",
-      },
-    },
-  },
   "Parameters": {
     "BootstrapVersion": {
       "Default": "/cdk-bootstrap/hnb659fds/version",
@@ -140,178 +10,10 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
     },
   },
   "Resources": {
-    "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+    "ETLFunction9A61AFF3": {
       "DependsOn": [
-        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "[Hash Id].zip",
-        },
-        "Description": {
-          "Fn::Join": [
-            "",
-            [
-              "Lambda function for auto-deleting objects in ",
-              {
-                "Ref": "ErrorBucket8D38AF42",
-              },
-              " S3 bucket.",
-            ],
-          ],
-        },
-        "Handler": "index.handler",
-        "MemorySize": 128,
-        "Role": {
-          "Fn::GetAtt": [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-            "Arn",
-          ],
-        },
-        "Runtime": {
-          "Fn::FindInMap": [
-            "LatestNodeRuntimeMap",
-            {
-              "Ref": "AWS::Region",
-            },
-            "value",
-          ],
-        },
-        "Timeout": 900,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Sub": "arn:\${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ETLFunctionErrorLogAlarm03BF0B9C": {
-      "Properties": {
-        "AlarmActions": [
-          {
-            "Ref": "FailureTopic74C6EA16",
-          },
-        ],
-        "AlarmName": "ETLFunctionErrorLogAlarm",
-        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "EvaluationPeriods": 1,
-        "MetricName": "ETLFunctionErrorLog",
-        "Namespace": "Custom/DcpOpsMonitor",
-        "Period": 300,
-        "Statistic": "Sum",
-        "Threshold": 1,
-      },
-      "Type": "AWS::CloudWatch::Alarm",
-    },
-    "ErrorBucket8D38AF42": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "aws-cdk:auto-delete-objects",
-            "Value": "true",
-          },
-        ],
-      },
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "ErrorBucketAutoDeleteObjectsCustomResource8FA01807": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "ErrorBucketPolicyC8A82C62",
-      ],
-      "Properties": {
-        "BucketName": {
-          "Ref": "ErrorBucket8D38AF42",
-        },
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::S3AutoDeleteObjects",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "ErrorBucketPolicyC8A82C62": {
-      "Properties": {
-        "Bucket": {
-          "Ref": "ErrorBucket8D38AF42",
-        },
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "s3:PutBucketPolicy",
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                    "Arn",
-                  ],
-                },
-              },
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ErrorBucket8D38AF42",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "ErrorBucket8D38AF42",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::S3::BucketPolicy",
-    },
-    "EtlFunction22ED5A0D": {
-      "DependsOn": [
-        "EtlFunctionServiceRoleDefaultPolicy2FA140FD",
-        "EtlFunctionServiceRole2ADAA4BC",
+        "ETLFunctionServiceRoleDefaultPolicy1E696897",
+        "ETLFunctionServiceRole8378D870",
       ],
       "Properties": {
         "Code": {
@@ -366,7 +68,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
         "PackageType": "Image",
         "Role": {
           "Fn::GetAtt": [
-            "EtlFunctionServiceRole2ADAA4BC",
+            "ETLFunctionServiceRole8378D870",
             "Arn",
           ],
         },
@@ -374,7 +76,25 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       },
       "Type": "AWS::Lambda::Function",
     },
-    "EtlFunctionServiceRole2ADAA4BC": {
+    "ETLFunctionErrorLogAlarm03BF0B9C": {
+      "Properties": {
+        "AlarmActions": [
+          {
+            "Ref": "FailureTopic74C6EA16",
+          },
+        ],
+        "AlarmName": "ETLFunctionErrorLogAlarm",
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "EvaluationPeriods": 1,
+        "MetricName": "ETLFunctionErrorLog",
+        "Namespace": "Custom/DcpOpsMonitor",
+        "Period": 300,
+        "Statistic": "Sum",
+        "Threshold": 1,
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+    "ETLFunctionServiceRole8378D870": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -405,7 +125,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
-    "EtlFunctionServiceRoleDefaultPolicy2FA140FD": {
+    "ETLFunctionServiceRoleDefaultPolicy1E696897": {
       "Properties": {
         "PolicyDocument": {
           "Statement": [
@@ -443,17 +163,77 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
                 "Ref": "SuccessTopic495EEDDD",
               },
             },
+            {
+              "Action": "s3:PutObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "ErrorBucket8D38AF42",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "EtlFunctionServiceRoleDefaultPolicy2FA140FD",
+        "PolicyName": "ETLFunctionServiceRoleDefaultPolicy1E696897",
         "Roles": [
           {
-            "Ref": "EtlFunctionServiceRole2ADAA4BC",
+            "Ref": "ETLFunctionServiceRole8378D870",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
+    },
+    "ErrorBucket8D38AF42": {
+      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "EventRule5A491D2C": {
+      "Properties": {
+        "ScheduleExpression": "cron(0 0 ? * MON *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "ETLFunction9A61AFF3",
+                "Arn",
+              ],
+            },
+            "Id": "Target0",
+          },
+        ],
+      },
+      "Type": "AWS::Events::Rule",
+    },
+    "EventRuleAllowEventRuleDcpOpsMonitorStackETLFunction130897F2C156DA9F": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ETLFunction9A61AFF3",
+            "Arn",
+          ],
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "EventRule5A491D2C",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "FailureTopic74C6EA16": {
       "Type": "AWS::SNS::Topic",
@@ -643,43 +423,6 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
         },
       },
       "Type": "AWS::SNS::Subscription",
-    },
-    "ScrapingNrkExecuteRule18738132": {
-      "Properties": {
-        "ScheduleExpression": "cron(0 0 ? * MON *)",
-        "State": "ENABLED",
-        "Targets": [
-          {
-            "Arn": {
-              "Fn::GetAtt": [
-                "EtlFunction22ED5A0D",
-                "Arn",
-              ],
-            },
-            "Id": "Target0",
-          },
-        ],
-      },
-      "Type": "AWS::Events::Rule",
-    },
-    "ScrapingNrkExecuteRuleAllowEventRuleDcpOpsMonitorStackEtlFunction7DD83C5FE83C465A": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "EtlFunction22ED5A0D",
-            "Arn",
-          ],
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "ScrapingNrkExecuteRule18738132",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "SuccessTopic495EEDDD": {
       "Type": "AWS::SNS::Topic",

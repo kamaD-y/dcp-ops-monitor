@@ -138,6 +138,9 @@ def _try_login(driver: WebDriver, user_id: str, password: str, birthdate: str) -
     login_btn = driver.find_element(By.ID, "btnLogin")
     login_btn.submit()
 
+    # ログイン後のページが読み込まれるまで待機
+    driver.find_element(By.ID, "mainMenu01")
+
     logger.info("_try_login end.")
 
 

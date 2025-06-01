@@ -47,7 +47,6 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     const errorBucket = new s3.Bucket(this, 'ErrorBucket', {
       versioned: false,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
     });
 
     // Lambda Function用の LogGroup
@@ -56,7 +55,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     });
 
     // Lambda Function
-    const etlFunction = new lambda.DockerImageFunction(this, 'EtlFunction', {
+    const etlFunction = new lambda.DockerImageFunction(this, 'ETLFunction', {
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../lambda/dcp_etl'), {
         file: 'Dockerfile',
         extraHash: props.env?.region,
@@ -85,6 +84,12 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       new iam.PolicyStatement({
         actions: ['sns:Publish'],
         resources: [successTopic.topicArn],
+      }),
+    );
+    etlFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['s3:PutObject'],
+        resources: [`${errorBucket.bucketArn}/*`],
       }),
     );
 
@@ -123,7 +128,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     failureTopic.addSubscription(new sns_subs.LambdaSubscription(notificationFunction));
 
     // 毎週月曜日 09:00 に実行する Rule を作成
-    new events.Rule(this, 'ScrapingNrkExecuteRule', {
+    new events.Rule(this, 'EventRule', {
       schedule: events.Schedule.cron({
         minute: '0',
         hour: '0',
