@@ -492,6 +492,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
     },
     "NotificationFunction0492F7EA": {
       "DependsOn": [
+        "NotificationFunctionServiceRoleDefaultPolicy49A8A750",
         "NotificationFunctionServiceRole66D0974B",
       ],
       "Properties": {
@@ -500,6 +501,13 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
           "S3Key": "[Hash Id].zip",
+        },
+        "Environment": {
+          "Variables": {
+            "LINE_MESSAGE_API_TOKEN": "testLineToken",
+            "LINE_MESSAGE_API_URL": "https://api.line.me/v2/bot/message/broadcast",
+            "POWERTOOLS_LOG_LEVEL": "INFO",
+          },
         },
         "Handler": "src.handler.handler",
         "Role": {
@@ -589,6 +597,37 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "NotificationFunctionServiceRoleDefaultPolicy49A8A750": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "logs:DescribeMetricFilters",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": "logs:FilterLogEvents",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "LogGroupF5B46931",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "NotificationFunctionServiceRoleDefaultPolicy49A8A750",
+        "Roles": [
+          {
+            "Ref": "NotificationFunctionServiceRole66D0974B",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "NotificationFunctionSuccessTopicAAC9B438": {
       "Properties": {
