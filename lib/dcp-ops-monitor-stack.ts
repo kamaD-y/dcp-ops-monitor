@@ -56,7 +56,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     });
 
     // Lambda Function
-    const etlFunction = new lambda.DockerImageFunction(this, 'EtlFunction', {
+    const etlFunction = new lambda.DockerImageFunction(this, 'ETLFunction', {
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../lambda/dcp_etl'), {
         file: 'Dockerfile',
         extraHash: props.env?.region,
@@ -85,6 +85,12 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       new iam.PolicyStatement({
         actions: ['sns:Publish'],
         resources: [successTopic.topicArn],
+      }),
+    );
+    etlFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['s3:PutObject'],
+        resources: [`${errorBucket.bucketArn}/*`],
       }),
     );
 
