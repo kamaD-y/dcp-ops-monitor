@@ -1,4 +1,3 @@
-import glob
 from tempfile import mkdtemp
 
 from selenium import webdriver
@@ -52,6 +51,8 @@ def get_chrome_driver() -> webdriver.Chrome:
     chrome_options.add_argument("--v=99")
     chrome_options.add_argument("--single-process")
     chrome_options.add_argument(f"--user-agent={settings.user_agent}")
+    # NOTE: 以下のオプションは、Seleniumが自動操作していること(navigator.webdriver)をFalseにする
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
 
     # ref: https://github.com/umihico/docker-selenium-lambda/blob/main/main.py
     chrome_options.binary_location = "/opt/chrome/chrome"
