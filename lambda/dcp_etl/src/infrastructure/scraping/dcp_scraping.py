@@ -2,7 +2,6 @@ import glob
 from tempfile import mkdtemp
 
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 
 from settings.settings import get_logger, get_settings
@@ -30,23 +29,12 @@ class ScrapingProcessError(ScrapingError):
         self.message = message
 
 
-def get_chrome_driver(
-    chrome_path: str = "/opt/chrome/linux64/*/chrome", driver_path: str = "/opt/chromedriver/linux64/*/chromedriver"
-) -> webdriver.Chrome:
+def get_chrome_driver() -> webdriver.Chrome:
     """WebDriverを取得する
-
-    Args:
-        chrome_path (str): Chromeのパス
-        driver_path (str): ChromeDriverのパス
 
     Returns:
         webdriver.Chrome: ChromeのWebDriver
     """
-    if not glob.glob(chrome_path):
-        raise FileNotFoundError(f"Chrome binary path not found: {chrome_path}")
-    if not glob.glob(driver_path):
-        raise FileNotFoundError(f"ChromeDriver binary not found: {driver_path}")
-
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--disable-gpu")
@@ -65,13 +53,11 @@ def get_chrome_driver(
     chrome_options.add_argument("--single-process")
     chrome_options.add_argument(f"--user-agent={settings.user_agent}")
 
-    chrome_binary_path = glob.glob(chrome_path)[0]
-    chrome_options.binary_location = chrome_binary_path
-
-    driver_path = glob.glob(driver_path)[0]
-
-    service = ChromeService(driver_path)
+    # ref: https://github.com/umihico/docker-selenium-lambda/blob/main/main.py
+    chrome_options.binary_location = "/opt/chrome/chrome"
+    service = webdriver.ChromeService("/opt/chromedriver")
     driver = webdriver.Chrome(service=service, options=chrome_options)
+
     # スクレイピング全体通して暗黙的に待機する時間を10秒に設定
     driver.implicitly_wait(10)
 
