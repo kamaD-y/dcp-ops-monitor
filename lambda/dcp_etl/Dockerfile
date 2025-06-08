@@ -1,6 +1,14 @@
 # uvからrequirements.txtを生成する為、builderステージを使用
 FROM public.ecr.aws/lambda/python:3.13 as builder
 
+# NOTE: 2025/06/08時点で、137.x.x.xのバージョンでは対象サイトのスクレイピングにてエラーが発生した為、バージョン126で固定化している
+# 参考: https://github.com/umihico/docker-selenium-lambda/blob/main/Dockerfile
+RUN dnf install -y unzip && \
+    curl -Lo "/tmp/chromedriver-linux64.zip" "https://storage.googleapis.com/chrome-for-testing-public/126.0.6478.126/linux64/chromedriver-linux64.zip" && \
+    curl -Lo "/tmp/chrome-linux64.zip" "https://storage.googleapis.com/chrome-for-testing-public/126.0.6478.126/linux64/chrome-linux64.zip" && \
+    unzip /tmp/chromedriver-linux64.zip -d /opt/ && \
+    unzip /tmp/chrome-linux64.zip -d /opt/
+
 WORKDIR /app
 RUN python3.13 -m pip install uv
 
@@ -25,7 +33,11 @@ COPY --from=builder /app/requirements.txt ./
 RUN python3.13 -m pip install -r requirements.txt -t .
 
 # selenium-managerを使ってChromeとChromeDriverをダウンロード
-RUN /var/task/selenium/webdriver/common/linux/selenium-manager --browser chrome --cache-path /opt
+# RUN /var/task/selenium/webdriver/common/linux/selenium-manager --browser chrome --cache-path /opt
+
+# ChromeとChromeDriverを配置
+COPY --from=builder /opt/chrome-linux64 /opt/chrome
+COPY --from=builder /opt/chromedriver-linux64 /opt/
 
 # 実行用ファイルをコピー
 COPY ./src ./
