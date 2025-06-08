@@ -1,12 +1,11 @@
 # uvからrequirements.txtを生成する為、builderステージを使用
 FROM public.ecr.aws/lambda/python:3.13 as builder
 
-# ChromeとChromeDriverのバージョンを明示的に指定してダウンロード
-# バージョンに差異があるとエラーを起こす為、バージョンを揃える必要がある
+# NOTE: 2025/06/08時点で、137.x.x.xのバージョンでは対象サイトのスクレイピングにてエラーが発生した為、バージョン126で固定化している
 # 参考: https://github.com/umihico/docker-selenium-lambda/blob/main/Dockerfile
 RUN dnf install -y unzip && \
-    curl -Lo "/tmp/chromedriver-linux64.zip" "https://storage.googleapis.com/chrome-for-testing-public/137.0.7151.68/linux64/chromedriver-linux64.zip" && \
-    curl -Lo "/tmp/chrome-linux64.zip" "https://storage.googleapis.com/chrome-for-testing-public/137.0.7151.68/linux64/chrome-linux64.zip" && \
+    curl -Lo "/tmp/chromedriver-linux64.zip" "https://storage.googleapis.com/chrome-for-testing-public/126.0.6478.126/linux64/chromedriver-linux64.zip" && \
+    curl -Lo "/tmp/chrome-linux64.zip" "https://storage.googleapis.com/chrome-for-testing-public/126.0.6478.126/linux64/chrome-linux64.zip" && \
     unzip /tmp/chromedriver-linux64.zip -d /opt/ && \
     unzip /tmp/chrome-linux64.zip -d /opt/
 
