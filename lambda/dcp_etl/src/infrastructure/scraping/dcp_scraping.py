@@ -1,31 +1,20 @@
 from tempfile import mkdtemp
+from typing import Optional
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+from domain.interface import AbstractScraper
 from settings.settings import get_logger, get_settings
 
 logger = get_logger()
 settings = get_settings()
-error_image_path = "/tmp/error.png"
 
 
 class ScrapingError(Exception):
-    def __init__(self) -> None:
-        super().__init__("Scraping Error")
+    def __init__(self, message: str, error_image_path: Optional[str] = None) -> None:
+        super().__init__(message)
         self.error_image_path = error_image_path
-
-
-class LoginError(ScrapingError):
-    def __init__(self) -> None:
-        super().__init__()
-        self.message = "ログインに失敗しました。ユーザーID、パスワード、生年月日を確認してください。"
-
-
-class ScrapingProcessError(ScrapingError):
-    def __init__(self, message: str = "スクレイピング処理中にエラーが発生しました。") -> None:
-        super().__init__()
-        self.message = message
 
 
 def get_chrome_driver() -> webdriver.Chrome:
@@ -51,8 +40,6 @@ def get_chrome_driver() -> webdriver.Chrome:
     chrome_options.add_argument("--v=99")
     chrome_options.add_argument("--single-process")
     chrome_options.add_argument(f"--user-agent={settings.user_agent}")
-    # NOTE: 以下のオプションは、Seleniumが自動操作していること(navigator.webdriver)をFalseにする
-    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
 
     # ref: https://github.com/umihico/docker-selenium-lambda/blob/main/main.py
     chrome_options.binary_location = "/opt/chrome/chrome"
@@ -65,121 +52,82 @@ def get_chrome_driver() -> webdriver.Chrome:
     return driver
 
 
-def scrape(user_id: str, password: str, birthdate: str, driver: webdriver.Chrome) -> str:
-    """日本レコードキーピング(NRK)ページをスクレイピングし、資産情報ページをhtml形式の文字列で返却する
+class NRKScraper(AbstractScraper):
+    """日本レコードキーピング(NRK)ページをスクレイピングするクラス"""
 
-    Args:
-        user_id (str): ログイン用ユーザーID
-        password (str): ログイン用パスワード
-        birthdate (str): ログイン用生年月日
-        driver (WebDriver): ChromeのWebDriver
+    def __init__(self, user_id: str, password: str, birthdate: str, driver: Optional[webdriver.Chrome] = None) -> None:
+        self.user_id = user_id
+        self.password = password
+        self.birthdate = birthdate
+        self.driver = driver if driver else get_chrome_driver()
+        self.is_login = False
 
-    Returns:
-        str: 資産情報ページのhtml
-    """
-    try:
-        # ログインページへ遷移
-        driver.get(settings.login_url)
+    def scrape(self, start_url: str) -> str:
+        """資産情報ページをスクレイピングし、取得ページをhtml形式の文字列で返す"""
+        try:
+            logger.info("Scraping start.")
 
-        # ログイン
-        _try_login(driver, user_id, password, birthdate)
+            # ログイン - ログインページにアクセス
+            self.driver.get(start_url)
 
-        # 資産評価額照会ページへ遷移
-        _try_goto_assets_page(driver)
+            # ログイン - ログイン情報入力
+            input_user_id = self.driver.find_element(By.NAME, "userId")
+            input_password = self.driver.find_element(By.NAME, "password")
+            input_birthdate = self.driver.find_element(By.NAME, "birthDate")
+            input_user_id.send_keys(self.user_id)
+            input_password.send_keys(self.password)
+            input_birthdate.send_keys(self.birthdate)
 
-        # 資産評価額照会ページをhtmlに出力
-        page_source = driver.page_source
+            # ログイン - ログインボタンをクリック
+            btn_login = self.driver.find_element(By.ID, "btnLogin")
+            btn_login.submit()
 
-        # ログアウト
-        _try_logout(driver)
-        return page_source
+            # ログイン - メインメニューの表示を確認
+            li_menu01 = self.driver.find_element(By.ID, "mainMenu01")
+            self.is_login = True
+            logger.info("Login succeeded.")
 
-    except ScrapingError as e:
-        logger.exception("An error occurred during the scraping process.")
-        if isinstance(e, ScrapingProcessError):
-            # ログイン後の処理でエラーが発生した場合は、ログアウトを試みる
-            _try_logout(driver)
-        raise
+            # 資産評価額紹介ページ取得 - 資産評価額照会ページをクリック
+            li_menu01.click()
+            logger.info("Click mainMenu01.")
 
-    finally:
-        driver.quit()
-        logger.info("driver quit.")
+            # 資産評価額紹介ページ取得 - 資産評価額の要素が表示されるまで暗黙的に待機
+            self.driver.find_element(By.CLASS_NAME, "total")
+            logger.info("Displayed total assets.")
+            page_source = self.driver.page_source
 
+            # ログアウト
+            self._logout()
+            logger.info("Scraping succeeded.")
+            return page_source
 
-def _try_login(driver: webdriver.Chrome, user_id: str, password: str, birthdate: str) -> None:
-    """ログインを試みる
+        except Exception as e:
+            if not self.is_login:
+                raise ScrapingError("Login failed.") from e
 
-    Args:
-        driver (webdriver.Chrome): ChromeのWebDriver
-        user_id (str): ログイン用ユーザーID
-        password (str): ログイン用パスワード
-        birthdate (str): ログイン用生年月日
+            error_image_path = "/tmp/error.png"
+            self.driver.save_screenshot(error_image_path)
 
-    Returns:
-        None
-    """
-    try:
-        logger.info("_try_login start.")
+            # ログアウト
+            self._logout()
+            raise ScrapingError("Scraping process failed.", error_image_path) from e
 
-        user_id_input = driver.find_element(By.NAME, "userId")
-        password_input = driver.find_element(By.NAME, "password")
-        birthdate_input = driver.find_element(By.NAME, "birthDate")
-        user_id_input.send_keys(user_id)
-        password_input.send_keys(password)
-        birthdate_input.send_keys(birthdate)
+        finally:
+            self.driver.quit()
+            logger.info("Driver quit.")
 
-        login_btn = driver.find_element(By.ID, "btnLogin")
-        login_btn.submit()
+    def _logout(self) -> None:
+        """ログアウト処理を行う"""
+        if not self.is_login:
+            logger.warning("Not logged in, cannot logout.")
+            return
 
-        # ログイン後のページが読み込まれるまで待機
-        driver.find_element(By.ID, "mainMenu01")
-
-        logger.info("_try_login end.")
-    except Exception as e:
-        driver.save_screenshot(error_image_path)
-        raise LoginError() from e
-
-
-def _try_goto_assets_page(driver: webdriver.Chrome) -> None:
-    """資産評価額照会ページへ遷移する
-
-    Args:
-        driver (webdriver.Chrome): ChromeのWebDriver
-
-    Returns:
-        None
-    """
-    try:
-        logger.info("_try_goto_assets_page start.")
-
-        menu01 = driver.find_element(By.ID, "mainMenu01")
-        menu01.click()
-
-        # class=totalの要素が表示されるまで待機.暗黙的に待機時間を設定している為、ここでは明示的に待機処理は不要
-        driver.find_element(By.CLASS_NAME, "total")
-
-        logger.info("_try_goto_assets_page end.")
-    except Exception as e:
-        driver.save_screenshot(error_image_path)
-        raise ScrapingProcessError("資産評価額照会ページへの遷移に失敗しました。") from e
-
-
-def _try_logout(driver: webdriver.Chrome) -> None:
-    """ログアウトを試みる
-
-    Args:
-        driver (webdriver.Chrome): ChromeのWebDriver
-
-    Returns:
-        None
-    """
-    try:
-        logger.info("_try_logout start.")
-
-        logout_a = driver.find_element(By.LINK_TEXT, "ログアウト")
-        logout_a.click()
-
-        logger.info("_try_logout end.")
-    except Exception:
-        # ログアウトに失敗してもエラー通知のみとする
-        logger.exception("logout error")
+        try:
+            logger.info("Logout trying.")
+            link_logout = self.driver.find_element(By.LINK_TEXT, "ログアウト")
+            link_logout.click()
+            self.is_login = False
+            logger.info("Logout succeeded.")
+        except Exception as e:
+            # ログアウト失敗は直接的に処理に影響がない為、エラーログを出力し処理を継続
+            logger.error(f"Logout failed: {e}")
