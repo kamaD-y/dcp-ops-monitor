@@ -9,7 +9,7 @@ from domain.dcp_value_object import DcpAssetsInfo, DcpOpsIndicators, DcpProductA
 from infrastructure.aws.s3 import put_object, upload_file
 from infrastructure.aws.sns import publish
 from infrastructure.aws.ssm import get_parameter
-from infrastructure.scraping.dcp_scraping import ScrapingError, get_chrome_driver, scrape
+from infrastructure.scraping.dcp_scraping import NRKScraper, ScrapingError
 from settings.settings import get_logger, get_settings
 
 logger = get_logger()
@@ -28,6 +28,7 @@ class DcpOperationsStatusScraper:
     """確定拠出年金の運用状況をスクレイピングするクラス"""
 
     def __init__(self) -> None:
+        self.start_url = settings.login_url
         self.user_id = settings.user_id
         self.password = settings.password
         self.birthdate = settings.birthdate
@@ -58,17 +59,17 @@ class DcpOperationsStatusScraper:
             if not self.user_id or not self.password or not self.birthdate:
                 raise ScrapingError("user_id, password, and birthdate must be set.")
 
-            driver = get_chrome_driver()
-            return scrape(self.user_id, self.password.get_secret_value(), self.birthdate, driver)
+            return NRKScraper(self.user_id, self.password.get_secret_value(), self.birthdate).scrape(self.start_url)
         except ScrapingError as e:
-            key = "error_image.png"
-            s3_uri = f"s3://{settings.error_bucket_name}/{key}"
-            upload_file(
-                bucket=settings.error_bucket_name,
-                key=key,
-                file_path=e.error_image_path,
-            )
-            logger.info(f"An error occurred during the scraping process. Please check {s3_uri} for error details.")
+            if e.error_image_path:
+                key = "error_image.png"
+                s3_uri = f"s3://{settings.error_bucket_name}/{key}"
+                upload_file(
+                    bucket=settings.error_bucket_name,
+                    key=key,
+                    file_path=e.error_image_path,
+                )
+                logger.info(f"An error occurred during the scraping process. Please check {s3_uri} for error details.")
             raise
 
 
