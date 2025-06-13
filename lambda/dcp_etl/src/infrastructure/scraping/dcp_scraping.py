@@ -118,15 +118,16 @@ class NRKScraper(AbstractScraper):
 
     def _logout(self) -> None:
         """ログアウト処理を行う"""
-        if self.is_login:
-            try:
-                logger.info("Logout trying.")
-                link_logout = self.driver.find_element(By.LINK_TEXT, "ログアウト")
-                link_logout.click()
-                self.is_login = False
-                logger.info("Logout succeeded.")
-            except Exception as e:
-                # ログアウト失敗は直接的に処理に影響がない為、エラーログを出力し処理を継続
-                logger.error(f"Logout failed: {e}")
-        else:
+        if not self.is_login:
             logger.warning("Not logged in, cannot logout.")
+            return
+
+        try:
+            logger.info("Logout trying.")
+            link_logout = self.driver.find_element(By.LINK_TEXT, "ログアウト")
+            link_logout.click()
+            self.is_login = False
+            logger.info("Logout succeeded.")
+        except Exception as e:
+            # ログアウト失敗は直接的に処理に影響がない為、エラーログを出力し処理を継続
+            logger.error(f"Logout failed: {e}")
