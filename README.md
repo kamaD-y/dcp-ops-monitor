@@ -1,19 +1,16 @@
 # dcp-ops-monitor
 
-## Description
-
 確定拠出年金 (Defined Contribution Plan) の運用状況を確認する為、
-日本レコードキーピング (NRK) が提供する Web ページをスクレイピングし、サマリした情報を通知する。
+週次で対象の Web ページをスクレイピングし、サマリした情報を通知する。
 
-## Architecture
-
-### Architecture Diagram
+## 構成
+### 構成図
 
 ![Architecture](docs/images/dcp-ops-monitor.png)
 
-### Directory
+### ディレクトリ構成
 
-レイヤードアーキテクチャを採用している
+レイヤードアーキテクチャを意識した以下構成としている
 
 ```
 |- bin
@@ -31,25 +28,126 @@
 |- pyproject.toml         # 各機能共通設定 (mypy, ruff など)
 ```
 
-### Flow
+## 処理シーケンス
+## 処理成功時のシーケンス
 
-#### dcp_etl
+```mermaid
+sequenceDiagram
+    participant Scheduler as EventBridge
+    participant ETL as ETL Lambda
+    participant Web as 対象サイト
+    participant SNS_S as SNS Success
+    participant Notify as 通知 Lambda
+    participant Notifications as 通知サービス(LINE etc.)
 
-1. 対象ページをスクレイピング・ HTML データ抽出処理  
-   エラー発生時は、エラー画面を PNG 形式で S3 に保存
-2. HTML データ加工処理
-3. 結果を通知
-   SNS Topic (Success) へ送信
+    Note over Scheduler, Notifications: 正常処理フロー
+    
+    Scheduler->>ETL: 週次実行トリガー
+    activate ETL
+    
+    ETL->>Web: スクレイピング開始
+    activate Web
+    Web-->>ETL: HTMLデータ取得成功
+    deactivate Web
+    
+    ETL->>ETL: HTMLデータ加工処理
+    Note right of ETL: データ変換・整形
+    
+    ETL->>SNS_S: 成功結果を送信
+    activate SNS_S
+    deactivate ETL
+    
+    SNS_S->>Notify: Success Eventでトリガー
+    activate Notify
+    deactivate SNS_S
+    
+    Notify->>Notify: EventからMessage抽出
+    
+    Notify->>Notifications: 成功メッセージ送信
+    activate Notifications
+    Note right of Notifications: 運用状況サマリを通知
+    Notifications-->>Notify: 送信完了
+    deactivate Notifications
+    deactivate Notify
+    
+    Note over Scheduler, Notifications: 処理完了
+```
 
-#### dcp_notification
+## 処理失敗時のシーケンス
 
-1. SNS Topic (Success/Failure) からトリガー・バリデーション  
-   Failure からの場合、SNS から受信した Event から対象のエラーログメッセージを取得する (https://qiita.com/onooooo/items/f59c69e30dc5b477f9fd)
-2. Message Event を LINE に通知
+```mermaid
+sequenceDiagram
+    participant Scheduler as EventBridge
+    participant ETL as ETL Lambda
+    participant Web as 対象サイト
+    participant S3 as S3
+    participant CWL as CloudWatch Logs
+    participant Alarm as CloudWatch Alarm
+    participant SNS_F as SNS Failure
+    participant Notify as 通知 Lambda
+    participant Notifications as 通知サービス(LINE etc.)
 
-## Development
+    Note over Scheduler, Notifications: 異常処理フロー
+    
+    Scheduler->>ETL: 週次実行トリガー
+    activate ETL
+    
+    ETL->>Web: スクレイピング開始
+    activate Web
+    Web-->>ETL: エラー発生
+    deactivate Web
+    Note right of Web: デバッグ用スクリーンショット
+    
+    ETL->>S3: エラー画面をPNG保存
+    activate S3
+    S3-->>ETL: 保存完了
+    deactivate S3
+    
+    ETL->>ETL: 例外をThrow
+    ETL->>CWL: エラーログ出力
+    activate CWL
+    deactivate ETL
+    Note right of CWL: 詳細なエラー情報
+    
+    CWL->>Alarm: ログベースアラーム発火
+    activate Alarm
+    deactivate CWL
+    
+    Alarm->>SNS_F: アラーム通知
+    activate SNS_F
+    deactivate Alarm
+    
+    SNS_F->>Notify: Failure Eventでトリガー
+    activate Notify
+    deactivate SNS_F
+    
+    Notify->>CWL: エラーログ取得
+    activate CWL
+    CWL-->>Notify: エラーログ返却
+    deactivate CWL
+       
+    Notify->>Notifications: エラーメッセージ送信
+    activate Notifications
+    Note right of Notifications: エラー詳細とS3画像URLを通知
+    Notifications-->>Notify: 送信完了
+    deactivate Notifications
+    deactivate Notify
+    
+    Note over Scheduler, Notifications: エラー処理完了
+```
+## 開発
 
-### cdk 開発環境の構築 (初回のみ)
+### 前提条件
+
+以下のソフトウェアがインストールされていること
+
+- `Node.js`: v21.7.0 以上
+- `Python`: 3.13 以上
+- `uv`
+- `Docker`
+
+### 開発環境の準備
+#### cdk 開発環境の構築 (初回のみ)
 
 [CDK 開発者ガイド](https://docs.aws.amazon.com/ja_jp/cdk/v2/guide/getting_started.html)
 
@@ -58,17 +156,6 @@
 ```
 $ cdk bootstrap aws://ACCOUNT-NUMBER/REGION --profile xxx
 ```
-
-### 開発環境の準備
-
-#### 前提条件
-
-以下のソフトウェアがインストールされていること
-
-- `Node.js`: v21.7.0 以上
-- `Python`: 3.13 以上
-- `uv`
-- `Docker`
 
 #### 環境変数の設定
 
@@ -126,9 +213,36 @@ $ cd lambda/{specific_project_name}
 $ uv sync
 ```
 
-### ローカルでの開発手順
+### Lint/Format
 
-#### Python インタプリタからインタラクティブに Selenium を使用する
+```bash
+# Lint
+$ npm run lint
+$ npm run lint:ci
+
+# Format
+$ npm run format
+$ npm run format:ci
+```
+
+### テスト
+
+```bash
+# CDK スナップショットテスト
+$ npm run test:cdk
+
+# Lambda コードテスト
+$ npm run test:unit
+```
+
+### コミット
+
+.husky/lefthook を使用し、コミット時に Lint/Format/Test を自動的に実行します。
+
+<details>
+<summary>ローカル環境でのETL機能の動作確認方法</summary>
+
+### Python インタプリタからインタラクティブに Selenium を使用する
 
 1. selenium/standalone-chrome を起動
 
@@ -162,25 +276,9 @@ $ python
 >>> driver.quit()
 ```
 
-### テスト
-
-#### スナップショット
-
-```bash
-$ npm run test:cdk
-```
-
-#### ユニットテスト
-
-```bash
-$ npm run test:unit
-```
-
-### コミット
-
-.husky を使用し、コミット時に Lint/Format を自動的に実行します。
-
-### ローカルから Lambda コンテナでハンドラーを実行する
+### Lambda コンテナでハンドラーを実行する
+TODO: SNS_TOPIC_ARN, ParameterStoreのARNをENVに設定する、もしくはLOGIN_USER_IDなどセットしておけば動作することを追記する
+TODO: デプロイされていないと動かないので、通知機能含めて動作確認できるように...
 
 1. docker-compose で起動する
 
@@ -200,26 +298,19 @@ $ curl -d "{}" http://localhost:8080/2015-03-31/functions/function/invocations
 $ docker compose down
 ```
 
-## Development
+</details>
 
-### デプロイ
+## デプロイ
 
-#### 事前作業
+### 事前作業
 
-1. ログイン用パラメータを格納する ParameterStore を手動で作成します
+1. ログイン用パラメータを格納する ParameterStore を手動で作成します (CDK で暗号化文字列を使用したパラメータを作成できない為手動としています)
 ```json
 {"LOGIN_USER_ID":"xxxx","LOGIN_PASSWORD":"xxxx","LOGIN_BIRTHDATE":"19701201"}
 ```
 
 2. 作成したパラメータ名を loginParameterName にセットします
 
-#### デプロイコマンド
-```bash
-$ npx cdk deploy --profile xxx
-```
+### デプロイ
 
-### デストロイ
-
-```bash
-$ npx cdk destroy --profile xxx
-```
+[GitHub Actions ワークフロー](.github/workflows/)を利用してデプロイします
