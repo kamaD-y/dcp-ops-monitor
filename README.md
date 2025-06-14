@@ -6,7 +6,7 @@
 ## 構成
 ### 構成図
 
-![Architecture](docs/images/dcp-ops-monitor.png)
+![Architecture](docs/images/dcp-ops-monitor.drawio.png)
 
 ### ディレクトリ構成
 
