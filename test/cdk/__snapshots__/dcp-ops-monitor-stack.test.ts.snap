@@ -42,10 +42,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
                   {
                     "Ref": "AWS::AccountId",
                   },
-                  ":parameter",
-                  {
-                    "Ref": "LoginParametersForScrapingAA8D7353",
-                  },
+                  ":parameter/dcp-ops-monitor/login-parameters-for-scraping",
                 ],
               ],
             },
@@ -148,10 +145,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
                     {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter",
-                    {
-                      "Ref": "LoginParametersForScrapingAA8D7353",
-                    },
+                    ":parameter/dcp-ops-monitor/login-parameters-for-scraping",
                   ],
                 ],
               },
@@ -261,14 +255,6 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
-    },
-    "LoginParametersForScrapingAA8D7353": {
-      "Properties": {
-        "Name": "/custom/dcp_etl/login-parameters",
-        "Type": "String",
-        "Value": "{"LOGIN_USER_ID":"testUser","LOGIN_PASSWORD":"testPassword","LOGIN_BIRTHDATE":"20000101"}",
-      },
-      "Type": "AWS::SSM::Parameter",
     },
     "NotificationFunction0492F7EA": {
       "DependsOn": [
