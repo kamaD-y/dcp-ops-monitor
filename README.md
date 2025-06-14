@@ -85,20 +85,17 @@ $ cp .env.example .env
 
 - `LOG_LEVEL`: アプリケーションのログレベル
 - `LOGIN_URL`: スクレイピング対象サイトのログインページ
-- `USER_ID`: ログイン用ユーザ ID
-- `PASSWORD`: ログイン用パスワード
-- `BIRTHDATE`: ログイン用生年月日
 - `USER_AGENT`: スクレイピングで使用するユーザーエージェント
 - 以下は LINE 通知関数用 (line_notification) 設定の設定
-  - `LINE_NOTIFY_URL`: LINE Messaging API の URL
-  - `LINE_NOTIFY_TOKEN`: LINE Messaging API の TOKEN
+  - `LINE_MESSAGE_API_URL`: LINE Messaging API の URL
+  - `LINE_MESSAGE_API_TOKEN`: LINE Messaging API の TOKEN
 
 #### Node 環境のセットアップ
 
 ```bash
 # 依存関係のインストール
 $ npm ci
-# pre-commitの有効化
+# pre-commit の有効化
 $ npx lefthook install
 ```
 
@@ -207,6 +204,16 @@ $ docker compose down
 
 ### デプロイ
 
+#### 事前作業
+
+1. ログイン用パラメータを格納する ParameterStore を手動で作成します
+```json
+{"LOGIN_USER_ID":"xxxx","LOGIN_PASSWORD":"xxxx","LOGIN_BIRTHDATE":"19701201"}
+```
+
+2. 作成したパラメータ名を loginParameterName にセットします
+
+#### デプロイコマンド
 ```bash
 $ npx cdk deploy --profile xxx
 ```
