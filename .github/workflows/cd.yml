@@ -1,0 +1,58 @@
+name: CD Workflow
+run-name: CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'bin/**'
+      - 'lib/**'
+      - 'lambda/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  cd:
+    runs-on: ubuntu-latest
+    env:
+      LOG_LEVEL: ${{ vars.LOG_LEVEL }}
+      LOGIN_URL: ${{ vars.LOGIN_URL }}
+      LOGIN_USER_ID: ${{ secrets.LOGIN_USER_ID }}
+      LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
+      LOGIN_BIRTHDATE: ${{ secrets.LOGIN_BIRTHDATE }}
+      USER_AGENT: ${{ vars.USER_AGENT }}
+      LINE_MESSAGE_API_URL: ${{ vars.LINE_MESSAGE_API_URL }}
+      LINE_MESSAGE_API_TOKEN: ${{ secrets.LINE_MESSAGE_API_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: configure aws credentials
+        id: configure-aws-credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.ROLE_TO_ASSUME }}
+          role-session-name: GitHubActions
+          aws-region: ${{ vars.AWS_REGION }}
+          output-credentials: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '21.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: CDK Deploy
+        env:
+          AWS_ACCOUNT_ID: ${{ steps.configure-aws-credentials.outputs.mask-aws-account-id}}
+          AWS_ACCESS_KEY_ID: ${{ steps.configure-aws-credentials.outputs.aws-access-key-id }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.configure-aws-credentials.outputs.aws-secret-access-key }}
+          AWS_SESSION_TOKEN: ${{ steps.configure-aws-credentials.outputs.aws-session-token }}
+        run: npx cdk deploy --require-approval never

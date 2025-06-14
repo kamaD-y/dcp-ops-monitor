@@ -17,12 +17,12 @@ import type { Construct } from 'constructs';
 export interface DcpOpsMonitorStackProps extends cdk.StackProps {
   logLevel: string;
   loginUrl: string;
-  userId: string;
-  password: string;
-  birthdate: string;
+  loginUserId: string;
+  loginPassword: string;
+  loginBirthdate: string;
   userAgent: string;
-  line_message_api_url: string;
-  line_message_api_token: string;
+  lineMessageApiUrl: string;
+  lineMessageApiToken: string;
 }
 
 export class DcpOpsMonitorStack extends cdk.Stack {
@@ -33,9 +33,9 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     const loginParametersForScraping = new ssm.StringParameter(this, 'LoginParametersForScraping', {
       parameterName: '/custom/dcp_etl/login-parameters',
       stringValue: JSON.stringify({
-        USER_ID: props.userId,
-        PASSWORD: props.password,
-        BIRTHDATE: props.birthdate,
+        LOGIN_USER_ID: props.loginUserId,
+        LOGIN_PASSWORD: props.loginPassword,
+        LOGIN_BIRTHDATE: props.loginBirthdate,
       }),
     });
 
@@ -104,8 +104,8 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       },
       environment: {
         POWERTOOLS_LOG_LEVEL: props.logLevel,
-        LINE_MESSAGE_API_URL: props.line_message_api_url,
-        LINE_MESSAGE_API_TOKEN: props.line_message_api_token,
+        LINE_MESSAGE_API_URL: props.lineMessageApiUrl,
+        LINE_MESSAGE_API_TOKEN: props.lineMessageApiToken,
       },
     });
 

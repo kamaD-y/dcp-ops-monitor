@@ -25,9 +25,9 @@ class ScrapingSettings(BaseSettings):
 
     # スクレイピング関連設定
     login_url: str = Field(default="https://www.nrkn.co.jp/rk/login.html")
-    user_id: Optional[str] = None
-    password: Optional[SecretStr] = None
-    birthdate: Optional[str] = None
+    login_user_id: Optional[str] = None
+    login_password: Optional[SecretStr] = None
+    login_birthdate: Optional[str] = None
     user_agent: str = Field(
         default=(
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
