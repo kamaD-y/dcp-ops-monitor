@@ -19,6 +19,6 @@ new DcpOpsMonitorStack(app, 'DcpOpsMonitorStack', {
   userAgent:
     process.env.USER_AGENT ||
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-  line_message_api_url: process.env.LINE_MESSAGE_API_URL || 'https://api.line.me/v2/bot/message/broadcast',
-  line_message_api_token: process.env.LINE_MESSAGE_API_TOKEN || 'dummy-line-token',
+  lineMessageApiUrl: process.env.LINE_MESSAGE_API_URL || 'https://api.line.me/v2/bot/message/broadcast',
+  lineMessageApiToken: process.env.LINE_MESSAGE_API_TOKEN || 'dummy-line-token',
 });
