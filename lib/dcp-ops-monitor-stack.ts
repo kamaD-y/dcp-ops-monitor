@@ -20,6 +20,7 @@ export interface DcpOpsMonitorStackProps extends cdk.StackProps {
   userAgent: string;
   lineMessageApiUrl: string;
   lineMessageApiToken: string;
+  loginParameterName: string;
 }
 
 export class DcpOpsMonitorStack extends cdk.Stack {
@@ -31,7 +32,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       this,
       'LoginParametersForScraping',
       {
-        parameterName: '/dcp-ops-monitor/login-parameters-for-scraping',
+        parameterName: props.loginParameterName,
       },
     );
 

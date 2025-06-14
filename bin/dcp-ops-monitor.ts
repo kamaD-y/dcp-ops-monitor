@@ -18,4 +18,5 @@ new DcpOpsMonitorStack(app, 'DcpOpsMonitorStack', {
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
   lineMessageApiUrl: process.env.LINE_MESSAGE_API_URL || 'https://api.line.me/v2/bot/message/broadcast',
   lineMessageApiToken: process.env.LINE_MESSAGE_API_TOKEN || 'dummy-line-token',
+  loginParameterName: '/dcp-ops-monitor/login-parameters-for-scraping',
 });

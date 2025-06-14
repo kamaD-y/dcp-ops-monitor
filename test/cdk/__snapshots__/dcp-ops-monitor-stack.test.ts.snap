@@ -42,7 +42,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
                   {
                     "Ref": "AWS::AccountId",
                   },
-                  ":parameter/dcp-ops-monitor/login-parameters-for-scraping",
+                  ":parameter/dcp-ops-monitor/dummy-login-parameters",
                 ],
               ],
             },
@@ -145,7 +145,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
                     {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/dcp-ops-monitor/login-parameters-for-scraping",
+                    ":parameter/dcp-ops-monitor/dummy-login-parameters",
                   ],
                 ],
               },
