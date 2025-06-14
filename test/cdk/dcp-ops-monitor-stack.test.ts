@@ -12,9 +12,9 @@ test('Snapshot test for DcpOpsStatusNotificationStack', () => {
     },
     logLevel: 'INFO',
     loginUrl: 'https://example.com/login',
-    userId: 'testUser',
-    password: 'testPassword',
-    birthdate: '20000101',
+    loginUserId: 'testUser',
+    loginPassword: 'testPassword',
+    loginBirthdate: '20000101',
     userAgent:
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
     line_message_api_url: 'https://api.line.me/v2/bot/message/broadcast',

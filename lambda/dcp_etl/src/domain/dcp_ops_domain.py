@@ -29,22 +29,24 @@ class DcpOperationsStatusScraper:
 
     def __init__(self) -> None:
         self.start_url = settings.login_url
-        self.user_id = settings.user_id
-        self.password = settings.password
-        self.birthdate = settings.birthdate
+        self.login_user_id = settings.login_user_id
+        self.login_password = settings.login_password
+        self.login_birthdate = settings.login_birthdate
 
         if os.getenv("LOGIN_PARAMETER_ARN"):
             parameters = get_parameter(os.getenv("LOGIN_PARAMETER_ARN"))
             if parameters:
-                os.environ["USER_ID"] = parameters.get("USER_ID")
-                os.environ["PASSWORD"] = parameters.get("PASSWORD")
-                os.environ["BIRTHDATE"] = parameters.get("BIRTHDATE")
+                os.environ["LOGIN_USER_ID"] = parameters.get("LOGIN_USER_ID")
+                os.environ["LOGIN_PASSWORD"] = parameters.get("LOGIN_PASSWORD")
+                os.environ["LOGIN_BIRTHDATE"] = parameters.get("LOGIN_BIRTHDATE")
             updated_settings = get_settings(
-                user_id=os.getenv("USER_ID"), password=os.getenv("PASSWORD"), birthdate=os.getenv("BIRTHDATE")
+                login_user_id=os.getenv("LOGIN_USER_ID"),
+                login_password=os.getenv("LOGIN_PASSWORD"),
+                login_birthdate=os.getenv("LOGIN_BIRTHDATE"),
             )
-            self.user_id = updated_settings.user_id
-            self.password = updated_settings.password
-            self.birthdate = updated_settings.birthdate
+            self.login_user_id = updated_settings.login_user_id
+            self.login_password = updated_settings.login_password
+            self.login_birthdate = updated_settings.login_birthdate
 
     def scrape(self) -> str:
         """スクレイピングを実行する
@@ -56,10 +58,12 @@ class DcpOperationsStatusScraper:
             ScrapingError: スクレイピングに失敗した場合
         """
         try:
-            if not self.user_id or not self.password or not self.birthdate:
+            if not self.login_user_id or not self.login_password or not self.login_birthdate:
                 raise ScrapingError("user_id, password, and birthdate must be set.")
 
-            return NRKScraper(self.user_id, self.password.get_secret_value(), self.birthdate).scrape(self.start_url)
+            return NRKScraper(self.login_user_id, self.login_password.get_secret_value(), self.login_birthdate).scrape(
+                self.start_url
+            )
         except ScrapingError as e:
             if e.error_image_path:
                 key = "error_image.png"

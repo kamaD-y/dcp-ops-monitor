@@ -266,7 +266,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       "Properties": {
         "Name": "/custom/dcp_etl/login-parameters",
         "Type": "String",
-        "Value": "{"USER_ID":"testUser","PASSWORD":"testPassword","BIRTHDATE":"20000101"}",
+        "Value": "{"LOGIN_USER_ID":"testUser","LOGIN_PASSWORD":"testPassword","LOGIN_BIRTHDATE":"20000101"}",
       },
       "Type": "AWS::SSM::Parameter",
     },
