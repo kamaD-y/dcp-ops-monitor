@@ -24,7 +24,7 @@ def get_parameter(parameter_name: str) -> Dict[str, Any]:
         Dict[str, Any]: 読み込んだパラメータ、失敗時は空辞書
     """
     try:
-        response = client.get_parameter(Name=parameter_name)
+        response = client.get_parameter(Name=parameter_name, WithDecryption=True)
         logger.info(f"Successfully retrieved parameter {parameter_name}", response=response)
         parameters_json = response["Parameter"]["Value"]
         return json.loads(parameters_json)

@@ -17,12 +17,10 @@ import type { Construct } from 'constructs';
 export interface DcpOpsMonitorStackProps extends cdk.StackProps {
   logLevel: string;
   loginUrl: string;
-  loginUserId: string;
-  loginPassword: string;
-  loginBirthdate: string;
   userAgent: string;
   lineMessageApiUrl: string;
   lineMessageApiToken: string;
+  loginParameterName: string;
 }
 
 export class DcpOpsMonitorStack extends cdk.Stack {
@@ -30,14 +28,13 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     super(scope, id, props);
 
     // Parameter Store
-    const loginParametersForScraping = new ssm.StringParameter(this, 'LoginParametersForScraping', {
-      parameterName: '/custom/dcp_etl/login-parameters',
-      stringValue: JSON.stringify({
-        LOGIN_USER_ID: props.loginUserId,
-        LOGIN_PASSWORD: props.loginPassword,
-        LOGIN_BIRTHDATE: props.loginBirthdate,
-      }),
-    });
+    const loginParametersForScraping = ssm.StringParameter.fromSecureStringParameterAttributes(
+      this,
+      'LoginParametersForScraping',
+      {
+        parameterName: props.loginParameterName,
+      },
+    );
 
     // SNS Topic
     const successTopic = new sns.Topic(this, 'SuccessTopic', {});
