@@ -1,5 +1,5 @@
 [project]
-name = "dcp-notification"
+name = "dcp-ops-monitor-notification"
 version = "0.1.0"
 description = "Notifies the execution result of dcp_etl"
 readme = "README.md"
