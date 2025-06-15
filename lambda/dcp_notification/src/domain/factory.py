@@ -1,5 +1,5 @@
 from src.domain.interface import Notification, NotificationError
-from src.infrastructure.notification.line_notification import LineNotification
+from src.infrastructure.notification.line_notification_impl import LineNotification
 from src.settings.settings import get_settings
 
 settings = get_settings()
@@ -16,7 +16,7 @@ class NotificationDestinations:
     def add(self, destination: Notification) -> None:
         self.destinations.append(destination)
 
-    def notify(self, message: str) -> None:
+    def send(self, message: str) -> None:
         for destination in self.destinations:
             destination.send(message)
 
