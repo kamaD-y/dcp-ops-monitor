@@ -49,9 +49,9 @@ class FailureNotification(NotificationUseCase):
         """
         try:
             message_dict = self._parse_message(message)
-            message = self._fetch_error_logs_from_cloudwatch_alarms(message_dict)
+            error_message = self._fetch_error_logs_from_cloudwatch_alarms(message_dict)
             notifications = NotificationDestinationsFactory.create()
-            notifications.send(message)
+            notifications.send(error_message)
         except Exception as e:
             raise RuntimeError("Failed to process failure message.") from e
 
