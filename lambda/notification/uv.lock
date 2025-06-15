@@ -84,7 +84,7 @@ wheels = [
 ]
 
 [[package]]
-name = "dcp-notification"
+name = "dcp-ops-monitor-notification"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

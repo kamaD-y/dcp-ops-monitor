@@ -24,7 +24,7 @@
 |      |   |- aws           # AWS リソース
 |      |   |- scraping      # スクレイピング
 |      |- settings        # 設定
-|  |- dcp_notification    # 通知機能
+|  |- notification    # 通知機能
 |- pyproject.toml         # 各機能共通設定 (mypy, ruff など)
 ```
 
