@@ -93,7 +93,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     // LINE通知用Lambda Function
     const notificationFunction = new PythonFunction(this, 'NotificationFunction', {
       runtime: lambda.Runtime.PYTHON_3_13,
-      entry: path.join(__dirname, '../lambda/dcp_notification'),
+      entry: path.join(__dirname, '../lambda/notification'),
       index: 'src/handler.py',
       handler: 'handler',
       bundling: {
