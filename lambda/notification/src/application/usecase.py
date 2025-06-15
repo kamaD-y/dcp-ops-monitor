@@ -22,9 +22,6 @@ class NotificationUseCase(ABC):
 class SuccessNotification(NotificationUseCase):
     """成功メッセージを処理するユースケース"""
 
-    def __init__(self) -> None:
-        pass
-
     def send(self, message: str) -> None:
         """成功メッセージを送信する
 
