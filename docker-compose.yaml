@@ -2,7 +2,7 @@ services:
   dcp-etl:
     container_name: dcp-etl
     build:
-      context: lambda/dcp_etl
+      context: lambda/etl
       dockerfile: Dockerfile
       args:
         - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}

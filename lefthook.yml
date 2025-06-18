@@ -23,4 +23,4 @@ pre-commit:
 
     test:lambda:
       glob: "*.py"
-      run: cd lambda/dcp_etl && ENV=test uv run pytest -v --tb=short --disable-warnings --maxfail=1
+      run: cd lambda/etl && ENV=test uv run pytest -v --tb=short --disable-warnings --maxfail=1
