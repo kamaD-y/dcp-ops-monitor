@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOG_LEVEL: ${{ vars.LOG_LEVEL }}
-      LOGIN_URL: ${{ vars.LOGIN_URL }}
+      START_URL: ${{ vars.START_URL }}
       USER_AGENT: ${{ vars.USER_AGENT }}
       LINE_MESSAGE_API_URL: ${{ vars.LINE_MESSAGE_API_URL }}
       LINE_MESSAGE_API_TOKEN: ${{ secrets.LINE_MESSAGE_API_TOKEN }}

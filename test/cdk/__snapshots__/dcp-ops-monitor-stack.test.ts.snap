@@ -46,11 +46,11 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
                 ],
               ],
             },
-            "LOGIN_URL": "https://example.com/login",
             "POWERTOOLS_LOG_LEVEL": "INFO",
             "SNS_TOPIC_ARN": {
               "Ref": "SuccessTopic495EEDDD",
             },
+            "START_URL": "https://example.com/login",
             "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
           },
         },

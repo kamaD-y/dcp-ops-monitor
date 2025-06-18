@@ -16,7 +16,7 @@ import type { Construct } from 'constructs';
 
 export interface DcpOpsMonitorStackProps extends cdk.StackProps {
   logLevel: string;
-  loginUrl: string;
+  startUrl: string;
   userAgent: string;
   lineMessageApiUrl: string;
   lineMessageApiToken: string;
@@ -64,7 +64,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       applicationLogLevel: props.logLevel,
       environment: {
         POWERTOOLS_LOG_LEVEL: props.logLevel,
-        LOGIN_URL: props.loginUrl,
+        START_URL: props.startUrl,
         USER_AGENT: props.userAgent,
         LOGIN_PARAMETER_ARN: loginParametersForScraping.parameterArn,
         SNS_TOPIC_ARN: successTopic.topicArn,
