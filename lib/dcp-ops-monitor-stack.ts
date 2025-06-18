@@ -53,7 +53,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
 
     // Lambda Function
     const etlFunction = new lambda.DockerImageFunction(this, 'ETLFunction', {
-      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../lambda/dcp_etl'), {
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../lambda/etl'), {
         file: 'Dockerfile',
         extraHash: props.env?.region,
       }),

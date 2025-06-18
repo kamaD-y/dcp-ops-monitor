@@ -16,7 +16,7 @@
 |- bin
 |- lib
 |- lambda
-|  |- dcp_etl             # ETL 機能
+|  |- etl             # ETL 機能
 |    |- src
 |      |- application     # アプリケーション層
 |      |- domain          # ドメイン層

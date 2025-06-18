@@ -1,5 +1,5 @@
 [project]
-name = "dcp_etl"
+name = "etl"
 version = "0.1.0"
 description = "To check the operation status of defined contribution pension plans, scrape web pages and provide summary information."
 readme = "README.md"
