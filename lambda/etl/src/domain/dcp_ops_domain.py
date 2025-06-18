@@ -4,7 +4,6 @@ from typing import Any, Dict, TypeGuard
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-
 from domain.dcp_value_object import DcpAssetsInfo, DcpOpsIndicators, DcpProductAssets, DcpTotalAssets
 from infrastructure.aws.s3 import put_object, upload_file
 from infrastructure.aws.sns import publish

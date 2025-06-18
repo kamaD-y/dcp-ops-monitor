@@ -24,7 +24,7 @@ class ScrapingSettings(BaseSettings):
     log_level: str = Field(default="INFO")
 
     # スクレイピング関連設定
-    login_url: str = Field(default="https://www.nrkn.co.jp/rk/login.html")
+    start_url: str = Field(default="https://example.com/login")
     login_user_id: Optional[str] = None
     login_password: Optional[SecretStr] = None
     login_birthdate: Optional[str] = None

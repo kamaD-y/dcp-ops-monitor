@@ -171,7 +171,7 @@ $ cp .env.example .env
   本番環境へのデプロイは GitHub Actions を介して行う為、GitHub に変数を設定しておくこと
 
 - `LOG_LEVEL`: アプリケーションのログレベル
-- `LOGIN_URL`: スクレイピング対象サイトのログインページ
+- `START_URL`: スクレイピング対象サイトのページURL
 - `USER_AGENT`: スクレイピングで使用するユーザーエージェント
 - 以下は LINE 通知関数用 (line_notification) 設定の設定
   - `LINE_MESSAGE_API_URL`: LINE Messaging API の URL
@@ -268,7 +268,7 @@ $ python
 >>> options = webdriver.ChromeOptions()
 >>> options.add_argument(f'--user-agent={os.environ["USER_AGENT"]}')
 >>> driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', options=options)
->>> driver.get(os.environ["LOGIN_URL"])
+>>> driver.get(os.environ["START_URL"])
 # localhost:7900 で、ブラウザが操作されていること
 ...
 
