@@ -52,7 +52,9 @@ class DcpOpsMonitorExtractor:
             ScrapingError: スクレイピングに失敗した場合
         """
         try:
-            return NRKScraper(**self.scraping_params.__dict__).scrape(settings.start_url)
+            return NRKScraper(
+                self.scraping_params.user_id, self.scraping_params.password, self.scraping_params.birthdate
+            ).scrape(settings.start_url)
         except ScrapingError as e:
             if e.error_image_path:
                 key = "error_image.png"
