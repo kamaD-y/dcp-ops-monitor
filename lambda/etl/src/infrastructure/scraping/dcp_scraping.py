@@ -70,6 +70,9 @@ class NRKScraper(AbstractScraper):
 
         Returns:
             str: スクレイピング結果のHTMLソース
+
+        Raises:
+            ScrapingError: スクレイピングに失敗した場合
         """
         try:
             logger.info("Scraping start.")
