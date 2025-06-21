@@ -21,6 +21,29 @@ def test_scraping_params__get_parameter_called_when_login_parameter_arn_set(put_
     assert scraping_params.birthdate == "19800101"
 
 
+def test_scraping_params__get_parameter_not_called_when_login_parameters_set()-> None:
+    """環境変数にLOGIN_USER_ID, LOGIN_PASSWORD, LOGIN_BIRTHDATEが設定されている場合、get_parameterは呼び出されない"""
+    from src.domain.dcp_value_object import ScrapingParams
+    # given
+    login_params = {
+        "user_id": "dummy-user-id",
+        "password": "dummy-password",
+        "birthdate": "19700101"
+    }
+    os.environ["LOGIN_PARAMETER_ARN"] = "/test/parameter"
+
+    # when
+    try:
+        scraping_params = ScrapingParams(**login_params)
+    except Exception as e:
+        pytest.fail(f"ScrapingParams raised an exception: {e}")
+
+    # then
+    assert scraping_params.user_id == "dummy-user-id"
+    assert scraping_params.password == "dummy-password"
+    assert scraping_params.birthdate == "19700101"
+
+
 def test_scraping_params__parameter_not_exists()-> None:
     """環境変数LOGIN_PARAMETER_ARNで指定されたパラメータが存在しない場合、ValueErrorが発生する"""
     from src.domain.dcp_value_object import ScrapingParams
