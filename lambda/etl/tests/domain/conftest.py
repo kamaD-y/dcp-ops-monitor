@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 
 import pytest
-from src.domain.dcp_value_object import DcpAssetsInfo, DcpProductAssets, DcpTotalAssets, DcpOpsIndicators
 
 @pytest.fixture
-def valid_assets_info() -> DcpAssetsInfo:
+def valid_assets_info():
     """テスト用のDcpAssetsInfoオブジェクトを生成する"""
+    from src.domain.dcp_value_object import DcpAssetsInfo, DcpProductAssets, DcpTotalAssets
     return DcpAssetsInfo(
         total=DcpTotalAssets(
             cumulative_contributions="900,000円", total_gains_or_losses="300,000円", total_asset_valuation="1,200,000円"
@@ -22,8 +22,10 @@ def valid_assets_info() -> DcpAssetsInfo:
 
 
 @pytest.fixture
-def valid_ops_indicators() -> DcpOpsIndicators:
+def valid_ops_indicators():
     """テスト用の運用指標を生成する"""
+    from src.domain.dcp_value_object import DcpOpsIndicators
+
     return DcpOpsIndicators(
         operation_years=5.0,
         actual_yield_rate=0.05,

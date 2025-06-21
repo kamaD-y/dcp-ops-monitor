@@ -1,5 +1,24 @@
+import os
 import pytest
-from src.domain.dcp_value_object import DcpOpsIndicators, DcpProductAssets, DcpTotalAssets
+
+
+"""
+ScrapingParamsのテスト
+"""
+
+def test_scraping_params__get_parameter_called_when_login_parameter_arn_set(put_login_parameter)-> None:
+    """環境変数LOGIN_PARAMETER_ARNが設定されている場合、get_parameterが呼び出される"""
+    from src.domain.dcp_value_object import ScrapingParams
+    # given
+    os.environ["LOGIN_PARAMETER_ARN"] = "/test/parameter"
+
+    # when
+    scraping_params = ScrapingParams()
+
+    # then
+    assert scraping_params.user_id == "test-user"
+    assert scraping_params.password == "test-password"
+    assert scraping_params.birthdate == "19800101"
 
 """
 DcpTotalAssetsのテスト
@@ -8,6 +27,8 @@ DcpTotalAssetsのテスト
 
 def test_dcp_total_assets__valid_parameters() -> None:
     """DcpTotalAssetsのパラメータが正しい場合のテスト"""
+    from src.domain.dcp_value_object import DcpTotalAssets
+
     try:
         DcpTotalAssets(
             cumulative_contributions="900,000円",
@@ -30,6 +51,7 @@ def test_dcp_total_assets__invalid_parameters(
     total_asset_valuation: str,
 ) -> None:
     """DcpTotalAssetsのパラメータが不正な場合のテスト"""
+    from src.domain.dcp_value_object import DcpTotalAssets
 
     with pytest.raises(ValueError):
         DcpTotalAssets(
@@ -46,6 +68,8 @@ DcpProductAssetsのテスト
 
 def test_dcp_product_assets__valid_parameters() -> None:
     """DcpProductAssetsのパラメータが正しい場合のテスト"""
+    from src.domain.dcp_value_object import DcpProductAssets
+
     try:
         DcpProductAssets(
             cumulative_acquisition_costs="100,000円",
@@ -68,6 +92,7 @@ def test_dcp_product_assets__invalid_parameters(
     asset_valuation: str,
 ) -> None:
     """DcpProductAssetsのパラメータが不正な場合のテスト"""
+    from src.domain.dcp_value_object import DcpProductAssets
 
     with pytest.raises(ValueError):
         DcpProductAssets(
@@ -84,6 +109,8 @@ DcpOpsIndicatorsのテスト
 
 def test_dcp_ops_indicators__valid_parameters() -> None:
     """DcpOpsIndicatorsのパラメータが正しい場合のテスト"""
+    from src.domain.dcp_value_object import DcpOpsIndicators
+
     try:
         DcpOpsIndicators(
             operation_years=5.0,
@@ -108,6 +135,7 @@ def test_dcp_ops_indicators__invalid_parameters(
     total_amount_at_60age: str,
 ) -> None:
     """DcpOpsIndicatorsのパラメータが不正な場合のテスト"""
+    from src.domain.dcp_value_object import DcpOpsIndicators
 
     with pytest.raises(ValueError):
         DcpOpsIndicators(
