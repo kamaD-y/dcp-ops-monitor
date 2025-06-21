@@ -63,7 +63,7 @@ def valid_assets_info():
     )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def put_login_parameter(local_stack_container: LocalStackContainer) -> None:
     parameter_name="/test/parameter"
     parameter_value = '{"LOGIN_USER_ID": "test-user", "LOGIN_PASSWORD": "test-password", "LOGIN_BIRTHDATE": "19800101"}'

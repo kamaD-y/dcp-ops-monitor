@@ -20,6 +20,17 @@ def test_scraping_params__get_parameter_called_when_login_parameter_arn_set(put_
     assert scraping_params.password == "test-password"
     assert scraping_params.birthdate == "19800101"
 
+
+def test_scraping_params__parameter_not_exists()-> None:
+    """環境変数LOGIN_PARAMETER_ARNで指定されたパラメータが存在しない場合、ValueErrorが発生する"""
+    from src.domain.dcp_value_object import ScrapingParams
+    # given
+    os.environ["LOGIN_PARAMETER_ARN"] = "/test/not-exists-parameter"
+
+    # when
+    with pytest.raises(ValueError):
+        ScrapingParams()
+
 """
 DcpTotalAssetsのテスト
 """
