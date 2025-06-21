@@ -91,7 +91,7 @@ class DcpOpsMonitorExtractor:
                 products=assets_each_product,
             )
 
-        except Exception:
+        except Exception as e:
             logger.exception("An error occurred during the extracting process.")
 
             key = "error_html.html"
@@ -104,7 +104,7 @@ class DcpOpsMonitorExtractor:
             )
             logger.info(f"An error occurred during the extracting process. Please check {s3_uri} for error details.")
 
-            raise ExtractError()
+            raise ExtractError() from e
 
     def _extract_total_assets(self, soup: BeautifulSoup) -> DcpTotalAssets:
         """総評価額を抽出する
