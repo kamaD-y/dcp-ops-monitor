@@ -53,7 +53,6 @@ Extractorのテスト
 def test_extract__valid_assets_page(valid_assets_page: str, mocker) -> None:
     from src.domain.extraction import DcpOpsMonitorExtractor
     # given
-    mocker.patch.object(DcpOpsMonitorExtractor, "__init__", return_value=None)
     mocker.patch.object(DcpOpsMonitorExtractor, "_scrape", return_value=valid_assets_page)
     extractor = DcpOpsMonitorExtractor()
 

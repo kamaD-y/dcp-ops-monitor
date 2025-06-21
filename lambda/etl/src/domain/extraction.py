@@ -26,13 +26,6 @@ class DcpOpsMonitorExtractor:
     このクラスは、スクレイピング結果から資産情報を抽出します。
     """
 
-    def __init__(self) -> None:
-        self.scraping_params = ScrapingParams(
-            settings.login_user_id,
-            settings.login_password.get_secret_value() if settings.login_password else "",
-            settings.login_birthdate,
-        )
-
     def extract(self) -> DcpAssetsInfo:
         """スクレイピングを実行し、資産情報を抽出する
 
@@ -52,9 +45,14 @@ class DcpOpsMonitorExtractor:
             ScrapingError: スクレイピングに失敗した場合
         """
         try:
-            return NRKScraper(
-                self.scraping_params.user_id, self.scraping_params.password, self.scraping_params.birthdate
-            ).scrape(settings.start_url)
+            scraping_params = ScrapingParams(
+                settings.login_user_id,
+                settings.login_password.get_secret_value() if settings.login_password else "",
+                settings.login_birthdate,
+            )
+            return NRKScraper(scraping_params.user_id, scraping_params.password, scraping_params.birthdate).scrape(
+                settings.start_url
+            )
         except ScrapingError as e:
             if e.error_image_path:
                 key = "error_image.png"
