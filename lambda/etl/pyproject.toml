@@ -37,3 +37,6 @@ testpaths = ["tests",]
 [tool.coverage.run]
 source = ["src"]
 omit = ["tests/*", "*/test_*"]
+
+[tool.coverage.report]
+fail_under = 60
