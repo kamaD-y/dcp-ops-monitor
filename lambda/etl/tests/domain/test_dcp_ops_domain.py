@@ -117,12 +117,12 @@ Transformerのテスト
 
 
 def test_transform__valid_assets_info(valid_assets_info, dcp_operation_days) -> None:
-    from src.domain.dcp_ops_domain import DcpOperationStatusTransformer
+    from src.domain.transform import DcpOpsMonitorTransformer
     # given
-    transformer = DcpOperationStatusTransformer()
+    transformer = DcpOpsMonitorTransformer()
 
     # when
-    operational_indicators = transformer.transform(valid_assets_info.total)
+    operational_indicators = transformer.calculate_ops_indicators(valid_assets_info.total)
 
     # then
     # 運用年数が正しいこと
@@ -150,12 +150,12 @@ def test_transform__valid_assets_info(valid_assets_info, dcp_operation_days) -> 
     ],
 )
 def test_yen_to_int__valid_str(yen_str: str, expected: int) -> None:
-    from src.domain.dcp_ops_domain import DcpOperationStatusTransformer
+    from src.domain.transform import DcpOpsMonitorTransformer
     # given
-    transformer = DcpOperationStatusTransformer()
+    transformer = DcpOpsMonitorTransformer()
 
     # when
-    result = transformer.yen_to_int(yen_str)
+    result = transformer._yen_to_int(yen_str)
 
     # then
     assert result == expected
@@ -170,19 +170,19 @@ def test_yen_to_int__valid_str(yen_str: str, expected: int) -> None:
     ],
 )
 def test_yen_to_int__invalid_str(yen_str: str) -> None:
-    from src.domain.dcp_ops_domain import DcpOperationStatusTransformer
+    from src.domain.transform import DcpOpsMonitorTransformer
     # given
-    transformer = DcpOperationStatusTransformer()
+    transformer = DcpOpsMonitorTransformer()
 
     # when, then
     with pytest.raises(ValueError):
-        transformer.yen_to_int(yen_str)
+        transformer._yen_to_int(yen_str)
 
 
 def test_make_message__valid_args(valid_assets_info, valid_ops_indicators) -> None:
-    from src.domain.dcp_ops_domain import DcpOperationStatusTransformer
+    from src.domain.transform import DcpOpsMonitorTransformer
     # given
-    transformer = DcpOperationStatusTransformer()
+    transformer = DcpOpsMonitorTransformer()
 
     # when
     message = transformer.make_message(valid_assets_info, valid_ops_indicators)
