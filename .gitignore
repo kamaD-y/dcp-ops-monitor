@@ -13,7 +13,7 @@ cdk.out
 # python
 .venv
 __pycache__/
-
+.coverage
 
 # Environment
 .env
