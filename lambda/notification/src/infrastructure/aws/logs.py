@@ -3,7 +3,7 @@ import os
 import boto3
 from mypy_boto3_logs.type_defs import DescribeMetricFiltersResponseTypeDef, FilterLogEventsResponseTypeDef
 
-from src.settings.settings import get_logger
+from src.config.settings import get_logger
 
 logger = get_logger()
 

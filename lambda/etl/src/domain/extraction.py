@@ -3,10 +3,10 @@ from typing import Any, Dict, TypeGuard
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
+from config.settings import get_logger, get_settings
 from domain.value_object import DcpAssetsInfo, DcpProductAssets, DcpTotalAssets, ScrapingParams
 from infrastructure.aws.s3 import put_object, upload_file
 from infrastructure.scraping.nrk_scraping import NRKScraper, ScrapingError
-from settings.settings import get_logger, get_settings
 
 logger = get_logger()
 settings = get_settings()

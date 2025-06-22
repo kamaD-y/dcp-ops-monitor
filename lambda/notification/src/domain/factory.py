@@ -1,6 +1,6 @@
+from src.config.settings import get_settings
 from src.domain.interface import Notification, NotificationError
 from src.infrastructure.notification.line_notification_impl import LineNotification
-from src.settings.settings import get_settings
 
 settings = get_settings()
 
