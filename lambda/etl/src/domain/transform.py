@@ -64,7 +64,7 @@ class DcpOpsMonitorTransformer:
 
         Example:
             >>> yen = "1,234,567円"
-            >>> transformer = DcpOperationStatusTransformer()
+            >>> transformer = DcpOpsMonitorTransformer()
             >>> transformer._yen_to_int(yen)
             1234567
         """
