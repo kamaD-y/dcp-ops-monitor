@@ -1,6 +1,5 @@
-from domain.notification import DcpOpsMonitorNotifier
-
 from .extraction import DcpOpsMonitorExtractor
+from .notification import DcpOpsMonitorNotifier
 from .transform import DcpOpsMonitorTransformer
 
 
