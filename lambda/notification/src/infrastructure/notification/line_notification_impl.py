@@ -2,8 +2,8 @@ import json
 
 import requests
 
+from src.config.settings import get_logger
 from src.domain.interface import Notification, NotificationError
-from src.settings.settings import get_logger
 
 logger = get_logger()
 
