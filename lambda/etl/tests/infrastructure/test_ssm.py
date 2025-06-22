@@ -3,7 +3,7 @@ from testcontainers.localstack import LocalStackContainer
 
 
 parameter_name = "/test/parameter"
-parameter_value = '{"USER_ID": "test-user", "PASSWORD": "test-password", "BIRTHDATE": "19800101"}'
+parameter_value = '{"LOGIN_USER_ID": "test-user", "LOGIN_PASSWORD": "test-password", "LOGIN_BIRTHDATE": "19800101"}'
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -26,11 +26,11 @@ def test_get_parameter() -> None:
         
         # then
         assert parameters is not None
-        assert "USER_ID" in parameters
-        assert parameters["USER_ID"] == "test-user"
-        assert "PASSWORD" in parameters
-        assert parameters["PASSWORD"] == "test-password"
-        assert "BIRTHDATE" in parameters
-        assert parameters["BIRTHDATE"] == "19800101"
+        assert "LOGIN_USER_ID" in parameters
+        assert parameters["LOGIN_USER_ID"] == "test-user"
+        assert "LOGIN_PASSWORD" in parameters
+        assert parameters["LOGIN_PASSWORD"] == "test-password"
+        assert "LOGIN_BIRTHDATE" in parameters
+        assert parameters["LOGIN_BIRTHDATE"] == "19800101"
     except Exception as e:
         pytest.fail(f"Failed to get parameter: {e}")

@@ -6,4 +6,12 @@ class AbstractScraper(ABC):
 
     @abstractmethod
     def scrape(self, start_url: str) -> str:
+        """スクレイピング実行メソッド
+
+        Args:
+            start_url (str): スクレイピングを開始するURL
+
+        Returns:
+            str: スクレイピング結果のHTMLソース
+        """
         pass

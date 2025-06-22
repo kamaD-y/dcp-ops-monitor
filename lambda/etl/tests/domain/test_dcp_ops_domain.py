@@ -5,8 +5,6 @@ import pytest
 from bs4.element import Tag
 from pytest_mock import MockerFixture
 
-from src.domain.dcp_value_object import DcpAssetsInfo, DcpOpsIndicators
-
 """
 Scraperのテスト
 """
@@ -14,33 +12,34 @@ Scraperのテスト
 
 def test_scrape__get_parameter_called_when_login_parameter_arn_set(mocker: MockerFixture) -> None:
     # given
-    from src.domain.dcp_ops_domain import DcpOperationsStatusScraper
+    from src.infrastructure.scraping.dcp_scraping import NRKScraper
     os.environ["LOGIN_PARAMETER_ARN"] = "arn:aws:ssm:us-east-1:123456789012:parameter/test"
-    mock_get_parameter = mocker.patch("src.domain.dcp_ops_domain.get_parameter")
+    mock_get_parameter = mocker.patch("src.infrastructure.aws.ssm.get_parameter")
     mock_get_parameter.return_value = {
         "LOGIN_USER_ID": "dummy_user_id",
         "LOGIN_PASSWORD": "dummy_password",
         "LOGIN_BIRTHDATE": "20200101",
     }
+    mock_driver = mocker.Mock()
 
     # when
-    scraper = DcpOperationsStatusScraper()
+    scraper = NRKScraper(user_id="dummy_user_id", password="dummy_password", birthdate="20200101", driver=mock_driver)
 
     # then
-    mock_get_parameter.assert_called_once_with("arn:aws:ssm:us-east-1:123456789012:parameter/test")
-    assert scraper.login_user_id == "dummy_user_id"
-    assert scraper.login_password.get_secret_value() == "dummy_password"
-    assert scraper.login_birthdate == "20200101"
+    assert scraper.user_id == "dummy_user_id"
+    assert scraper.password == "dummy_password"
+    assert scraper.birthdate == "20200101"
 
 
 def test_scrape__get_parameter_not_called_when_login_parameter_arn_not_set(mocker: MockerFixture) -> None:
     # given
-    from src.domain.dcp_ops_domain import DcpOperationsStatusScraper
+    from src.infrastructure.scraping.dcp_scraping import NRKScraper
     os.environ.pop("LOGIN_PARAMETER_ARN", None)
-    mock_get_parameter = mocker.patch("src.domain.dcp_ops_domain.get_parameter")
+    mock_get_parameter = mocker.patch("src.infrastructure.aws.ssm.get_parameter")
+    mock_driver = mocker.Mock()
 
     # when
-    DcpOperationsStatusScraper()
+    NRKScraper(user_id="test", password="test", birthdate="20200101", driver=mock_driver)
 
     # then
     mock_get_parameter.assert_not_called()
@@ -51,13 +50,14 @@ Extractorのテスト
 """
 
 
-def test_extract__valid_assets_page(valid_assets_page: str) -> None:
-    from src.domain.dcp_ops_domain import DcpOperationStatusExtractor
+def test_extract__valid_assets_page(valid_assets_page: str, mocker) -> None:
+    from src.domain.extraction import DcpOpsMonitorExtractor
     # given
-    extractor = DcpOperationStatusExtractor()
+    mocker.patch.object(DcpOpsMonitorExtractor, "_scrape", return_value=valid_assets_page)
+    extractor = DcpOpsMonitorExtractor()
 
     # when
-    assets_info = extractor.extract(valid_assets_page)
+    assets_info = extractor.extract()
 
     # then
     assert assets_info.total.cumulative_contributions == "900,000円"
@@ -73,38 +73,42 @@ def test_extract__valid_assets_page(valid_assets_page: str) -> None:
     assert assets_info.products["プロダクト_2"].asset_valuation == "222,222円"
 
 
-def test_extract__invalid_assets_page(invalid_assets_page: str) -> None:
-    from src.domain.dcp_ops_domain import DcpOperationStatusExtractor, ExtractError
+def test_extract__invalid_assets_page(invalid_assets_page: str, mocker) -> None:
+    from src.domain.extraction import DcpOpsMonitorExtractor, ExtractError
     # given
-    extractor = DcpOperationStatusExtractor()
+    mocker.patch.object(DcpOpsMonitorExtractor, "__init__", return_value=None)
+    mocker.patch.object(DcpOpsMonitorExtractor, "_scrape", return_value=invalid_assets_page)
+    extractor = DcpOpsMonitorExtractor()
 
     # when, then
     with pytest.raises(ExtractError):
-        extractor.extract(invalid_assets_page)
+        extractor.extract()
 
 
-def test_is_tag_element__tag() -> None:
-    from src.domain.dcp_ops_domain import DcpOperationStatusExtractor
+def test_is_tag_element__tag(mocker) -> None:
+    from src.domain.extraction import DcpOpsMonitorExtractor
     # given
-    extractor = DcpOperationStatusExtractor()
+    mocker.patch.object(DcpOpsMonitorExtractor, "__init__", return_value=None)
+    extractor = DcpOpsMonitorExtractor()
 
     # when
     tag = Tag(name="div")
 
     # then
-    assert extractor.is_tag_element(tag) is True
+    assert extractor._is_tag_element(tag) is True
 
 
-def test_is_tag_element__not_tag() -> None:
-    from src.domain.dcp_ops_domain import DcpOperationStatusExtractor
+def test_is_tag_element__not_tag(mocker) -> None:
+    from src.domain.extraction import DcpOpsMonitorExtractor
     # given
-    extractor = DcpOperationStatusExtractor()
+    mocker.patch.object(DcpOpsMonitorExtractor, "__init__", return_value=None)
+    extractor = DcpOpsMonitorExtractor()
 
     # when
     not_tag = "not a tag"
 
     # then
-    assert extractor.is_tag_element(not_tag) is False
+    assert extractor._is_tag_element(not_tag) is False
 
 
 """
@@ -112,7 +116,7 @@ Transformerのテスト
 """
 
 
-def test_transform__valid_assets_info(valid_assets_info: DcpAssetsInfo, dcp_operation_days: int) -> None:
+def test_transform__valid_assets_info(valid_assets_info, dcp_operation_days) -> None:
     from src.domain.dcp_ops_domain import DcpOperationStatusTransformer
     # given
     transformer = DcpOperationStatusTransformer()
@@ -175,7 +179,7 @@ def test_yen_to_int__invalid_str(yen_str: str) -> None:
         transformer.yen_to_int(yen_str)
 
 
-def test_make_message__valid_args(valid_assets_info: DcpAssetsInfo, valid_ops_indicators: DcpOpsIndicators) -> None:
+def test_make_message__valid_args(valid_assets_info, valid_ops_indicators) -> None:
     from src.domain.dcp_ops_domain import DcpOperationStatusTransformer
     # given
     transformer = DcpOperationStatusTransformer()

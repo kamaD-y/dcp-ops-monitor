@@ -63,7 +63,17 @@ class NRKScraper(AbstractScraper):
         self.is_login = False
 
     def scrape(self, start_url: str) -> str:
-        """資産情報ページをスクレイピングし、取得ページをhtml形式の文字列で返す"""
+        """資産情報ページをスクレイピングし、取得ページをhtml形式の文字列で返す
+
+        Args:
+            start_url (str): スクレイピングを開始するURL
+
+        Returns:
+            str: スクレイピング結果のHTMLソース
+
+        Raises:
+            ScrapingError: スクレイピングに失敗した場合
+        """
         try:
             logger.info("Scraping start.")
 
@@ -130,4 +140,4 @@ class NRKScraper(AbstractScraper):
             logger.info("Logout succeeded.")
         except Exception as e:
             # ログアウト失敗は直接的に処理に影響がない為、エラーログを出力し処理を継続
-            logger.error(f"Logout failed: {e}")
+            logger.exception("Logout failed.")

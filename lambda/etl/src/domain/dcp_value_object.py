@@ -1,7 +1,40 @@
 import dataclasses
+import os
 from typing import Dict
 
 from pydantic.dataclasses import dataclass
+
+from infrastructure.aws.ssm import get_parameter
+
+
+@dataclass()
+class ScrapingParams:
+    """スクレイピングのパラメータを扱う値クラス
+
+    Attributes:
+        user_id (str): ユーザーID
+        password (str): パスワード
+        birthdate (str): 生年月日
+    """
+
+    user_id: str = dataclasses.field(default="")
+    password: str = dataclasses.field(default="")
+    birthdate: str = dataclasses.field(default="")
+
+    def __post_init__(self) -> None:
+        """Parameter Storeからの値を取得し、フィールドに設定する
+        `user_id`, `password`, `birthdate` を環境変数に設定している場合は実行されません。
+
+        Raises:
+            ValueError: パラメータストアから取得した値が不正な場合
+        """
+        if not self.user_id and not self.password and not self.birthdate and os.getenv("LOGIN_PARAMETER_ARN"):
+            parameters = get_parameter(os.getenv("LOGIN_PARAMETER_ARN"))
+            if not parameters:
+                raise ValueError("No parameters found in Parameter Store")
+            self.user_id = parameters.get("LOGIN_USER_ID")
+            self.password = parameters.get("LOGIN_PASSWORD")
+            self.birthdate = parameters.get("LOGIN_BIRTHDATE")
 
 
 @dataclass(frozen=True)
