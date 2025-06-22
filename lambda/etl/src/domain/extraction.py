@@ -5,7 +5,7 @@ from bs4.element import Tag
 
 from domain.value_object import DcpAssetsInfo, DcpProductAssets, DcpTotalAssets, ScrapingParams
 from infrastructure.aws.s3 import put_object, upload_file
-from infrastructure.scraping.dcp_scraping import NRKScraper, ScrapingError
+from infrastructure.scraping.nrk_scraping import NRKScraper, ScrapingError
 from settings.settings import get_logger, get_settings
 
 logger = get_logger()
