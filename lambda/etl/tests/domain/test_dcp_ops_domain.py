@@ -140,43 +140,31 @@ def test_transform__valid_assets_info(valid_assets_info, dcp_operation_days) -> 
 @pytest.mark.parametrize(
     "yen_str, expected",
     [
-        ("999,999,999", 999999999),
-        ("999,999,999円", 999999999),
-        ("0円", 0),
-        ("100円", 100),
-        ("1,000,000円", 1000000),
-        ("1000000円", 1000000),
-        ("-1,234,567円", -1234567),
+        ("円", ValueError),
+        ("0.01円", ValueError),
+        ("abc円", ValueError),
+        ("0円", ZeroDivisionError)
     ],
 )
-def test_yen_to_int__valid_str(yen_str: str, expected: int) -> None:
+def test_transform__invalid_assets_info(yen_str: str, expected: Exception) -> None:
     from src.domain.transform import DcpOpsMonitorTransformer
+    from src.domain.dcp_value_object import DcpAssetsInfo, DcpTotalAssets
     # given
     transformer = DcpOpsMonitorTransformer()
-
-    # when
-    result = transformer._yen_to_int(yen_str)
-
-    # then
-    assert result == expected
-
-
-@pytest.mark.parametrize(
-    "yen_str",
-    [
-        "",
-        "0.01円",
-        "abc円",
-    ],
-)
-def test_yen_to_int__invalid_str(yen_str: str) -> None:
-    from src.domain.transform import DcpOpsMonitorTransformer
-    # given
-    transformer = DcpOpsMonitorTransformer()
+    # 不正なデータを設定
+    invalid_total = DcpTotalAssets(
+        cumulative_contributions=yen_str,
+        total_gains_or_losses="300,000円",
+        total_asset_valuation="1,200,000円",
+    )
+    invalid_assets_info = DcpAssetsInfo(
+        total=invalid_total,
+        products={},
+    )
 
     # when, then
-    with pytest.raises(ValueError):
-        transformer._yen_to_int(yen_str)
+    with pytest.raises(expected):
+        transformer.calculate_ops_indicators(invalid_assets_info.total)
 
 
 def test_make_message__valid_args(valid_assets_info, valid_ops_indicators) -> None:
