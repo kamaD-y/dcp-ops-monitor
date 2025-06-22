@@ -1,8 +1,7 @@
 import pytest
-from pytest_mock import MockerFixture
 
 
-def test_main__success(mocker: MockerFixture, valid_assets_info) -> None:
+def test_main__success(mocker, valid_assets_info) -> None:
     """main()が正常に動作することを確認するテスト"""
     from src.application.etl import main
     # given
@@ -20,7 +19,7 @@ def test_main__success(mocker: MockerFixture, valid_assets_info) -> None:
     mock_notify.assert_called_once()
 
 
-def test_main__failed(mocker: MockerFixture) -> None:
+def test_main__failed(mocker) -> None:
     """main()がエラー発生時に異常終了することを確認するテスト"""
     from src.application.etl import main
     # given

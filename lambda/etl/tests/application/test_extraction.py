@@ -3,7 +3,7 @@ from bs4.element import Tag
 
 
 def test_extract__valid_assets_page(valid_assets_page: str, mocker) -> None:
-    from src.domain.extraction import DcpOpsMonitorExtractor
+    from src.application.extraction import DcpOpsMonitorExtractor
     # given
     mocker.patch.object(DcpOpsMonitorExtractor, "_scrape", return_value=valid_assets_page)
     extractor = DcpOpsMonitorExtractor()
@@ -26,7 +26,7 @@ def test_extract__valid_assets_page(valid_assets_page: str, mocker) -> None:
 
 
 def test_extract__invalid_assets_page(invalid_assets_page: str, mocker) -> None:
-    from src.domain.extraction import DcpOpsMonitorExtractor, ExtractError
+    from src.application.extraction import DcpOpsMonitorExtractor, ExtractError
     # given
     mocker.patch.object(DcpOpsMonitorExtractor, "__init__", return_value=None)
     mocker.patch.object(DcpOpsMonitorExtractor, "_scrape", return_value=invalid_assets_page)
@@ -38,7 +38,7 @@ def test_extract__invalid_assets_page(invalid_assets_page: str, mocker) -> None:
 
 
 def test_is_tag_element__tag(mocker) -> None:
-    from src.domain.extraction import DcpOpsMonitorExtractor
+    from src.application.extraction import DcpOpsMonitorExtractor
     # given
     mocker.patch.object(DcpOpsMonitorExtractor, "__init__", return_value=None)
     extractor = DcpOpsMonitorExtractor()
@@ -51,7 +51,7 @@ def test_is_tag_element__tag(mocker) -> None:
 
 
 def test_is_tag_element__not_tag(mocker) -> None:
-    from src.domain.extraction import DcpOpsMonitorExtractor
+    from src.application.extraction import DcpOpsMonitorExtractor
     # given
     mocker.patch.object(DcpOpsMonitorExtractor, "__init__", return_value=None)
     extractor = DcpOpsMonitorExtractor()
