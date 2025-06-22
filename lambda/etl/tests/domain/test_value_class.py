@@ -8,7 +8,7 @@ ScrapingParamsのテスト
 
 def test_scraping_params__get_parameter_called_when_login_parameter_arn_set(put_login_parameter)-> None:
     """環境変数LOGIN_PARAMETER_ARNが設定されている場合、get_parameterが呼び出される"""
-    from src.domain.dcp_value_object import ScrapingParams
+    from src.domain.value_object import ScrapingParams
     # given
     os.environ["LOGIN_PARAMETER_ARN"] = "/test/parameter"
 
@@ -23,7 +23,7 @@ def test_scraping_params__get_parameter_called_when_login_parameter_arn_set(put_
 
 def test_scraping_params__get_parameter_not_called_when_login_parameters_set()-> None:
     """環境変数にLOGIN_USER_ID, LOGIN_PASSWORD, LOGIN_BIRTHDATEが設定されている場合、get_parameterは呼び出されない"""
-    from src.domain.dcp_value_object import ScrapingParams
+    from src.domain.value_object import ScrapingParams
     # given
     login_params = {
         "user_id": "dummy-user-id",
@@ -46,7 +46,7 @@ def test_scraping_params__get_parameter_not_called_when_login_parameters_set()->
 
 def test_scraping_params__parameter_not_exists()-> None:
     """環境変数LOGIN_PARAMETER_ARNで指定されたパラメータが存在しない場合、ValueErrorが発生する"""
-    from src.domain.dcp_value_object import ScrapingParams
+    from src.domain.value_object import ScrapingParams
     # given
     os.environ["LOGIN_PARAMETER_ARN"] = "/test/not-exists-parameter"
 
@@ -61,7 +61,7 @@ DcpTotalAssetsのテスト
 
 def test_dcp_total_assets__valid_parameters() -> None:
     """DcpTotalAssetsのパラメータが正しい場合のテスト"""
-    from src.domain.dcp_value_object import DcpTotalAssets
+    from src.domain.value_object import DcpTotalAssets
 
     try:
         DcpTotalAssets(
@@ -85,7 +85,7 @@ def test_dcp_total_assets__invalid_parameters(
     total_asset_valuation: str,
 ) -> None:
     """DcpTotalAssetsのパラメータが不正な場合のテスト"""
-    from src.domain.dcp_value_object import DcpTotalAssets
+    from src.domain.value_object import DcpTotalAssets
 
     with pytest.raises(ValueError):
         DcpTotalAssets(
@@ -102,7 +102,7 @@ DcpProductAssetsのテスト
 
 def test_dcp_product_assets__valid_parameters() -> None:
     """DcpProductAssetsのパラメータが正しい場合のテスト"""
-    from src.domain.dcp_value_object import DcpProductAssets
+    from src.domain.value_object import DcpProductAssets
 
     try:
         DcpProductAssets(
@@ -126,7 +126,7 @@ def test_dcp_product_assets__invalid_parameters(
     asset_valuation: str,
 ) -> None:
     """DcpProductAssetsのパラメータが不正な場合のテスト"""
-    from src.domain.dcp_value_object import DcpProductAssets
+    from src.domain.value_object import DcpProductAssets
 
     with pytest.raises(ValueError):
         DcpProductAssets(
@@ -143,7 +143,7 @@ DcpOpsIndicatorsのテスト
 
 def test_dcp_ops_indicators__valid_parameters() -> None:
     """DcpOpsIndicatorsのパラメータが正しい場合のテスト"""
-    from src.domain.dcp_value_object import DcpOpsIndicators
+    from src.domain.value_object import DcpOpsIndicators
 
     try:
         DcpOpsIndicators(
@@ -169,7 +169,7 @@ def test_dcp_ops_indicators__invalid_parameters(
     total_amount_at_60age: str,
 ) -> None:
     """DcpOpsIndicatorsのパラメータが不正な場合のテスト"""
-    from src.domain.dcp_value_object import DcpOpsIndicators
+    from src.domain.value_object import DcpOpsIndicators
 
     with pytest.raises(ValueError):
         DcpOpsIndicators(

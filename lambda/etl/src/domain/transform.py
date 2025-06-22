@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from domain.dcp_value_object import DcpAssetsInfo, DcpOpsIndicators, DcpTotalAssets
+from domain.value_object import DcpAssetsInfo, DcpOpsIndicators, DcpTotalAssets
 from settings.settings import get_logger, get_settings
 
 logger = get_logger()
