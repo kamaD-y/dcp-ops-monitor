@@ -5,11 +5,8 @@ logger = get_logger()
 settings = get_settings()
 
 
-class DcpOperationStatusNotifier:
+class DcpOpsMonitorNotifier:
     """確定拠出年金の運用状況を通知するクラス"""
-
-    def __init__(self) -> None:
-        pass
 
     def notify(self, message: str) -> None:
         """通知用メッセージを作成する"""

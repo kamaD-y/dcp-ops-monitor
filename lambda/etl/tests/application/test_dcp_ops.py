@@ -8,7 +8,7 @@ def test_main__success(mocker: MockerFixture, valid_assets_info) -> None:
     # given
     mock_extractor = mocker.patch("src.application.etl.DcpOpsMonitorExtractor")
     mock_extractor.return_value.extract.return_value = valid_assets_info
-    mock_notify = mocker.patch("src.application.etl.DcpOperationStatusNotifier.notify")
+    mock_notify = mocker.patch("src.application.etl.DcpOpsMonitorNotifier.notify")
 
     # when, then
     try:

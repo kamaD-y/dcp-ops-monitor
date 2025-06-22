@@ -1,5 +1,5 @@
-from domain.dcp_ops_domain import DcpOperationStatusNotifier
 from domain.extraction import DcpOpsMonitorExtractor
+from domain.notification import DcpOpsMonitorNotifier
 from domain.transform import DcpOpsMonitorTransformer
 
 
@@ -15,5 +15,5 @@ def main() -> None:
     message = transformer.make_message(assets_info, operational_indicators)
 
     # 通知
-    notifier = DcpOperationStatusNotifier()
+    notifier = DcpOpsMonitorNotifier()
     notifier.notify(message)
