@@ -2,8 +2,8 @@ import re
 import pytest
 
 
-def test_transform__valid_assets_info(valid_assets_info, dcp_operation_days) -> None:
-    from src.domain.transform import DcpOpsMonitorTransformer
+def test_transform__valid_assets_info(valid_assets_info, operation_years) -> None:
+    from src.application.transform import DcpOpsMonitorTransformer
     # given
     transformer = DcpOpsMonitorTransformer()
 
@@ -12,7 +12,7 @@ def test_transform__valid_assets_info(valid_assets_info, dcp_operation_days) -> 
 
     # then
     # 運用年数が正しいこと
-    assert operational_indicators.operation_years == dcp_operation_days
+    assert operational_indicators.operation_years == operation_years
     # 0.0以上の浮動小数点であること
     assert operational_indicators.actual_yield_rate > 0.0
     # 0.06であること
@@ -33,7 +33,7 @@ def test_transform__valid_assets_info(valid_assets_info, dcp_operation_days) -> 
     ],
 )
 def test_transform__invalid_assets_info(yen_str: str, expected: Exception) -> None:
-    from src.domain.transform import DcpOpsMonitorTransformer
+    from src.application.transform import DcpOpsMonitorTransformer
     from src.domain.value_object import DcpAssetsInfo, DcpTotalAssets
     # given
     transformer = DcpOpsMonitorTransformer()
@@ -54,7 +54,7 @@ def test_transform__invalid_assets_info(yen_str: str, expected: Exception) -> No
 
 
 def test_make_message__valid_args(valid_assets_info, valid_ops_indicators) -> None:
-    from src.domain.transform import DcpOpsMonitorTransformer
+    from src.application.transform import DcpOpsMonitorTransformer
     # given
     transformer = DcpOpsMonitorTransformer()
 

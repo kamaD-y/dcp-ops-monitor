@@ -1,6 +1,6 @@
-from domain.extraction import DcpOpsMonitorExtractor
-from domain.notification import DcpOpsMonitorNotifier
-from domain.transform import DcpOpsMonitorTransformer
+from application.extraction import DcpOpsMonitorExtractor
+from application.notification import DcpOpsMonitorNotifier
+from application.transform import DcpOpsMonitorTransformer
 
 
 def main() -> None:
