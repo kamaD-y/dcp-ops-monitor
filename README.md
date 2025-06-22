@@ -1,7 +1,7 @@
 # dcp-ops-monitor
 
 確定拠出年金 (Defined Contribution Plan) の運用状況を確認する為、
-週次で対象の Web ページをスクレイピングし、サマリした情報を通知する。
+週次で対象の Web ページをスクレイピングし、運用指標をサマリして通知する。
 
 ## 構成
 ### 構成図
@@ -173,7 +173,7 @@ $ cp .env.example .env
 - `LOG_LEVEL`: アプリケーションのログレベル
 - `START_URL`: スクレイピング対象サイトのページURL
 - `USER_AGENT`: スクレイピングで使用するユーザーエージェント
-- 以下は LINE 通知関数用 (line_notification) 設定の設定
+- 以下は LINE 通知関数用 (notification) の設定
   - `LINE_MESSAGE_API_URL`: LINE Messaging API の URL
   - `LINE_MESSAGE_API_TOKEN`: LINE Messaging API の TOKEN
 
