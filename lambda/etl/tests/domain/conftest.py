@@ -6,7 +6,7 @@ import pytest
 @pytest.fixture
 def valid_ops_indicators():
     """テスト用の運用指標を生成する"""
-    from src.domain.dcp_value_object import DcpOpsIndicators
+    from src.domain.value_object import DcpOpsIndicators
 
     return DcpOpsIndicators(
         operation_years=5.0,

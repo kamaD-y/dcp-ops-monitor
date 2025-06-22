@@ -148,7 +148,7 @@ def test_transform__valid_assets_info(valid_assets_info, dcp_operation_days) -> 
 )
 def test_transform__invalid_assets_info(yen_str: str, expected: Exception) -> None:
     from src.domain.transform import DcpOpsMonitorTransformer
-    from src.domain.dcp_value_object import DcpAssetsInfo, DcpTotalAssets
+    from src.domain.value_object import DcpAssetsInfo, DcpTotalAssets
     # given
     transformer = DcpOpsMonitorTransformer()
     # 不正なデータを設定

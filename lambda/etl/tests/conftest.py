@@ -47,7 +47,7 @@ def invalid_assets_page() -> str:
 @pytest.fixture
 def valid_assets_info():
     """テスト用のDcpAssetsInfoオブジェクトを生成する"""
-    from src.domain.dcp_value_object import DcpAssetsInfo, DcpProductAssets, DcpTotalAssets
+    from src.domain.value_object import DcpAssetsInfo, DcpProductAssets, DcpTotalAssets
     return DcpAssetsInfo(
         total=DcpTotalAssets(
             cumulative_contributions="900,000円", total_gains_or_losses="300,000円", total_asset_valuation="1,200,000円"
