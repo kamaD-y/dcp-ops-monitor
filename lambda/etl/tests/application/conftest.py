@@ -17,7 +17,7 @@ def valid_ops_indicators():
 
 
 @pytest.fixture
-def dcp_operation_days() -> float:
+def operation_years() -> float:
     """運用年数を返す"""
     # 運用開始日: 2016/10/01
     operation_start_dt = datetime(2016, 10, 1)

@@ -1,7 +1,7 @@
 from domain.notification import DcpOpsMonitorNotifier
-from domain.transform import DcpOpsMonitorTransformer
 
 from .extraction import DcpOpsMonitorExtractor
+from .transform import DcpOpsMonitorTransformer
 
 
 def main() -> None:
