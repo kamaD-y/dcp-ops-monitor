@@ -1,8 +1,6 @@
-from domain.dcp_ops_domain import (
-    DcpOperationStatusNotifier,
-    DcpOperationStatusTransformer,
-)
+from domain.dcp_ops_domain import DcpOperationStatusNotifier
 from domain.extraction import DcpOpsMonitorExtractor
+from domain.transform import DcpOpsMonitorTransformer
 
 
 def main() -> None:
@@ -12,8 +10,8 @@ def main() -> None:
     assets_info = DcpOpsMonitorExtractor().extract()
 
     # データ変換
-    transformer = DcpOperationStatusTransformer()
-    operational_indicators = transformer.transform(assets_info.total)
+    transformer = DcpOpsMonitorTransformer()
+    operational_indicators = transformer.calculate_ops_indicators(assets_info.total)
     message = transformer.make_message(assets_info, operational_indicators)
 
     # 通知
