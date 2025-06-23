@@ -23,26 +23,15 @@ class DcpOpsMonitorExtractor:
         Raises:
             ScrapingError: スクレイピングに失敗した場合
         """
-        try:
-            scraping_params = ScrapingParams(
-                settings.login_user_id,
-                settings.login_password.get_secret_value() if settings.login_password else "",
-                settings.login_birthdate,
-            )
-            scraper = NRKScraper(scraping_params.user_id, scraping_params.password, scraping_params.birthdate)
-            self._scrape(scraper)
-            return self._extract(scraper)
-        except ScrapingError as e:
-            if e.error_image_path:
-                key = "error_image.png"
-                s3_uri = f"s3://{settings.error_bucket_name}/{key}"
-                upload_file(
-                    bucket=settings.error_bucket_name,
-                    key=key,
-                    file_path=e.error_image_path,
-                )
-                logger.info(f"An error occurred during the scraping process. Please check {s3_uri} for error details.")
-            raise
+        scraping_params = ScrapingParams(
+            settings.login_user_id,
+            settings.login_password.get_secret_value() if settings.login_password else "",
+            settings.login_birthdate,
+        )
+        scraper = NRKScraper(scraping_params.user_id, scraping_params.password, scraping_params.birthdate)
+        self._scrape(scraper)
+        assets = self._extract(scraper)
+        return assets
 
     def _scrape(self, scraper: ScraperInterface) -> str:
         """スクレイピングを実行し、資産情報ページのHTMLソースを取得する

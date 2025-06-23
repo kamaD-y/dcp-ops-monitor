@@ -25,11 +25,8 @@ class ScraperInterface(ABC):
         pass
 
     @abstractmethod
-    def extract(self, html_source: str) -> DcpAssetsInfo:
+    def extract(self) -> DcpAssetsInfo:
         """スクレイピング結果から資産情報を抽出するメソッド
-
-        Args:
-            html_source (str): スクレイピング結果のHTMLソース
 
         Returns:
             DcpAssetsInfo: 抽出した資産情報
