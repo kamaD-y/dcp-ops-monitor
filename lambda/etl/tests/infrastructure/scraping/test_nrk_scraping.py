@@ -97,3 +97,26 @@ def test_is_tag_element__not_tag(mocker) -> None:
     # then
     assert scraper._is_tag_element(not_tag) is False
 
+
+def test_is_tag_elements__tag(mocker) -> None:
+    from src.infrastructure.scraping.nrk_scraping import NRKScraper
+    # given
+    scraper = NRKScraper(user_id="test", password="XXXX", birthdate="20200101", driver=mocker.Mock())
+
+    # when
+    tags = [Tag(name="div"), Tag(name="span")]
+
+    # then
+    assert scraper._is_tag_elements(tags) is True
+
+
+def test_is_tag_elements__not_tag(mocker) -> None:
+    from src.infrastructure.scraping.nrk_scraping import NRKScraper
+    # given
+    scraper = NRKScraper(user_id="test", password="XXXX", birthdate="20200101", driver=mocker.Mock())
+
+    # when
+    not_tags = ["not a tag", "another not a tag"]
+
+    # then
+    assert scraper._is_tag_elements(not_tags) is False
