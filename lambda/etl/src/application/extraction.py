@@ -33,17 +33,14 @@ class DcpOpsMonitorExtractor:
         assets = self._extract(scraper)
         return assets
 
-    def _scrape(self, scraper: ScraperInterface) -> str:
+    def _scrape(self, scraper: ScraperInterface) -> None:
         """スクレイピングを実行し、資産情報ページのHTMLソースを取得する
-
-        Returns:
-            str: スクレイピング結果のHTMLソース
 
         Raises:
             ScrapingError: スクレイピングに失敗した場合
         """
         try:
-            return scraper.scrape(settings.start_url)
+            scraper.scrape(settings.start_url)
         except ScrapingError as e:
             if e.error_image_path:
                 key = "error_image.png"
