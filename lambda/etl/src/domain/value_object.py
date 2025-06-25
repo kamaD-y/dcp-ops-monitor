@@ -31,13 +31,18 @@ class ScrapingParams:
         Raises:
             ValueError: パラメータストアから取得した値が不正な場合
         """
-        if not self.user_id and not self.password and not self.birthdate and os.getenv("LOGIN_PARAMETER_NAME"):
-            parameters = get_parameter(os.getenv("LOGIN_PARAMETER_NAME"))
-            if not parameters:
-                raise ValueError("No parameters found in Parameter Store")
-            self.user_id = parameters.get("LOGIN_USER_ID")
-            self.password = parameters.get("LOGIN_PASSWORD")
-            self.birthdate = parameters.get("LOGIN_BIRTHDATE")
+        if not os.getenv("LOGIN_PARAMETER_NAME"):
+            return
+
+        logger.info(
+            "Fetching parameters from Parameter Store.", extra={"parameter_name": os.getenv("LOGIN_PARAMETER_NAME")}
+        )
+        parameters = get_parameter(os.getenv("LOGIN_PARAMETER_NAME"))
+        if not parameters:
+            raise ValueError("No parameters found in Parameter Store")
+        self.user_id = parameters.get("LOGIN_USER_ID")
+        self.password = parameters.get("LOGIN_PASSWORD")
+        self.birthdate = parameters.get("LOGIN_BIRTHDATE")
 
 
 @dataclass(frozen=True)

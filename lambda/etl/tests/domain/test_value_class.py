@@ -10,10 +10,15 @@ def test_scraping_params__get_parameter_called_when_login_parameter_name_set(put
     """環境変数LOGIN_PARAMETER_NAMEが設定されている場合、get_parameterが呼び出される"""
     from src.domain.value_object import ScrapingParams
     # given
+    login_params = {
+        "user_id": "dummy-user-id",
+        "password": "dummy-password",
+        "birthdate": "19700101"
+    }
     os.environ["LOGIN_PARAMETER_NAME"] = "/test/parameter"
 
     # when
-    scraping_params = ScrapingParams()
+    scraping_params = ScrapingParams(**login_params)
 
     # then
     assert scraping_params.user_id == "test-user"
@@ -21,8 +26,8 @@ def test_scraping_params__get_parameter_called_when_login_parameter_name_set(put
     assert scraping_params.birthdate == "19800101"
 
 
-def test_scraping_params__get_parameter_not_called_when_login_parameters_set()-> None:
-    """環境変数にLOGIN_USER_ID, LOGIN_PASSWORD, LOGIN_BIRTHDATEが設定されている場合、get_parameterは呼び出されない"""
+def test_scraping_params__get_parameter_not_called_when_login_parameter_name_not_set()-> None:
+    """環境変数LOGIN_PARAMETER_NAMEが設定されていない場合、get_parameterは呼び出されない"""
     from src.domain.value_object import ScrapingParams
     # given
     login_params = {
@@ -30,7 +35,8 @@ def test_scraping_params__get_parameter_not_called_when_login_parameters_set()->
         "password": "dummy-password",
         "birthdate": "19700101"
     }
-    os.environ["LOGIN_PARAMETER_NAME"] = "/test/parameter"
+    if "LOGIN_PARAMETER_NAME" in os.environ:
+        del os.environ["LOGIN_PARAMETER_NAME"]
 
     # when
     try:
