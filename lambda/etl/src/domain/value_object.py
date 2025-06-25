@@ -13,6 +13,8 @@ logger = get_logger()
 @dataclass()
 class ScrapingParams:
     """スクレイピングのパラメータを扱う値クラス
+    LOGIN_PARAMETER_NAME 環境変数が設定されている場合、Parameter Storeから値を取得し、フィールドに設定します。
+    user_id, password, birthdate のいずれかが空の場合は ValueError を発生させます。
 
     Attributes:
         user_id (str): ユーザーID
@@ -43,6 +45,11 @@ class ScrapingParams:
         self.user_id = parameters.get("LOGIN_USER_ID")
         self.password = parameters.get("LOGIN_PASSWORD")
         self.birthdate = parameters.get("LOGIN_BIRTHDATE")
+
+        if not self.user_id or not self.password or not self.birthdate:
+            raise ValueError(
+                f"Invalid parameters: user_id, password, and birthdate must be provided. fields: {self.__dict__}"
+            )
 
 
 @dataclass(frozen=True)
