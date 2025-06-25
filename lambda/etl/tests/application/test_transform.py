@@ -8,7 +8,7 @@ def test_transform__valid_assets_info(valid_assets_info, operation_years) -> Non
     transformer = DcpOpsMonitorTransformer()
 
     # when
-    operational_indicators = transformer.calculate_ops_indicators(valid_assets_info.total)
+    operational_indicators = transformer.to_operational_indicators(valid_assets_info.total)
 
     # then
     # 運用年数が正しいこと
@@ -50,7 +50,7 @@ def test_transform__invalid_assets_info(yen_str: str, expected: Exception) -> No
 
     # when, then
     with pytest.raises(expected):
-        transformer.calculate_ops_indicators(invalid_assets_info.total)
+        transformer.to_operational_indicators(invalid_assets_info.total)
 
 
 def test_make_message__valid_args(valid_assets_info, valid_ops_indicators) -> None:

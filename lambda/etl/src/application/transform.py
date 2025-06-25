@@ -10,11 +10,11 @@ settings = get_settings()
 class DcpOpsMonitorTransformer:
     """確定拠出年金の運用状況を変換するクラス"""
 
-    def calculate_ops_indicators(self, total_assets: DcpTotalAssets) -> DcpOpsIndicators:
-        """総資産評価情報から運用指標を算出する
+    def to_operational_indicators(self, total_assets: DcpTotalAssets) -> DcpOpsIndicators:
+        """総資産評価情報から運用指標へ変換する
 
         Args:
-            total_assets (DcpTotalAssets): 資産情報
+            total_assets (DcpTotalAssets): 総資産情報
 
         Returns:
             DcpOpsIndicators: 運用指標情報
