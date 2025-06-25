@@ -6,11 +6,11 @@ import pytest
 ScrapingParamsのテスト
 """
 
-def test_scraping_params__get_parameter_called_when_login_parameter_arn_set(put_login_parameter)-> None:
-    """環境変数LOGIN_PARAMETER_ARNが設定されている場合、get_parameterが呼び出される"""
+def test_scraping_params__get_parameter_called_when_login_parameter_name_set(put_login_parameter)-> None:
+    """環境変数LOGIN_PARAMETER_NAMEが設定されている場合、get_parameterが呼び出される"""
     from src.domain.value_object import ScrapingParams
     # given
-    os.environ["LOGIN_PARAMETER_ARN"] = "/test/parameter"
+    os.environ["LOGIN_PARAMETER_NAME"] = "/test/parameter"
 
     # when
     scraping_params = ScrapingParams()
@@ -30,7 +30,7 @@ def test_scraping_params__get_parameter_not_called_when_login_parameters_set()->
         "password": "dummy-password",
         "birthdate": "19700101"
     }
-    os.environ["LOGIN_PARAMETER_ARN"] = "/test/parameter"
+    os.environ["LOGIN_PARAMETER_NAME"] = "/test/parameter"
 
     # when
     try:
@@ -45,10 +45,10 @@ def test_scraping_params__get_parameter_not_called_when_login_parameters_set()->
 
 
 def test_scraping_params__parameter_not_exists()-> None:
-    """環境変数LOGIN_PARAMETER_ARNで指定されたパラメータが存在しない場合、ValueErrorが発生する"""
+    """環境変数LOGIN_PARAMETER_NAMEで指定されたパラメータが存在しない場合、ValueErrorが発生する"""
     from src.domain.value_object import ScrapingParams
     # given
-    os.environ["LOGIN_PARAMETER_ARN"] = "/test/not-exists-parameter"
+    os.environ["LOGIN_PARAMETER_NAME"] = "/test/not-exists-parameter"
 
     # when
     with pytest.raises(ValueError):

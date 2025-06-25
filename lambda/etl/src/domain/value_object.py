@@ -4,7 +4,10 @@ from typing import Dict
 
 from pydantic.dataclasses import dataclass
 
+from config.settings import get_logger
 from infrastructure.aws.ssm import get_parameter
+
+logger = get_logger()
 
 
 @dataclass()
@@ -23,13 +26,13 @@ class ScrapingParams:
 
     def __post_init__(self) -> None:
         """Parameter Storeからの値を取得し、フィールドに設定する
-        `user_id`, `password`, `birthdate` を環境変数に設定している場合は実行されません。
+        環境変数に LOGIN_PARAMETER_NAME が設定されていない場合は実行しません。
 
         Raises:
             ValueError: パラメータストアから取得した値が不正な場合
         """
-        if not self.user_id and not self.password and not self.birthdate and os.getenv("LOGIN_PARAMETER_ARN"):
-            parameters = get_parameter(os.getenv("LOGIN_PARAMETER_ARN"))
+        if not self.user_id and not self.password and not self.birthdate and os.getenv("LOGIN_PARAMETER_NAME"):
+            parameters = get_parameter(os.getenv("LOGIN_PARAMETER_NAME"))
             if not parameters:
                 raise ValueError("No parameters found in Parameter Store")
             self.user_id = parameters.get("LOGIN_USER_ID")
