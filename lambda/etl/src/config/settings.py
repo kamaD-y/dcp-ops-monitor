@@ -39,7 +39,7 @@ class ScrapingSettings(BaseSettings):
     error_bucket_name: str = Field(default="dummy-bucket")
 
     # Parameter Store関連設定
-    login_parameter_arn: Optional[str] = None
+    login_parameter_name: Optional[str] = None
 
     # SNS関連設定
     sns_topic_arn: Optional[str] = None

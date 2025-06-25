@@ -4,12 +4,17 @@ from typing import Dict
 
 from pydantic.dataclasses import dataclass
 
+from config.settings import get_logger
 from infrastructure.aws.ssm import get_parameter
+
+logger = get_logger()
 
 
 @dataclass()
 class ScrapingParams:
     """スクレイピングのパラメータを扱う値クラス
+    LOGIN_PARAMETER_NAME 環境変数が設定されている場合、Parameter Storeから値を取得し、フィールドに設定します。
+    user_id, password, birthdate のいずれかが空の場合は ValueError を発生させます。
 
     Attributes:
         user_id (str): ユーザーID
@@ -23,18 +28,28 @@ class ScrapingParams:
 
     def __post_init__(self) -> None:
         """Parameter Storeからの値を取得し、フィールドに設定する
-        `user_id`, `password`, `birthdate` を環境変数に設定している場合は実行されません。
+        環境変数に LOGIN_PARAMETER_NAME が設定されていない場合は実行しません。
 
         Raises:
             ValueError: パラメータストアから取得した値が不正な場合
         """
-        if not self.user_id and not self.password and not self.birthdate and os.getenv("LOGIN_PARAMETER_ARN"):
-            parameters = get_parameter(os.getenv("LOGIN_PARAMETER_ARN"))
-            if not parameters:
-                raise ValueError("No parameters found in Parameter Store")
-            self.user_id = parameters.get("LOGIN_USER_ID")
-            self.password = parameters.get("LOGIN_PASSWORD")
-            self.birthdate = parameters.get("LOGIN_BIRTHDATE")
+        if not os.getenv("LOGIN_PARAMETER_NAME"):
+            return
+
+        logger.info(
+            "Fetching parameters from Parameter Store.", extra={"parameter_name": os.getenv("LOGIN_PARAMETER_NAME")}
+        )
+        parameters = get_parameter(os.getenv("LOGIN_PARAMETER_NAME"))
+        if not parameters:
+            raise ValueError("No parameters found in Parameter Store")
+        self.user_id = parameters.get("LOGIN_USER_ID")
+        self.password = parameters.get("LOGIN_PASSWORD")
+        self.birthdate = parameters.get("LOGIN_BIRTHDATE")
+
+        if not self.user_id or not self.password or not self.birthdate:
+            raise ValueError(
+                f"Invalid parameters: user_id, password, and birthdate must be provided. fields: {self.__dict__}"
+            )
 
 
 @dataclass(frozen=True)

@@ -4,10 +4,10 @@ import pytest
 from bs4.element import Tag
 
 
-def test_scrape__get_parameter_called_when_login_parameter_arn_set(mocker) -> None:
+def test_scrape__get_parameter_called_when_login_parameter_name_set(mocker) -> None:
     # given
     from src.infrastructure.scraping.nrk_scraping import NRKScraper
-    os.environ["LOGIN_PARAMETER_ARN"] = "arn:aws:ssm:us-east-1:123456789012:parameter/test"
+    os.environ["LOGIN_PARAMETER_NAME"] = "/test/parameter"
     mock_get_parameter = mocker.patch("src.infrastructure.aws.ssm.get_parameter")
     mock_get_parameter.return_value = {
         "LOGIN_USER_ID": "dummy_user_id",
@@ -25,10 +25,10 @@ def test_scrape__get_parameter_called_when_login_parameter_arn_set(mocker) -> No
     assert scraper.birthdate == "20200101"
 
 
-def test_scrape__get_parameter_not_called_when_login_parameter_arn_not_set(mocker) -> None:
+def test_scrape__get_parameter_not_called_when_login_parameter_name_not_set(mocker) -> None:
     # given
     from src.infrastructure.scraping.nrk_scraping import NRKScraper
-    os.environ.pop("LOGIN_PARAMETER_ARN", None)
+    os.environ.pop("LOGIN_PARAMETER_NAME", None)
     mock_get_parameter = mocker.patch("src.infrastructure.aws.ssm.get_parameter")
     mock_driver = mocker.Mock()
 
