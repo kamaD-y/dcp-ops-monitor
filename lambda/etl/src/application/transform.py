@@ -70,7 +70,7 @@ class DcpOpsMonitorTransformer:
         Args:
             cumulative_contributions (str): 拠出額累計
             gains_or_losses (str): 評価損益
-            operation_years (int): 運用年数
+            operation_years (float): 運用年数
 
         Returns:
             float: 年間利回り
