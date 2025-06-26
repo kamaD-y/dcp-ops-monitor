@@ -31,9 +31,14 @@ class DcpOpsMonitorTransformer:
             operation_years=operation_years,
         )
 
-        # 60歳まで運用した場合の想定受取額, 60歳までの運用年数: 26年とする
-        # 計算式: 24万(年積立額) * (((1+利回り)**年数26年 - 1) / 利回り)
-        total_amount_at_60age_int = int(240000 * (((1 + actual_yield_rate) ** 26 - 1) / actual_yield_rate))
+        # 60歳まで運用した場合の想定受取額の計算
+        annual_reserve_amount = 12 * 20000  # 年間積立額: 24万円とする
+        years_to_60age = self.calculate_operation_years(start_dt=datetime.today(), end_dt=datetime(2046, 10, 1))
+        # 計算式: 年間積立額 * (((1+利回り)**60歳までの年数 - 1) / 利回り)
+        # TODO: 計算実行日から運用開始～60歳まで、で計算されている為、計算実行時点での資産も含めた計算式に変えたい
+        total_amount_at_60age_int = int(
+            annual_reserve_amount * (((1 + actual_yield_rate) ** years_to_60age - 1) / actual_yield_rate)
+        )
         total_amount_at_60age = f"{total_amount_at_60age_int:,.0f}円"
 
         # 計算した値で運用指標オブジェクトを作成
@@ -47,7 +52,9 @@ class DcpOpsMonitorTransformer:
 
         return operational_indicators
 
-    def calculate_operation_years(self, start_dt: datetime = datetime(2016, 10, 1)) -> float:
+    def calculate_operation_years(
+        self, start_dt: datetime = datetime(2016, 10, 1), end_dt: datetime = datetime.today()
+    ) -> float:
         """運用開始日から実行日までの運用年数を算出する
 
         Args:
@@ -56,8 +63,7 @@ class DcpOpsMonitorTransformer:
         Returns:
             float: 運用年数
         """
-        today = datetime.today()
-        operation_years = (today - start_dt) / timedelta(days=365)
+        operation_years = (end_dt - start_dt) / timedelta(days=365)
         operation_years = round(operation_years, 2)
         return operation_years
 
