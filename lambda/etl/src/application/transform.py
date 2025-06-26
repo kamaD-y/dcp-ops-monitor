@@ -19,23 +19,17 @@ class DcpOpsMonitorTransformer:
         Returns:
             DcpOpsIndicators: 運用指標情報
         """
-        logger.info("calculate_ops_indicators start.", extra=total_assets.__dict__)
+        logger.info("to_operational_indicators start.", extra=total_assets.__dict__)
 
         # 運用年数の算出
-        today = datetime.today()
-        operation_start_dt = datetime(2016, 10, 1)  # 運用開始日: 2016/10/01
-        operation_years = (today - operation_start_dt) / timedelta(days=365)
-        operation_years = round(operation_years, 2)
+        operation_years = self.calculate_operation_years()
 
         # 年間利回りの算出
-        cumulative_contributions = self._yen_to_int(total_assets.cumulative_contributions)
-        total_gains_or_losses = self._yen_to_int(total_assets.total_gains_or_losses)
-        try:
-            # 年間利回りの計算式: 利回り = 利益 / 拠出額 / 運用年数
-            actual_yield_rate = round(total_gains_or_losses / cumulative_contributions / operation_years, 3)
-        except ZeroDivisionError:
-            logger.error("ZeroDivisionError: Error in yield calculation.", extra=total_assets.__dict__)
-            raise
+        actual_yield_rate = self.calculate_annual_operation_yield_rate(
+            cumulative_contributions=total_assets.cumulative_contributions,
+            gains_or_losses=total_assets.total_gains_or_losses,
+            operation_years=operation_years,
+        )
 
         # 60歳まで運用した場合の想定受取額, 60歳までの運用年数: 26年とする
         # 計算式: 24万(年積立額) * (((1+利回り)**年数26年 - 1) / 利回り)
@@ -49,9 +43,57 @@ class DcpOpsMonitorTransformer:
             expected_yield_rate=0.06,
             total_amount_at_60age=total_amount_at_60age,
         )
-        logger.info("calculate_ops_indicators end.", extra=operational_indicators.__dict__)
+        logger.info("to_operational_indicators end.", extra=operational_indicators.__dict__)
 
         return operational_indicators
+
+    def calculate_operation_years(self, start_dt: datetime = datetime(2016, 10, 1)) -> float:
+        """運用開始日から実行日までの運用年数を算出する
+
+        Args:
+            start_dt (datetime): 運用開始日, デフォルトは2016年10月1日
+
+        Returns:
+            float: 運用年数
+        """
+        today = datetime.today()
+        operation_years = (today - start_dt) / timedelta(days=365)
+        operation_years = round(operation_years, 2)
+        return operation_years
+
+    def calculate_annual_operation_yield_rate(
+        self, cumulative_contributions: str, gains_or_losses: str, operation_years: float
+    ) -> float:
+        """拠出額累計、評価損益、運用年数から年間利回り率を算出する
+        年間利回りの計算式: 利回り = 利益 / 拠出額 / 運用年数
+
+        Args:
+            cumulative_contributions (str): 拠出額累計
+            gains_or_losses (str): 評価損益
+            operation_years (int): 運用年数
+
+        Returns:
+            float: 年間利回り
+        """
+        try:
+            # 年間利回りの計算式: 利回り = 利益 / 拠出額 / 運用年数
+            actual_yield_rate = round(
+                self._yen_to_int(gains_or_losses) / self._yen_to_int(cumulative_contributions) / operation_years, 3
+            )
+        except ValueError as e:
+            logger.error(
+                f"ValueError: {e} in yield calculation.",
+                extra={"cumulative_contributions": cumulative_contributions, "gains_or_losses": gains_or_losses},
+            )
+            raise
+        except ZeroDivisionError:
+            logger.error(
+                "ZeroDivisionError: Error in yield calculation.",
+                extra={"cumulative_contributions": cumulative_contributions, "gains_or_losses": gains_or_losses},
+            )
+            raise
+
+        return actual_yield_rate
 
     def _yen_to_int(self, yen: str) -> int:
         """円表記の文字列を数値に変換する
