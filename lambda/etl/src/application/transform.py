@@ -105,9 +105,7 @@ class DcpOpsMonitorTransformer:
             int: 数値
 
         Example:
-            >>> yen = "1,234,567円"
-            >>> transformer = DcpOpsMonitorTransformer()
-            >>> transformer._yen_to_int(yen)
+            >>> self._yen_to_int("1,234,567円")
             1234567
         """
         return int(yen.replace("円", "").replace(",", ""))
