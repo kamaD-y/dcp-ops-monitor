@@ -22,7 +22,7 @@ class DcpOpsMonitorTransformer:
         logger.info("to_operational_indicators start.", extra=total_assets.__dict__)
 
         # 運用年数の算出
-        operation_years = self.calculate_operation_years()
+        operation_years = self.calculate_year_diff(start_dt=datetime(2016, 10, 1), end_dt=datetime.today())
 
         # 年間利回りの算出
         actual_yield_rate = self.calculate_annual_operation_yield_rate(
@@ -33,12 +33,13 @@ class DcpOpsMonitorTransformer:
 
         # 60歳まで運用した場合の想定受取額の計算
         annual_reserve_amount = 12 * 20000  # 年間積立額: 24万円とする
-        years_to_60age = self.calculate_operation_years(start_dt=datetime.today(), end_dt=datetime(2046, 10, 1))
-        # 計算式: 年間積立額 * (((1+利回り)**60歳までの年数 - 1) / 利回り)
-        # TODO: 計算実行日から運用開始～60歳まで、で計算されている為、計算実行時点での資産も含めた計算式に変えたい
+        years_to_60age = self.calculate_year_diff(start_dt=datetime.today(), end_dt=datetime(2046, 10, 1))
+        # NOTE: 計算式: 年間積立額 * (((1+利回り)**60歳までの年数 - 1) / 利回り)
         total_amount_at_60age_int = int(
             annual_reserve_amount * (((1 + actual_yield_rate) ** years_to_60age - 1) / actual_yield_rate)
         )
+        # NOTE: 計算方法が正しいか分からないが、計算実行時点での資産評価額を加算する
+        total_amount_at_60age_int += self._yen_to_int(total_assets.total_asset_valuation)
         total_amount_at_60age = f"{total_amount_at_60age_int:,.0f}円"
 
         # 計算した値で運用指標オブジェクトを作成
@@ -52,16 +53,15 @@ class DcpOpsMonitorTransformer:
 
         return operational_indicators
 
-    def calculate_operation_years(
-        self, start_dt: datetime = datetime(2016, 10, 1), end_dt: datetime = datetime.today()
-    ) -> float:
-        """運用開始日から実行日までの運用年数を算出する
+    def calculate_year_diff(self, start_dt: datetime, end_dt: datetime) -> float:
+        """開始日と終了日から年数を算出する
 
         Args:
-            start_dt (datetime): 運用開始日, デフォルトは2016年10月1日
+            start_dt (datetime): 開始日時
+            end_dt (datetime): 終了日時
 
         Returns:
-            float: 運用年数
+            float: 年数
         """
         operation_years = (end_dt - start_dt) / timedelta(days=365)
         operation_years = round(operation_years, 2)
