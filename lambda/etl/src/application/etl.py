@@ -11,7 +11,7 @@ def main() -> None:
 
     # データ変換
     transformer = DcpOpsMonitorTransformer()
-    operational_indicators = transformer.calculate_ops_indicators(assets_info.total)
+    operational_indicators = transformer.to_operational_indicators(assets_info.total)
     message = transformer.make_message(assets_info, operational_indicators)
 
     # 通知
