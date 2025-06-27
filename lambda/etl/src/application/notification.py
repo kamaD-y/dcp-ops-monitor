@@ -1,5 +1,5 @@
-from config.settings import get_logger, get_settings
 from infrastructure.aws.sns import publish
+from settings import get_logger, get_settings
 
 logger = get_logger()
 settings = get_settings()

@@ -1,8 +1,8 @@
-from config.settings import get_logger, get_settings
 from domain.interface import ScraperInterface
 from domain.value_object import DcpAssetsInfo, ScrapingParams
 from infrastructure.aws.s3 import put_object, upload_file
 from infrastructure.scraping.nrk_scraping import ExtractError, NRKScraper, ScrapingError
+from settings import get_logger, get_settings
 
 logger = get_logger()
 settings = get_settings()
