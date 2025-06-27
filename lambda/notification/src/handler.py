@@ -2,7 +2,7 @@ from aws_lambda_powertools.utilities.data_classes import SNSEvent, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from src.application.notification import send
-from src.config.settings import get_logger
+from src.settings import get_logger
 
 logger = get_logger()
 
