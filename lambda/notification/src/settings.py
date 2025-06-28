@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 from aws_lambda_powertools import Logger
-from pydantic import Field, SecretStr
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,15 +21,16 @@ class NotificationSettings(BaseSettings):
     """スクレイピング関数の設定"""
 
     # 共通設定
-    log_level: str = Field(default="INFO")
+    log_level: str = "INFO"
 
-    line_message_api_url: str = Field(default="https://api.line.me/v2/bot/message/broadcast")
+    line_message_api_url: str = "https://api.line.me/v2/bot/message/broadcast"
     line_message_api_token: Optional[SecretStr] = None
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
+        extra="ignore",
     )
 
 
