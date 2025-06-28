@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 from aws_lambda_powertools import Logger
-from pydantic import Field, SecretStr
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,33 +21,30 @@ class ScrapingSettings(BaseSettings):
     """スクレイピング関数の設定"""
 
     # 共通設定
-    log_level: str = Field(default="INFO")
+    log_level: str = "INFO"
 
     # スクレイピング関連設定
-    start_url: str = Field(default="https://example.com/login")
+    start_url: str
     login_user_id: Optional[str] = None
     login_password: Optional[SecretStr] = None
     login_birthdate: Optional[str] = None
-    user_agent: str = Field(
-        default=(
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-        )
+    login_parameter_name: Optional[str] = None
+    user_agent: str = (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
     )
 
-    # S3関連設定
-    error_bucket_name: str = Field(default="dummy-bucket")
+    # エラー関連設定
+    error_bucket_name: str
 
-    # Parameter Store関連設定
-    login_parameter_name: Optional[str] = None
-
-    # SNS関連設定
-    sns_topic_arn: Optional[str] = None
+    # 通知関連設定
+    sns_topic_arn: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
+        extra="ignore",
     )
 
 
