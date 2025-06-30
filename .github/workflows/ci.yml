@@ -33,6 +33,10 @@ jobs:
           npm run lint:ci
           npm run format:ci
 
+      - name: Run Type Check
+        run: |
+          npm run type-check
+
       - name: Run Tests
         run: |
           npm run test:cdk

@@ -21,6 +21,10 @@ pre-commit:
       glob: "*.py"
       run: uvx ruff format --check
 
+    type-check:lambda:
+      glob: "*.py"
+      run: npm run type-check
+
     test:lambda:
       glob: "*.py"
       run: cd lambda/etl && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1

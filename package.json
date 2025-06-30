@@ -12,6 +12,8 @@
     "cdk": "cdk",
     "lint": "biome lint --write . && uvx ruff check",
     "lint:ci": "biome lint . && uvx ruff check --no-fix",
+    "type-check": "cd lambda/etl && uvx ty check src/ --ignore unresolved-import",
+    "type-check:all": "npm run type-check",
     "format": "biome format --write . && uvx ruff format",
     "format:ci": "biome format . && uvx ruff format --check"
   },
