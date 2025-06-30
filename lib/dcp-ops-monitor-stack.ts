@@ -66,7 +66,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         POWERTOOLS_LOG_LEVEL: props.logLevel,
         START_URL: props.startUrl,
         USER_AGENT: props.userAgent,
-        LOGIN_PARAMETER_ARN: loginParametersForScraping.parameterArn,
+        LOGIN_PARAMETER_NAME: loginParametersForScraping.parameterName,
         SNS_TOPIC_ARN: successTopic.topicArn,
         ERROR_BUCKET_NAME: errorBucket.bucketName,
       },
