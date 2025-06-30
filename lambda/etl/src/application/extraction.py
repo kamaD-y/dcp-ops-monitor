@@ -23,15 +23,12 @@ class DcpOpsMonitorExtractor:
         Raises:
             ScrapingError: スクレイピングに失敗した場合
         """
-        login_params = (
-            {
-                "user_id": settings.login_user_id,
-                "password": settings.login_password.get_secret_value() if settings.login_password else None,
-                "birthdate": settings.login_birthdate,
-            }
-            if settings.login_user_id
-            else {}
-        )
+        login_params = {
+            **({"user_id": settings.login_user_id} if settings.login_user_id else {}),
+            **({"password": settings.login_password.get_secret_value()} if settings.login_password else {}),
+            **({"birthdate": settings.login_birthdate} if settings.login_birthdate else {}),
+            **({"parameter_name": settings.login_parameter_name} if settings.login_parameter_name else {}),
+        }
         scraping_params = ScrapingParams(**login_params)
         scraper = NRKScraper(scraping_params.user_id, scraping_params.password, scraping_params.birthdate)
         self._scrape(scraper)
