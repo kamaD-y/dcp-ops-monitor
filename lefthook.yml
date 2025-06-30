@@ -14,17 +14,17 @@ pre-commit:
       run: npm run test:cdk
 
     lint:lambda:
-      glob: "*.py"
+      glob: "lambda/**/*.py"
       run: uvx ruff check --no-fix
 
     format:lambda:
-      glob: "*.py"
+      glob: "lambda/**/*.py"
       run: uvx ruff format --check
 
     type-check:lambda:
-      glob: "*.py"
+      glob: "lambda/**/*.py"
       run: npm run type-check
 
     test:lambda:
-      glob: "*.py"
+      glob: "lambda/**/*.py"
       run: cd lambda/etl && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1
