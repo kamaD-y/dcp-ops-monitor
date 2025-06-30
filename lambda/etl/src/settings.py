@@ -49,7 +49,7 @@ class ScrapingSettings(BaseSettings):
 
 
 # TODO: Anyを具体的な型への置き換えを検討
-def get_settings(settings_instance: ScrapingSettings = ScrapingSettings(), **kwargs: Any) -> ScrapingSettings:
+def get_settings(settings_instance: ScrapingSettings = ScrapingSettings(), **kwargs: Any) -> ScrapingSettings:  # type: ignore
     """設定インスタンスを取得する
 
     Args:
@@ -60,5 +60,5 @@ def get_settings(settings_instance: ScrapingSettings = ScrapingSettings(), **kwa
         ScrapingSettings: 設定インスタンス
     """
     if kwargs:
-        settings_instance = ScrapingSettings(**kwargs)
+        settings_instance = ScrapingSettings(**kwargs)  # type: ignore
     return settings_instance
