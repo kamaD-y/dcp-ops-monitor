@@ -75,7 +75,7 @@ class DcpOpsMonitorExtractor:
 
             key = "error_html.html"
             s3_uri = f"s3://{settings.error_bucket_name}/{key}"
-            body = scraper.page_source.encode("utf-8")
+            body = scraper.page_source
             put_object(
                 bucket=settings.error_bucket_name,
                 key=key,
