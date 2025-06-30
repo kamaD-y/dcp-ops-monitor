@@ -1,0 +1,43 @@
+{
+  "mcpServers": {
+    "container-use": {
+      "command": "cu",
+      "timeout": 60000,
+      "args": ["stdio"]
+    },
+    "github": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "ghcr.io/github/github-mcp-server"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "xxxx"
+      }
+    },
+    "awslabs.core-mcp-server": {
+      "command": "uvx",
+      "args": ["awslabs.core-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "autoApprove": [],
+      "disabled": false
+    },
+    "awslabs.cdk-mcp-server": {
+      "command": "uvx",
+      "args": ["awslabs.cdk-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "awslabs.aws-documentation-mcp-server": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": ["read_documentation"]
+    }
+  }
+}
