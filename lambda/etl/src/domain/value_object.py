@@ -1,5 +1,4 @@
 import dataclasses
-import os
 from typing import Dict
 
 from pydantic.dataclasses import dataclass
@@ -20,11 +19,13 @@ class ScrapingParams:
         user_id (str): ユーザーID
         password (str): パスワード
         birthdate (str): 生年月日
+        parameter_name (str): Parameter Storeのパラメータ名
     """
 
     user_id: str = dataclasses.field(default="")
     password: str = dataclasses.field(default="")
     birthdate: str = dataclasses.field(default="")
+    parameter_name: str = dataclasses.field(default="")
 
     def __post_init__(self) -> None:
         """Parameter Storeからの値を取得し、フィールドに設定する
@@ -33,13 +34,11 @@ class ScrapingParams:
         Raises:
             ValueError: パラメータストアから取得した値が不正な場合
         """
-        if not os.getenv("LOGIN_PARAMETER_NAME"):
+        if not self.parameter_name:
             return
 
-        logger.info(
-            "Fetching parameters from Parameter Store.", extra={"parameter_name": os.getenv("LOGIN_PARAMETER_NAME")}
-        )
-        parameters = get_parameter(os.getenv("LOGIN_PARAMETER_NAME"))
+        logger.info("Fetching parameters from Parameter Store.", extra={"parameter_name": self.parameter_name})
+        parameters = get_parameter(self.parameter_name)
         if not parameters:
             raise ValueError("No parameters found in Parameter Store")
         self.user_id = parameters.get("LOGIN_USER_ID")

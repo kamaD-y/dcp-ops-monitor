@@ -48,8 +48,9 @@ class ScrapingSettings(BaseSettings):
     )
 
 
-# TODO: Anyを具体的な型への置き換えを検討
-def get_settings(settings_instance: ScrapingSettings = ScrapingSettings(), **kwargs: Any) -> ScrapingSettings:
+# TODO: Settings呼び出し時のデフォルト値が空で発生する型エラーの回避 (mypyは pydantic.mypy があるが ty は実装時は不可避)
+# TODO: Any型引数の代替の検討
+def get_settings(settings_instance: ScrapingSettings = ScrapingSettings(), **kwargs: Any) -> ScrapingSettings:  # type: ignore
     """設定インスタンスを取得する
 
     Args:
@@ -60,5 +61,5 @@ def get_settings(settings_instance: ScrapingSettings = ScrapingSettings(), **kwa
         ScrapingSettings: 設定インスタンス
     """
     if kwargs:
-        settings_instance = ScrapingSettings(**kwargs)
+        settings_instance = ScrapingSettings(**kwargs)  # type: ignore
     return settings_instance

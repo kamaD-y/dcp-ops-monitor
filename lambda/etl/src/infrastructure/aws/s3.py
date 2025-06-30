@@ -43,7 +43,8 @@ def put_object(bucket: str, key: str, body: str) -> None:
         None
     """
     try:
-        client.put_object(Bucket=bucket, Key=key, Body=body)
+        body_bytes = body.encode("utf-8")
+        client.put_object(Bucket=bucket, Key=key, Body=body_bytes)
         logger.info(f"Object with key {key} uploaded to bucket {bucket}")
     except Exception:
         logger.exception(f"Failed to upload object with key {key} to bucket {bucket}")
