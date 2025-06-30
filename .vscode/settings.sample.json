@@ -5,8 +5,6 @@
   "files.insertFinalNewline": true,
   "ruff.configuration": "pyproject.toml",
   "ruff.configurationPreference": "filesystemFirst",
-  "mypy-type-checker.args": ["--config-file=${workspaceFolder}/pyproject.toml"],
-  "mypy-type-checker.ignorePatterns": ["**/tests/*.py"],
   "[python]": {
     "editor.codeActionsOnSave": {
       "source.fixAll.ruff": "explicit"
