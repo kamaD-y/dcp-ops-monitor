@@ -26,26 +26,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
             "ERROR_BUCKET_NAME": {
               "Ref": "ErrorBucket8D38AF42",
             },
-            "LOGIN_PARAMETER_ARN": {
-              "Fn::Join": [
-                "",
-                [
-                  "arn:",
-                  {
-                    "Ref": "AWS::Partition",
-                  },
-                  ":ssm:",
-                  {
-                    "Ref": "AWS::Region",
-                  },
-                  ":",
-                  {
-                    "Ref": "AWS::AccountId",
-                  },
-                  ":parameter/dcp-ops-monitor/dummy-login-parameters",
-                ],
-              ],
-            },
+            "LOGIN_PARAMETER_NAME": "/dcp-ops-monitor/dummy-login-parameters",
             "POWERTOOLS_LOG_LEVEL": "INFO",
             "SNS_TOPIC_ARN": {
               "Ref": "SuccessTopic495EEDDD",
