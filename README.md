@@ -171,12 +171,23 @@ $ cp .env.example .env
   本番環境へのデプロイは GitHub Actions を介して行う為、GitHub に変数を設定しておくこと
 
 - `LOG_LEVEL`: アプリケーションのログレベル
-- 以下は ETL 関数用 (etl) の設定
-  - `START_URL`: スクレイピング対象サイトのページ URL
-  - `USER_AGENT`: スクレイピングで使用するユーザーエージェント
-- 以下は LINE 通知関数用 (notification) の設定
-  - `LINE_MESSAGE_API_URL`: LINE Messaging API の URL
-  - `LINE_MESSAGE_API_TOKEN`: LINE Messaging API の TOKEN
+- `START_URL`: スクレイピング対象サイトのページ URL
+- `USER_AGENT`: スクレイピングで使用するユーザーエージェント
+- `LINE_MESSAGE_API_URL`: LINE Messaging API の URL
+- `LINE_MESSAGE_API_TOKEN`: LINE Messaging API の TOKEN
+- 以下は、docker-compose を使用したテスト用の設定
+  - `ENV`: boto3 endpoint 切り替えの為、test を代入
+  - `AWS_DEFAULT_REGION`: LocalStack 用
+  - `AWS_ACCESS_KEY_ID`: LocalStack 用のダミー
+  - `AWS_SECRET_ACCESS_KEY`: LocalStack 用のダミー
+  - `LOCAL_STACK_CONTAINER_URL`: LocalStack URL
+  - `SERVICES`: LocalStack で使用する AWS サービス
+- 以下は、LocalStack に作成するダミーリソース用の設定
+  - `LOGIN_PARAMETER_NAME`: スクレピング先ページへのログイン情報を保存したパラメータストア名
+  - `LOGIN_PARAMETER_VALUE`: スクレイピング先ページへのログイン情報
+  - `ERROR_BUCKET_NAME`: エラー情報を保存する S3 バケット
+  - `SNS_TOPIC_NAME`: ETL 完了時の通知先の SNS 名
+  - `SNS_TOPIC_ARN`: ETL 完了時の通知先の SNS ARN
 
 #### Node 環境のセットアップ
 
@@ -277,7 +288,11 @@ $ python
 >>> driver.quit()
 ```
 
-### Lambda コンテナでハンドラーを実行する
+### docker-compose で Lambda コンテナを実行する
+
+> [!NOTE]  
+> Lambda コンテナでスクレイピングが正常に動作するか確認する為使用します。
+> AWS リソースについては LocalStack を使用しますが、スクレイピングは本物を使用します。
 
 1. docker-compose で起動する
 
