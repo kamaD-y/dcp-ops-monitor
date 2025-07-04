@@ -242,10 +242,9 @@ $ npm run test:unit
 
 .husky/lefthook を使用し、コミット時に Lint/Format/Test を自動的に実行します。
 
-<details>
-<summary>ローカル環境での ETL 機能の動作確認方法</summary>
+### ローカル環境での ETL 機能の動作確認方法
 
-### Python インタプリタからインタラクティブに Selenium を使用する
+#### Python インタプリタからインタラクティブに Selenium を使用する
 
 1. selenium/standalone-chrome を起動
 
@@ -279,7 +278,7 @@ $ python
 >>> driver.quit()
 ```
 
-### docker-compose で Lambda コンテナを実行する
+#### docker-compose で Lambda コンテナを実行する
 
 > [!NOTE]  
 > Lambda コンテナでスクレイピングが正常に動作するか確認する為使用します。
@@ -302,8 +301,6 @@ $ curl -d "{}" http://localhost:8080/2015-03-31/functions/function/invocations
 ```bash
 $ docker compose down
 ```
-
-</details>
 
 ## デプロイ
 
