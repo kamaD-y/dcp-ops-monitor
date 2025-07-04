@@ -18,7 +18,3 @@ __pycache__/
 # Environment
 .env
 .env.test
-
-# AmazonQ
-.amazonq/*
-!.amazonq/mcp.example.json

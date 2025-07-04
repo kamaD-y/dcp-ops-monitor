@@ -10,22 +10,12 @@
 
 ### ディレクトリ構成
 
-レイヤードアーキテクチャを意識した以下構成としている
-
 ```
-|- bin
-|- lib
-|- lambda
-|  |- etl             # ETL 機能
-|    |- src
-|      |- application     # アプリケーション層
-|      |- domain          # ドメイン層
-|      |- infrastructure  # インフラ層
-|      |   |- aws           # AWS リソース
-|      |   |- scraping      # スクレイピング
-|      |- settings        # 設定
-|  |- notification    # 通知機能
-|- pyproject.toml         # 各機能共通設定 (mypy, ruff など)
+bin/                 # CDK アプリケーション
+lib/                 # スタック/コンストラクト
+localstack/          # LocalStack 用スクリプト
+lambda/etl           # ETL 用 Lambda 関数
+lambda/notification  # 通知用 Lambda 関数
 ```
 
 ## 処理シーケンス
@@ -163,6 +153,7 @@ $ cdk bootstrap aws://ACCOUNT-NUMBER/REGION --profile xxx
 
 ```bash
 $ cp .env.example .env
+$ cp .env.example .env.test # docker-compose で使用します
 ```
 
 2. テキストエディタで`.env`ファイルを開きます
