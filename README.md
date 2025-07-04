@@ -38,7 +38,7 @@ sequenceDiagram
     participant Web as 対象サイト
     participant SNS_S as SNS Success
     participant Notify as 通知 Lambda
-    participant Notifications as 通知サービス(LINE etc.)
+    participant Notifications as 通知サービス (LINE etc.)
 
     Note over Scheduler, Notifications: 正常処理フロー
     
@@ -47,21 +47,21 @@ sequenceDiagram
     
     ETL->>Web: スクレイピング開始
     activate Web
-    Web-->>ETL: HTMLデータ取得成功
+    Web-->>ETL: HTML データ取得成功
     deactivate Web
     
-    ETL->>ETL: HTMLデータ加工処理
+    ETL->>ETL: HTML データ加工処理
     Note right of ETL: データ変換・整形
     
     ETL->>SNS_S: 成功結果を送信
     activate SNS_S
     deactivate ETL
     
-    SNS_S->>Notify: Success Eventでトリガー
+    SNS_S->>Notify: Success Event でトリガー
     activate Notify
     deactivate SNS_S
     
-    Notify->>Notify: EventからMessage抽出
+    Notify->>Notify: Event から Message 抽出
     
     Notify->>Notifications: 成功メッセージ送信
     activate Notifications
@@ -85,7 +85,7 @@ sequenceDiagram
     participant Alarm as CloudWatch Alarm
     participant SNS_F as SNS Failure
     participant Notify as 通知 Lambda
-    participant Notifications as 通知サービス(LINE etc.)
+    participant Notifications as 通知サービス (LINE etc.)
 
     Note over Scheduler, Notifications: 異常処理フロー
     
@@ -98,12 +98,12 @@ sequenceDiagram
     deactivate Web
     Note right of Web: デバッグ用スクリーンショット
     
-    ETL->>S3: エラー画面をPNG保存
+    ETL->>S3: エラー画面を PNG 保存
     activate S3
     S3-->>ETL: 保存完了
     deactivate S3
     
-    ETL->>ETL: 例外をThrow
+    ETL->>ETL: 例外を Throw
     ETL->>CWL: エラーログ出力
     activate CWL
     deactivate ETL
@@ -117,7 +117,7 @@ sequenceDiagram
     activate SNS_F
     deactivate Alarm
     
-    SNS_F->>Notify: Failure Eventでトリガー
+    SNS_F->>Notify: Failure Event でトリガー
     activate Notify
     deactivate SNS_F
     
@@ -128,7 +128,7 @@ sequenceDiagram
        
     Notify->>Notifications: エラーメッセージ送信
     activate Notifications
-    Note right of Notifications: エラー詳細とS3画像URLを通知
+    Note right of Notifications: エラー詳細と S3 画像 URL を通知
     Notifications-->>Notify: 送信完了
     deactivate Notifications
     deactivate Notify
@@ -171,11 +171,23 @@ $ cp .env.example .env
   本番環境へのデプロイは GitHub Actions を介して行う為、GitHub に変数を設定しておくこと
 
 - `LOG_LEVEL`: アプリケーションのログレベル
-- `START_URL`: スクレイピング対象サイトのページURL
+- `START_URL`: スクレイピング対象サイトのページ URL
 - `USER_AGENT`: スクレイピングで使用するユーザーエージェント
-- 以下は LINE 通知関数用 (notification) の設定
-  - `LINE_MESSAGE_API_URL`: LINE Messaging API の URL
-  - `LINE_MESSAGE_API_TOKEN`: LINE Messaging API の TOKEN
+- `LINE_MESSAGE_API_URL`: LINE Messaging API の URL
+- `LINE_MESSAGE_API_TOKEN`: LINE Messaging API の TOKEN
+- 以下は、docker-compose を使用したテスト用の設定
+  - `ENV`: boto3 endpoint 切り替えの為、test を代入
+  - `AWS_DEFAULT_REGION`: LocalStack 用
+  - `AWS_ACCESS_KEY_ID`: LocalStack 用のダミー
+  - `AWS_SECRET_ACCESS_KEY`: LocalStack 用のダミー
+  - `LOCAL_STACK_CONTAINER_URL`: LocalStack URL
+  - `SERVICES`: LocalStack で使用する AWS サービス
+- 以下は、LocalStack に作成するダミーリソース用の設定
+  - `LOGIN_PARAMETER_NAME`: スクレピング先ページへのログイン情報を保存したパラメータストア名
+  - `LOGIN_PARAMETER_VALUE`: スクレイピング先ページへのログイン情報
+  - `ERROR_BUCKET_NAME`: エラー情報を保存する S3 バケット
+  - `SNS_TOPIC_NAME`: ETL 完了時の通知先の SNS 名
+  - `SNS_TOPIC_ARN`: ETL 完了時の通知先の SNS ARN
 
 #### Node 環境のセットアップ
 
@@ -240,7 +252,7 @@ $ npm run test:unit
 .husky/lefthook を使用し、コミット時に Lint/Format/Test を自動的に実行します。
 
 <details>
-<summary>ローカル環境でのETL機能の動作確認方法</summary>
+<summary>ローカル環境での ETL 機能の動作確認方法</summary>
 
 ### Python インタプリタからインタラクティブに Selenium を使用する
 
@@ -276,9 +288,11 @@ $ python
 >>> driver.quit()
 ```
 
-### Lambda コンテナでハンドラーを実行する
-TODO: SNS_TOPIC_ARN, ParameterStoreのARNをENVに設定する、もしくはLOGIN_USER_IDなどセットしておけば動作することを追記する
-TODO: デプロイされていないと動かないので、通知機能含めて動作確認できるように...
+### docker-compose で Lambda コンテナを実行する
+
+> [!NOTE]  
+> Lambda コンテナでスクレイピングが正常に動作するか確認する為使用します。
+> AWS リソースについては LocalStack を使用しますが、スクレイピングは本物を使用します。
 
 1. docker-compose で起動する
 
@@ -313,4 +327,4 @@ $ docker compose down
 
 ### デプロイ
 
-[GitHub Actions ワークフロー](.github/workflows/)を利用してデプロイします
+[GitHub Actions ワークフロー](.github/workflows/) を利用してデプロイします
