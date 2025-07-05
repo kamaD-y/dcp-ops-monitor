@@ -242,9 +242,12 @@ $ npm run test:unit
 
 .husky/lefthook を使用し、コミット時に Lint/Format/Test を自動的に実行します。
 
-### ローカル環境での ETL 機能の動作確認方法
+### ローカル環境でのスクレイピング実行方法
 
 #### Python インタプリタからインタラクティブに Selenium を使用する
+
+> [!NOTE]  
+> スクレイピングの接続先は本物を使用します。
 
 1. selenium/standalone-chrome を起動
 
