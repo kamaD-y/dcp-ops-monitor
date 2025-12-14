@@ -189,8 +189,6 @@ class NRKScraper(ScraperInterface):
         logger.info("_extract_total_assets start.")
 
         total = soup.find(class_="total")
-        if not self._is_tag_element(total):
-            raise ElementTypeError("total is not a tag element")
 
         total_assets = DcpTotalAssets(
             cumulative_contributions=total.find_all("dd")[0].text,
@@ -215,23 +213,15 @@ class NRKScraper(ScraperInterface):
         logger.info("_extract_product_assets start.")
 
         product_info = soup.find(id="prodInfo")
-        if not self._is_tag_element(product_info):
-            raise ElementTypeError("product_info is not a tag element")
 
         products = product_info.find_all(class_="infoDetailUnit_02 pc_mb30")
-        if not self._is_tag_elements(products):
-            raise ElementTypeError("products is not a tag element list")
 
         # 商品毎の資産評価額を取得する
         assets_each_product: Dict[str, DcpProductAssets] = {}
         for product in products:
             table_body = product.find("tbody")
-            if not self._is_tag_element(table_body):
-                raise ElementTypeError("table_body is not a tag element")
 
             table_rows = table_body.find_all("tr")
-            if not self._is_tag_elements(table_rows):
-                raise ElementTypeError("table_rows is not a tag element list")
 
             product_assets = DcpProductAssets(
                 cumulative_acquisition_costs=table_rows[2].find_all("td")[-1].text,
@@ -240,8 +230,6 @@ class NRKScraper(ScraperInterface):
             )
 
             product_info = product.find(class_="infoHdWrap00")
-            if not self._is_tag_element(product_info):
-                raise ElementTypeError("product_info is not a tag element")
 
             product_name = product_info.text.strip()
             assets_each_product[product_name] = product_assets
@@ -258,29 +246,3 @@ class NRKScraper(ScraperInterface):
             },
         )
         return assets_each_product
-
-    def _is_tag_element(self, element: Any) -> TypeGuard[Tag]:
-        """要素がタグ要素かどうかを判定する型ガード
-
-        Args:
-            element (Any): 判定する要素
-
-        Returns:
-            TypeGuard[Tag]: 要素がタグ要素であるかどうか
-        """
-        if isinstance(element, Tag):
-            return True
-        return False
-
-    def _is_tag_elements(self, elements: Any) -> TypeGuard[list[Tag]]:
-        """要素がタグ要素のリストかどうかを判定する型ガード
-
-        Args:
-            elements (Any): 判定する要素
-
-        Returns:
-            TypeGuard[list[Tag]]: 要素がタグ要素のリストであるかどうか
-        """
-        if isinstance(elements, list) and all(isinstance(e, Tag) for e in elements):
-            return True
-        return False

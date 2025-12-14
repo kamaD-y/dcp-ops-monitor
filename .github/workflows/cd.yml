@@ -6,9 +6,9 @@ on:
     branches:
       - main
     paths:
-      - 'bin/**'
-      - 'lib/**'
-      - 'lambda/**'
+      - "bin/**"
+      - "lib/**"
+      - "lambda/**"
   workflow_dispatch:
 
 permissions:
@@ -41,15 +41,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '21.x'
+          node-version: "22.x"
 
       - name: Install dependencies
         run: npm ci
 
       - name: CDK Deploy
-        env:
-          AWS_ACCOUNT_ID: ${{ steps.configure-aws-credentials.outputs.mask-aws-account-id}}
-          AWS_ACCESS_KEY_ID: ${{ steps.configure-aws-credentials.outputs.aws-access-key-id }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.configure-aws-credentials.outputs.aws-secret-access-key }}
-          AWS_SESSION_TOKEN: ${{ steps.configure-aws-credentials.outputs.aws-session-token }}
         run: npx cdk deploy --require-approval never

@@ -9,7 +9,7 @@ from settings import get_logger
 logger = get_logger()
 
 
-@dataclass()
+@dataclass
 class ScrapingParams:
     """スクレイピングのパラメータを扱う値クラス
     LOGIN_PARAMETER_NAME 環境変数が設定されている場合、Parameter Storeから値を取得し、フィールドに設定します。
@@ -41,9 +41,9 @@ class ScrapingParams:
         parameters = get_parameter(self.parameter_name)
         if not parameters:
             raise ValueError("No parameters found in Parameter Store")
-        self.user_id = parameters.get("LOGIN_USER_ID")
-        self.password = parameters.get("LOGIN_PASSWORD")
-        self.birthdate = parameters.get("LOGIN_BIRTHDATE")
+        self.user_id = parameters.get("LOGIN_USER_ID", "")
+        self.password = parameters.get("LOGIN_PASSWORD", "")
+        self.birthdate = parameters.get("LOGIN_BIRTHDATE", "")
 
         if not self.user_id or not self.password or not self.birthdate:
             raise ValueError(
@@ -51,7 +51,7 @@ class ScrapingParams:
             )
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class DcpTotalAssets:
     """確定拠出年金の総資産評価を扱う値クラス
 
@@ -76,7 +76,7 @@ class DcpTotalAssets:
                 raise ValueError(f"{field.name} must be a string ending with '円'")
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class DcpProductAssets:
     """確定拠出年金の商品毎の資産評価を扱う値クラス
 
@@ -102,7 +102,7 @@ class DcpProductAssets:
                 raise ValueError(f"{field.name} must be a string ending with '円'")
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class DcpAssetsInfo:
     """確定拠出年金の資産評価を扱う値クラス
 
@@ -115,7 +115,7 @@ class DcpAssetsInfo:
     products: Dict[str, DcpProductAssets] = dataclasses.field(default_factory=dict)
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class DcpOpsIndicators:
     """確定拠出年金の運用指標を扱う値クラス
 

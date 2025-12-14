@@ -1,0 +1,10 @@
+[env]
+mise.file = ".env"
+
+[tools]
+python = "3.13.1"
+node = "22.18"
+uv = "latest"
+
+[settings]
+python.uv_venv_auto = true
