@@ -1,5 +1,4 @@
-name: CI Workflow
-run-name: CI
+name: Tests and Code Checks
 
 on:
   pull_request:

@@ -1,5 +1,4 @@
-name: CD Workflow
-run-name: CD
+name: Deployment
 
 on:
   push:
