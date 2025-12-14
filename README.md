@@ -131,10 +131,18 @@ sequenceDiagram
 
 以下のソフトウェアがインストールされていること
 
-- `Node.js`: v21.7.0 以上
-- `Python`: 3.13 以上
-- `uv`
 - `Docker`
+- `aws-cli`
+
+以下は、[mise](https://mise.jdx.dev/installing-mise.html) を使用してインストールします
+- `Node.js`
+- `Python`
+- `uv`
+
+```shell
+$ mise trust
+$ mise install
+```
 
 ### 開発環境の準備
 #### cdk 開発環境の構築 (初回のみ)
@@ -191,25 +199,7 @@ $ npx lefthook install
 
 #### Python 実行環境のセットアップ
 
-1. uv インストール  
-  仮想環境を使用している場合、仮想環境へ切り替え (Pyenv の例)
-  仮想環境を使用しない場合は手順スキップ
-
-```bash
-$ pyenv install 3.13
-$ pyenv versions
-# インストールされた Python バージョンへ切り替え
-$ pyenv local 3.13.xx
-```
-
-  uv インストール
-
-```bash
-$ pip install uv
-```
-
-2. 依存関係のインストール  
-  各プロジェクト毎に依存関係を管理、分離しています
+各プロジェクト毎に依存関係を管理、分離しています
 
 ```bash
 $ cd lambda/{specific_project_name}
