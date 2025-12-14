@@ -1,5 +1,9 @@
 # dcp-ops-monitor
 
+[![ci](https://github.com/kamaD-y/dcp-ops-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/kamaD-y/dcp-ops-monitor/actions/workflows/ci.yml)
+[![cd](https://github.com/kamaD-y/dcp-ops-monitor/actions/workflows/cd.yml/badge.svg)](https://github.com/kamaD-y/dcp-ops-monitor/actions/workflows/cd.yml)
+![last commit](https://img.shields.io/github/last-commit/kamaD-y/dcp-ops-monitor)
+
 確定拠出年金 (Defined Contribution Plan) の運用状況を確認する為、
 週次で対象の Web ページをスクレイピングし、運用指標をサマリして通知する。
 
