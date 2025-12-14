@@ -6,11 +6,10 @@ pre-commit:
       run: npx biome check --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
 
     test:cdk:
-      glob: "*.{ts,js,py}"
-      include:
-        - "bin/**/*"
-        - "lib/**/*"
-        - "lambda/**/*"
+      glob:
+        - "bin/*.{ts,js}"
+        - "lib/*.{ts,js}"
+        - "lambda/**/*.py"
       run: npm run test:cdk
 
     lint:lambda:
