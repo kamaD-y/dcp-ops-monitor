@@ -13,14 +13,14 @@ class ScraperInterface(ABC):
         pass
 
     @abstractmethod
-    def scrape(self, start_url: str) -> str:
+    def scrape(self, start_url: str) -> None:
         """スクレイピング実行メソッド
 
         Args:
             start_url (str): スクレイピングを開始するURL
 
         Returns:
-            str: スクレイピング結果のHTMLソース
+            None
         """
         pass
 
