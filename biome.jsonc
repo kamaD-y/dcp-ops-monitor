@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["node_modules", "cdk.out", ".venv", ".ruff_cache", ".mypy_cache", ".pytest_cache"]
+    "ignore": ["node_modules", "cdk.out", ".venv", ".ruff_cache", ".pytest_cache"]
   },
   "formatter": {
     "enabled": true,
