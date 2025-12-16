@@ -16,9 +16,6 @@ dependencies = [
 [tool.ruff]
 extend = "../../pyproject.toml"
 
-[tool.mypy]
-config_file = "../../pyproject.toml"
-
 [dependency-groups]
 dev = [
     "types-requests>=2.32.0.20250515",

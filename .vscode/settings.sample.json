@@ -5,6 +5,7 @@
   "files.insertFinalNewline": true,
   "ruff.configuration": "pyproject.toml",
   "ruff.configurationPreference": "filesystemFirst",
+  "python.languageServer": "None",
   "[python]": {
     "editor.codeActionsOnSave": {
       "source.fixAll.ruff": "explicit"
