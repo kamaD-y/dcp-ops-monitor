@@ -76,9 +76,9 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     );
 
     // LINE通知用Lambda Function
-    const notificationFunction = new PythonFunction(this, 'NotificationFunction', {
+    const errorNotificationFunction = new PythonFunction(this, 'ErrorNotificationFunction', {
       runtime: lambda.Runtime.PYTHON_3_13,
-      entry: path.join(__dirname, '../lambda/notification'),
+      entry: path.join(__dirname, '../lambda/error-notification'),
       index: 'src/handler.py',
       handler: 'handler',
       bundling: {
@@ -90,7 +90,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         LINE_MESSAGE_API_TOKEN: props.lineMessageApiToken,
       },
     });
-    notificationFunction.addToRolePolicy(
+    errorNotificationFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['s3:GetObject'],
         resources: [`${errorBucket.bucketArn}/*`],

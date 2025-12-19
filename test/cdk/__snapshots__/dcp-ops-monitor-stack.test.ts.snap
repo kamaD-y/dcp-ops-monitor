@@ -15,6 +15,101 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
     },
+    "ErrorNotificationFunction68DA9498": {
+      "DependsOn": [
+        "ErrorNotificationFunctionServiceRoleDefaultPolicyB61EBDA9",
+        "ErrorNotificationFunctionServiceRoleA771D2E1",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[Hash Id].zip",
+        },
+        "Environment": {
+          "Variables": {
+            "LINE_MESSAGE_API_TOKEN": "testLineToken",
+            "LINE_MESSAGE_API_URL": "https://api.line.me/v2/bot/message/broadcast",
+            "POWERTOOLS_LOG_LEVEL": "INFO",
+          },
+        },
+        "Handler": "src.handler.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "ErrorNotificationFunctionServiceRoleA771D2E1",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.13",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "ErrorNotificationFunctionServiceRoleA771D2E1": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ErrorNotificationFunctionServiceRoleDefaultPolicyB61EBDA9": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "ErrorBucket8D38AF42",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ErrorNotificationFunctionServiceRoleDefaultPolicyB61EBDA9",
+        "Roles": [
+          {
+            "Ref": "ErrorNotificationFunctionServiceRoleA771D2E1",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "EventRule5A491D2C": {
       "Properties": {
         "ScheduleExpression": "cron(0 0 ? * MON *)",
@@ -59,101 +154,6 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
-    },
-    "NotificationFunction0492F7EA": {
-      "DependsOn": [
-        "NotificationFunctionServiceRoleDefaultPolicy49A8A750",
-        "NotificationFunctionServiceRole66D0974B",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "[Hash Id].zip",
-        },
-        "Environment": {
-          "Variables": {
-            "LINE_MESSAGE_API_TOKEN": "testLineToken",
-            "LINE_MESSAGE_API_URL": "https://api.line.me/v2/bot/message/broadcast",
-            "POWERTOOLS_LOG_LEVEL": "INFO",
-          },
-        },
-        "Handler": "src.handler.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "NotificationFunctionServiceRole66D0974B",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.13",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "NotificationFunctionServiceRole66D0974B": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "NotificationFunctionServiceRoleDefaultPolicy49A8A750": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "s3:GetObject",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "ErrorBucket8D38AF42",
-                        "Arn",
-                      ],
-                    },
-                    "/*",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "NotificationFunctionServiceRoleDefaultPolicy49A8A750",
-        "Roles": [
-          {
-            "Ref": "NotificationFunctionServiceRole66D0974B",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
     },
     "webScrapingFunction3F73FC71": {
       "DependsOn": [

@@ -1,7 +1,7 @@
 [project]
-name = "dcp-ops-monitor-notification"
+name = "dcp-ops-monitor-error-notification"
 version = "0.1.0"
-description = "Notifies the execution result of etl"
+description = "Notifies the execution result of web scraping"
 readme = "README.md"
 requires-python = ">=3.13.1"
 dependencies = [
