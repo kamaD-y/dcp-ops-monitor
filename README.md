@@ -23,48 +23,28 @@ lambda/notification  # 通知用 Lambda 関数
 ```
 
 ## 処理シーケンス
-## 処理成功時のシーケンス
+## スクレイピング Lambda 処理シーケンス
 
 ```mermaid
 sequenceDiagram
     participant Scheduler as EventBridge
-    participant ETL as ETL Lambda
-    participant Web as 対象サイト
-    participant SNS_S as SNS Success
-    participant Notify as 通知 Lambda
+    participant Scraping as スクレイピング処理
+    participant Web as Web Page
     participant Notifications as 通知サービス (LINE etc.)
-
-    Note over Scheduler, Notifications: 正常処理フロー
+   
+    Scheduler->>Scraping: スケジュール実行トリガー
+    activate Scraping
     
-    Scheduler->>ETL: 週次実行トリガー
-    activate ETL
-    
-    ETL->>Web: スクレイピング開始
+    Scraping->>Web: Web スクレイピング
     activate Web
-    Web-->>ETL: HTML データ取得成功
+    Web-->>Scraping: HTML データ取得
     deactivate Web
     
-    ETL->>ETL: HTML データ加工処理
-    Note right of ETL: データ変換・整形
+    Scraping->>Scraping: HTML データ加工処理
+    Scraping->>Scraping: 通知メッセージ整形
     
-    ETL->>SNS_S: 成功結果を送信
-    activate SNS_S
-    deactivate ETL
-    
-    SNS_S->>Notify: Success Event でトリガー
-    activate Notify
-    deactivate SNS_S
-    
-    Notify->>Notify: Event から Message 抽出
-    
-    Notify->>Notifications: 成功メッセージ送信
-    activate Notifications
-    Note right of Notifications: 運用状況サマリを通知
-    Notifications-->>Notify: 送信完了
-    deactivate Notifications
-    deactivate Notify
-    
-    Note over Scheduler, Notifications: 処理完了
+    Scraping->>Notifications: 運用指標サマリを送信
+    deactivate Scraping
 ```
 
 ## 処理失敗時のシーケンス
