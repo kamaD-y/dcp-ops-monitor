@@ -1,11 +1,11 @@
 services:
-  dcp-etl:
-    container_name: dcp-etl
+  dcp-web-scraping:
+    container_name: dcp-web-scraping
     build:
-      context: lambda/etl
+      context: lambda/web-scraping
       dockerfile: Dockerfile
     ports:
-      - '8080:8080'
+      - "8080:8080"
     env_file:
       - .env.test
     depends_on:
@@ -15,7 +15,7 @@ services:
     container_name: localstack
     image: localstack/localstack
     ports:
-      - '4566:4566'  # LocalStack Gateway
+      - "4566:4566" # LocalStack Gateway
     volumes:
       - ./localstack/ready.sh:/etc/localstack/init/ready.d/ready.sh
       - /var/run/docker.sock:/var/run/docker.sock
