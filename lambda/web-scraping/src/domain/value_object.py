@@ -3,8 +3,8 @@ from typing import Dict
 
 from pydantic.dataclasses import dataclass
 
+from config.settings import get_logger
 from infrastructure.aws.ssm import get_parameter
-from settings import get_logger
 
 logger = get_logger()
 
