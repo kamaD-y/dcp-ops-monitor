@@ -28,9 +28,6 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
             },
             "LOGIN_PARAMETER_NAME": "/dcp-ops-monitor/dummy-login-parameters",
             "POWERTOOLS_LOG_LEVEL": "INFO",
-            "SNS_TOPIC_ARN": {
-              "Ref": "SuccessTopic495EEDDD",
-            },
             "START_URL": "https://example.com/login",
             "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
           },
@@ -53,24 +50,6 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
         "Timeout": 60,
       },
       "Type": "AWS::Lambda::Function",
-    },
-    "ETLFunctionErrorLogAlarm03BF0B9C": {
-      "Properties": {
-        "AlarmActions": [
-          {
-            "Ref": "FailureTopic74C6EA16",
-          },
-        ],
-        "AlarmName": "ETLFunctionErrorLogAlarm",
-        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "EvaluationPeriods": 1,
-        "MetricName": "ETLFunctionErrorLog",
-        "Namespace": "Custom/DcpOpsMonitor",
-        "Period": 300,
-        "Statistic": "Sum",
-        "Threshold": 1,
-      },
-      "Type": "AWS::CloudWatch::Alarm",
     },
     "ETLFunctionServiceRole8378D870": {
       "Properties": {
@@ -129,13 +108,6 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
                     ":parameter/dcp-ops-monitor/dummy-login-parameters",
                   ],
                 ],
-              },
-            },
-            {
-              "Action": "sns:Publish",
-              "Effect": "Allow",
-              "Resource": {
-                "Ref": "SuccessTopic495EEDDD",
               },
             },
             {
@@ -210,25 +182,6 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "FailureTopic74C6EA16": {
-      "Type": "AWS::SNS::Topic",
-    },
-    "LogGroupETLFunctionErrorLogFilter613E5F93": {
-      "Properties": {
-        "FilterPattern": "{ $.level = "ERROR" }",
-        "LogGroupName": {
-          "Ref": "LogGroupF5B46931",
-        },
-        "MetricTransformations": [
-          {
-            "MetricName": "ETLFunctionErrorLog",
-            "MetricNamespace": "Custom/DcpOpsMonitor",
-            "MetricValue": "1",
-          },
-        ],
-      },
-      "Type": "AWS::Logs::MetricFilter",
-    },
     "LogGroupF5B46931": {
       "DeletionPolicy": "Retain",
       "Properties": {
@@ -267,53 +220,6 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       },
       "Type": "AWS::Lambda::Function",
     },
-    "NotificationFunctionAllowInvokeDcpOpsMonitorStackFailureTopic58EA38C4DFE1BC8C": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "NotificationFunction0492F7EA",
-            "Arn",
-          ],
-        },
-        "Principal": "sns.amazonaws.com",
-        "SourceArn": {
-          "Ref": "FailureTopic74C6EA16",
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "NotificationFunctionAllowInvokeDcpOpsMonitorStackSuccessTopicB3D06A97EBD84C42": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "NotificationFunction0492F7EA",
-            "Arn",
-          ],
-        },
-        "Principal": "sns.amazonaws.com",
-        "SourceArn": {
-          "Ref": "SuccessTopic495EEDDD",
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "NotificationFunctionFailureTopicBF1827AA": {
-      "Properties": {
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "NotificationFunction0492F7EA",
-            "Arn",
-          ],
-        },
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "FailureTopic74C6EA16",
-        },
-      },
-      "Type": "AWS::SNS::Subscription",
-    },
     "NotificationFunctionServiceRole66D0974B": {
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -350,17 +256,20 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "logs:DescribeMetricFilters",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            {
-              "Action": "logs:FilterLogEvents",
+              "Action": "s3:GetObject",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "LogGroupF5B46931",
-                  "Arn",
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "ErrorBucket8D38AF42",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
                 ],
               },
             },
@@ -375,24 +284,6 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "NotificationFunctionSuccessTopicAAC9B438": {
-      "Properties": {
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "NotificationFunction0492F7EA",
-            "Arn",
-          ],
-        },
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "SuccessTopic495EEDDD",
-        },
-      },
-      "Type": "AWS::SNS::Subscription",
-    },
-    "SuccessTopic495EEDDD": {
-      "Type": "AWS::SNS::Topic",
     },
   },
   "Rules": {

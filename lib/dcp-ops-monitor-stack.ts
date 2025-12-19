@@ -1,16 +1,12 @@
 import * as path from 'node:path';
 import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
 import * as cdk from 'aws-cdk-lib';
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as cw_actions from 'aws-cdk-lib/aws-cloudwatch-actions';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as sns from 'aws-cdk-lib/aws-sns';
-import * as sns_subs from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import type { Construct } from 'constructs';
 
@@ -35,10 +31,6 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         parameterName: props.loginParameterName,
       },
     );
-
-    // SNS Topic
-    const successTopic = new sns.Topic(this, 'SuccessTopic', {});
-    const failureTopic = new sns.Topic(this, 'FailureTopic', {});
 
     // S3 Bucket
     const errorBucket = new s3.Bucket(this, 'ErrorBucket', {
@@ -67,7 +59,6 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         START_URL: props.startUrl,
         USER_AGENT: props.userAgent,
         LOGIN_PARAMETER_NAME: loginParametersForScraping.parameterName,
-        SNS_TOPIC_ARN: successTopic.topicArn,
         ERROR_BUCKET_NAME: errorBucket.bucketName,
       },
     });
@@ -75,12 +66,6 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       new iam.PolicyStatement({
         actions: ['ssm:GetParameter'],
         resources: [loginParametersForScraping.parameterArn],
-      }),
-    );
-    etlFunction.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: ['sns:Publish'],
-        resources: [successTopic.topicArn],
       }),
     );
     etlFunction.addToRolePolicy(
@@ -105,25 +90,12 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         LINE_MESSAGE_API_TOKEN: props.lineMessageApiToken,
       },
     });
-
     notificationFunction.addToRolePolicy(
       new iam.PolicyStatement({
-        actions: ['logs:DescribeMetricFilters'],
-        resources: ['*'],
+        actions: ['s3:GetObject'],
+        resources: [`${errorBucket.bucketArn}/*`],
       }),
     );
-
-    notificationFunction.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: ['logs:FilterLogEvents'],
-        resources: [logGroup.logGroupArn],
-      }),
-    );
-
-    // SNS Topic に LINE通知用Lambda Function をサブスクライブ
-    successTopic.addSubscription(new sns_subs.LambdaSubscription(notificationFunction));
-    failureTopic.addSubscription(new sns_subs.LambdaSubscription(notificationFunction));
-
     // 毎週月曜日 09:00 に実行する Rule を作成
     new events.Rule(this, 'EventRule', {
       schedule: events.Schedule.cron({
@@ -133,26 +105,5 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       }),
       targets: [new targets.LambdaFunction(etlFunction)],
     });
-
-    // Lambda Functionエラーログ検知用の MetricFilter を作成
-    const etlFunctionMetricFilter = etlFunction.logGroup.addMetricFilter('ETLFunctionErrorLogFilter', {
-      filterPattern: logs.FilterPattern.all(logs.FilterPattern.stringValue('$.level', '=', 'ERROR')),
-      metricNamespace: 'Custom/DcpOpsMonitor',
-      metricName: 'ETLFunctionErrorLog',
-      metricValue: '1',
-    });
-
-    // MetricFilter に対する CloudWatchAlarm を作成
-    etlFunctionMetricFilter
-      .metric({
-        statistic: cloudwatch.Stats.SUM,
-      })
-      .createAlarm(this, 'ETLFunctionErrorLogAlarm', {
-        threshold: 1,
-        evaluationPeriods: 1,
-        alarmName: 'ETLFunctionErrorLogAlarm',
-        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-      })
-      .addAlarmAction(new cw_actions.SnsAction(failureTopic));
   }
 }
