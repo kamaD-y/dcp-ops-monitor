@@ -44,8 +44,8 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     });
 
     // Lambda Function
-    const etlFunction = new lambda.DockerImageFunction(this, 'ETLFunction', {
-      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../lambda/etl'), {
+    const webScrapingFunction = new lambda.DockerImageFunction(this, 'webScrapingFunction', {
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../lambda/web-scraping'), {
         file: 'Dockerfile',
         extraHash: props.env?.region,
       }),
@@ -62,13 +62,13 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         ERROR_BUCKET_NAME: errorBucket.bucketName,
       },
     });
-    etlFunction.addToRolePolicy(
+    webScrapingFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['ssm:GetParameter'],
         resources: [loginParametersForScraping.parameterArn],
       }),
     );
-    etlFunction.addToRolePolicy(
+    webScrapingFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['s3:PutObject'],
         resources: [`${errorBucket.bucketArn}/*`],
@@ -103,7 +103,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         hour: '0',
         weekDay: 'MON',
       }),
-      targets: [new targets.LambdaFunction(etlFunction)],
+      targets: [new targets.LambdaFunction(webScrapingFunction)],
     });
   }
 }
