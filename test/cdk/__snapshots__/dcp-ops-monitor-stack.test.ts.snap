@@ -10,69 +10,42 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
     },
   },
   "Resources": {
-    "ETLFunction9A61AFF3": {
+    "ErrorBucket8D38AF42": {
+      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "ErrorNotificationFunction68DA9498": {
       "DependsOn": [
-        "ETLFunctionServiceRoleDefaultPolicy1E696897",
-        "ETLFunctionServiceRole8378D870",
+        "ErrorNotificationFunctionServiceRoleDefaultPolicyB61EBDA9",
+        "ErrorNotificationFunctionServiceRoleA771D2E1",
       ],
       "Properties": {
         "Code": {
-          "ImageUri": {
-            "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:[Image Tag]",
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
+          "S3Key": "[Hash Id].zip",
         },
         "Environment": {
           "Variables": {
-            "ERROR_BUCKET_NAME": {
-              "Ref": "ErrorBucket8D38AF42",
-            },
-            "LOGIN_PARAMETER_NAME": "/dcp-ops-monitor/dummy-login-parameters",
+            "LINE_MESSAGE_API_TOKEN": "",
+            "LINE_MESSAGE_API_URL": "",
             "POWERTOOLS_LOG_LEVEL": "INFO",
-            "SNS_TOPIC_ARN": {
-              "Ref": "SuccessTopic495EEDDD",
-            },
-            "START_URL": "https://example.com/login",
-            "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
           },
         },
-        "LoggingConfig": {
-          "ApplicationLogLevel": "INFO",
-          "LogFormat": "JSON",
-          "LogGroup": {
-            "Ref": "LogGroupF5B46931",
-          },
-        },
-        "MemorySize": 1024,
-        "PackageType": "Image",
+        "Handler": "src.handler.handler",
         "Role": {
           "Fn::GetAtt": [
-            "ETLFunctionServiceRole8378D870",
+            "ErrorNotificationFunctionServiceRoleA771D2E1",
             "Arn",
           ],
         },
-        "Timeout": 60,
+        "Runtime": "python3.13",
       },
       "Type": "AWS::Lambda::Function",
     },
-    "ETLFunctionErrorLogAlarm03BF0B9C": {
-      "Properties": {
-        "AlarmActions": [
-          {
-            "Ref": "FailureTopic74C6EA16",
-          },
-        ],
-        "AlarmName": "ETLFunctionErrorLogAlarm",
-        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "EvaluationPeriods": 1,
-        "MetricName": "ETLFunctionErrorLog",
-        "Namespace": "Custom/DcpOpsMonitor",
-        "Period": 300,
-        "Statistic": "Sum",
-        "Threshold": 1,
-      },
-      "Type": "AWS::CloudWatch::Alarm",
-    },
-    "ETLFunctionServiceRole8378D870": {
+    "ErrorNotificationFunctionServiceRoleA771D2E1": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -103,40 +76,207 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
-    "ETLFunctionServiceRoleDefaultPolicy1E696897": {
+    "ErrorNotificationFunctionServiceRoleDefaultPolicyB61EBDA9": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "ErrorBucket8D38AF42",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ErrorNotificationFunctionServiceRoleDefaultPolicyB61EBDA9",
+        "Roles": [
+          {
+            "Ref": "ErrorNotificationFunctionServiceRoleA771D2E1",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "EventRule5A491D2C": {
+      "Properties": {
+        "ScheduleExpression": "cron(0 0 ? * MON *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "webScrapingFunction3F73FC71",
+                "Arn",
+              ],
+            },
+            "Id": "Target0",
+          },
+        ],
+      },
+      "Type": "AWS::Events::Rule",
+    },
+    "EventRuleAllowEventRuleDcpOpsMonitorStackwebScrapingFunctionD4D82C84799A9237": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "webScrapingFunction3F73FC71",
+            "Arn",
+          ],
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "EventRule5A491D2C",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "LogGroupF5B46931": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RetentionInDays": 7,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "webScrapingFunction3F73FC71": {
+      "DependsOn": [
+        "webScrapingFunctionServiceRoleDefaultPolicy417D3A09",
+        "webScrapingFunctionServiceRoleC1917590",
+      ],
+      "Properties": {
+        "Code": {
+          "ImageUri": {
+            "Fn::Sub": "\${AWS::AccountId}.dkr.ecr.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-\${AWS::AccountId}-\${AWS::Region}:[Image Tag]",
+          },
+        },
+        "Environment": {
+          "Variables": {
+            "ERROR_BUCKET_NAME": {
+              "Ref": "ErrorBucket8D38AF42",
+            },
+            "LINE_MESSAGE_PARAMETER_NAME": "/dcp-ops-monitor/dummy-line-message-token",
+            "LOGIN_PARAMETER_NAME": "/dcp-ops-monitor/dummy-login-parameters",
+            "POWERTOOLS_LOG_LEVEL": "INFO",
+            "START_URL": "https://example.com/login",
+            "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+          },
+        },
+        "LoggingConfig": {
+          "ApplicationLogLevel": "INFO",
+          "LogFormat": "JSON",
+          "LogGroup": {
+            "Ref": "LogGroupF5B46931",
+          },
+        },
+        "MemorySize": 1024,
+        "PackageType": "Image",
+        "Role": {
+          "Fn::GetAtt": [
+            "webScrapingFunctionServiceRoleC1917590",
+            "Arn",
+          ],
+        },
+        "Timeout": 60,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "webScrapingFunctionServiceRoleC1917590": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "webScrapingFunctionServiceRoleDefaultPolicy417D3A09": {
       "Properties": {
         "PolicyDocument": {
           "Statement": [
             {
               "Action": "ssm:GetParameter",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":ssm:",
-                    {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":parameter/dcp-ops-monitor/dummy-login-parameters",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":parameter/dcp-ops-monitor/dummy-login-parameters",
+                    ],
                   ],
-                ],
-              },
-            },
-            {
-              "Action": "sns:Publish",
-              "Effect": "Allow",
-              "Resource": {
-                "Ref": "SuccessTopic495EEDDD",
-              },
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":parameter/dcp-ops-monitor/dummy-line-message-token",
+                    ],
+                  ],
+                },
+              ],
             },
             {
               "Action": "s3:PutObject",
@@ -159,240 +299,14 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "ETLFunctionServiceRoleDefaultPolicy1E696897",
+        "PolicyName": "webScrapingFunctionServiceRoleDefaultPolicy417D3A09",
         "Roles": [
           {
-            "Ref": "ETLFunctionServiceRole8378D870",
+            "Ref": "webScrapingFunctionServiceRoleC1917590",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "ErrorBucket8D38AF42": {
-      "DeletionPolicy": "Delete",
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "EventRule5A491D2C": {
-      "Properties": {
-        "ScheduleExpression": "cron(0 0 ? * MON *)",
-        "State": "ENABLED",
-        "Targets": [
-          {
-            "Arn": {
-              "Fn::GetAtt": [
-                "ETLFunction9A61AFF3",
-                "Arn",
-              ],
-            },
-            "Id": "Target0",
-          },
-        ],
-      },
-      "Type": "AWS::Events::Rule",
-    },
-    "EventRuleAllowEventRuleDcpOpsMonitorStackETLFunction130897F2C156DA9F": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ETLFunction9A61AFF3",
-            "Arn",
-          ],
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "EventRule5A491D2C",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "FailureTopic74C6EA16": {
-      "Type": "AWS::SNS::Topic",
-    },
-    "LogGroupETLFunctionErrorLogFilter613E5F93": {
-      "Properties": {
-        "FilterPattern": "{ $.level = "ERROR" }",
-        "LogGroupName": {
-          "Ref": "LogGroupF5B46931",
-        },
-        "MetricTransformations": [
-          {
-            "MetricName": "ETLFunctionErrorLog",
-            "MetricNamespace": "Custom/DcpOpsMonitor",
-            "MetricValue": "1",
-          },
-        ],
-      },
-      "Type": "AWS::Logs::MetricFilter",
-    },
-    "LogGroupF5B46931": {
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "RetentionInDays": 7,
-      },
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-    },
-    "NotificationFunction0492F7EA": {
-      "DependsOn": [
-        "NotificationFunctionServiceRoleDefaultPolicy49A8A750",
-        "NotificationFunctionServiceRole66D0974B",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "[Hash Id].zip",
-        },
-        "Environment": {
-          "Variables": {
-            "LINE_MESSAGE_API_TOKEN": "testLineToken",
-            "LINE_MESSAGE_API_URL": "https://api.line.me/v2/bot/message/broadcast",
-            "POWERTOOLS_LOG_LEVEL": "INFO",
-          },
-        },
-        "Handler": "src.handler.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "NotificationFunctionServiceRole66D0974B",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.13",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "NotificationFunctionAllowInvokeDcpOpsMonitorStackFailureTopic58EA38C4DFE1BC8C": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "NotificationFunction0492F7EA",
-            "Arn",
-          ],
-        },
-        "Principal": "sns.amazonaws.com",
-        "SourceArn": {
-          "Ref": "FailureTopic74C6EA16",
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "NotificationFunctionAllowInvokeDcpOpsMonitorStackSuccessTopicB3D06A97EBD84C42": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "NotificationFunction0492F7EA",
-            "Arn",
-          ],
-        },
-        "Principal": "sns.amazonaws.com",
-        "SourceArn": {
-          "Ref": "SuccessTopic495EEDDD",
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "NotificationFunctionFailureTopicBF1827AA": {
-      "Properties": {
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "NotificationFunction0492F7EA",
-            "Arn",
-          ],
-        },
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "FailureTopic74C6EA16",
-        },
-      },
-      "Type": "AWS::SNS::Subscription",
-    },
-    "NotificationFunctionServiceRole66D0974B": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "NotificationFunctionServiceRoleDefaultPolicy49A8A750": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "logs:DescribeMetricFilters",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            {
-              "Action": "logs:FilterLogEvents",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "LogGroupF5B46931",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "NotificationFunctionServiceRoleDefaultPolicy49A8A750",
-        "Roles": [
-          {
-            "Ref": "NotificationFunctionServiceRole66D0974B",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "NotificationFunctionSuccessTopicAAC9B438": {
-      "Properties": {
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "NotificationFunction0492F7EA",
-            "Arn",
-          ],
-        },
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "SuccessTopic495EEDDD",
-        },
-      },
-      "Type": "AWS::SNS::Subscription",
-    },
-    "SuccessTopic495EEDDD": {
-      "Type": "AWS::SNS::Topic",
     },
   },
   "Rules": {

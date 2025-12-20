@@ -1,0 +1,22 @@
+[project]
+name = "dcp-ops-monitor-error-notification"
+version = "0.1.0"
+description = "Notifies the execution result of web scraping"
+readme = "README.md"
+requires-python = ">=3.13.1"
+dependencies = [
+    "aws-lambda-powertools>=3.13.0",
+    "boto3>=1.38.27",
+    "mypy-boto3-logs>=1.38.16",
+    "pydantic>=2.11.5",
+    "pydantic-settings>=2.9.1",
+    "requests>=2.32.3",
+]
+
+[tool.ruff]
+extend = "../../pyproject.toml"
+
+[dependency-groups]
+dev = [
+    "types-requests>=2.32.0.20250515",
+]

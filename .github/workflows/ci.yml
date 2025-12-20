@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          cd lambda/etl && python -m pip install uv && uv sync
+          cd lambda/web-scraping && python -m pip install uv && uv sync
 
       - name: Run Lint
         run: |
