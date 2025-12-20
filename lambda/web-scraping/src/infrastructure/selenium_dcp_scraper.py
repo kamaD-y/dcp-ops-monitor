@@ -10,12 +10,6 @@ from domain import IDcpScraper, LoginParams
 logger = get_logger()
 
 
-class ScrapingError(Exception):
-    def __init__(self, message: str, error_image_path: Optional[str] = None) -> None:
-        super().__init__(message)
-        self.error_image_path = error_image_path
-
-
 class SeleniumDcpScraper(IDcpScraper):
     """Selenium WebDriverを提供するクラス"""
 
@@ -33,6 +27,7 @@ class SeleniumDcpScraper(IDcpScraper):
         self.user_id = login_params.user_id
         self.password = login_params.password
         self.birthdate = login_params.birthdate
+        self.error_image_path: Optional[str] = None
 
     def _get_driver(self) -> webdriver.Chrome:
         chrome_options = webdriver.ChromeOptions()
@@ -95,11 +90,11 @@ class SeleniumDcpScraper(IDcpScraper):
             # ログアウトボタンがなければログイン失敗とする
             self.driver.find_element(By.LINK_TEXT, "ログアウト")
 
-        except Exception as e:
-            error_image_path = "/tmp/error.png"
-            self.driver.save_screenshot(error_image_path)
+        except Exception:
+            self.error_image_path = "/tmp/error_login.png"
+            self.driver.save_screenshot(self.error_image_path)
             self.driver.quit()
-            raise ScrapingError("ログイン処理中に問題が発生しました。") from e
+            raise
 
     def _get_asset_valuation_page(self) -> str:
         try:
@@ -109,12 +104,12 @@ class SeleniumDcpScraper(IDcpScraper):
             # 資産評価額照会ページ取得
             self.driver.find_element(By.CLASS_NAME, "total")
             return self.driver.page_source
-        except Exception as e:
-            error_image_path = "/tmp/error.png"
-            self.driver.save_screenshot(error_image_path)
+        except Exception:
+            self.error_image_path = "/tmp/error_asset_valuation.png"
+            self.driver.save_screenshot(self.error_image_path)
             self._logout()
             self.driver.quit()
-            raise ScrapingError("資産評価ページ取得中に問題が発生しました。") from e
+            raise
 
     def _logout(self) -> None:
         try:
@@ -124,3 +119,6 @@ class SeleniumDcpScraper(IDcpScraper):
             # ログアウト失敗はエラーログのみ出力して無視
             logger.exception("ログアウト処理中に問題が発生しました。")
             pass
+
+    def get_error_image_path(self) -> Optional[str]:
+        return self.error_image_path

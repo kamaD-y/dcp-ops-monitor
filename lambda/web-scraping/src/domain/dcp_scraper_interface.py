@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 
 class IDcpScraper(ABC):
@@ -18,5 +19,14 @@ class IDcpScraper(ABC):
 
         Returns:
             str: 資産評価情報ページの HTML ソース
+        """
+        pass
+
+    @abstractmethod
+    def get_error_image_path(self) -> Optional[str]:
+        """エラー時のスクリーンショット画像のパスを取得するメソッド
+
+        Returns:
+            Optional[str]: エラー時のスクリーンショット画像のパス
         """
         pass
