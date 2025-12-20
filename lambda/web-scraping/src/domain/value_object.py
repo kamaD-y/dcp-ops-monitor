@@ -4,7 +4,6 @@ from typing import Dict
 from pydantic.dataclasses import dataclass
 
 from config.settings import get_logger
-from infrastructure.aws.ssm import get_parameter
 
 logger = get_logger()
 
@@ -38,12 +37,12 @@ class ScrapingParams:
             return
 
         logger.info("Fetching parameters from Parameter Store.", extra={"parameter_name": self.parameter_name})
-        parameters = get_parameter(self.parameter_name)
-        if not parameters:
-            raise ValueError("No parameters found in Parameter Store")
-        self.user_id = parameters.get("LOGIN_USER_ID", "")
-        self.password = parameters.get("LOGIN_PASSWORD", "")
-        self.birthdate = parameters.get("LOGIN_BIRTHDATE", "")
+        # parameters = get_parameter(self.parameter_name)
+        # if not parameters:
+        #     raise ValueError("No parameters found in Parameter Store")
+        # self.user_id = parameters.get("LOGIN_USER_ID", "")
+        # self.password = parameters.get("LOGIN_PASSWORD", "")
+        # self.birthdate = parameters.get("LOGIN_BIRTHDATE", "")
 
         if not self.user_id or not self.password or not self.birthdate:
             raise ValueError(
