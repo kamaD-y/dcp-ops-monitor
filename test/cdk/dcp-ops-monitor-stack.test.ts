@@ -14,9 +14,8 @@ test('Snapshot test for DcpOpsStatusNotificationStack', () => {
     startUrl: 'https://example.com/login',
     userAgent:
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-    lineMessageApiUrl: 'https://api.line.me/v2/bot/message/broadcast',
-    lineMessageApiToken: 'testLineToken',
     loginParameterName: '/dcp-ops-monitor/dummy-login-parameters',
+    lineMessageTokenParameterName: '/dcp-ops-monitor/dummy-line-message-token',
   });
   // THEN
   expect(Template.fromStack(stack)).toMatchSnapshot();

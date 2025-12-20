@@ -29,8 +29,8 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
         },
         "Environment": {
           "Variables": {
-            "LINE_MESSAGE_API_TOKEN": "testLineToken",
-            "LINE_MESSAGE_API_URL": "https://api.line.me/v2/bot/message/broadcast",
+            "LINE_MESSAGE_API_TOKEN": "",
+            "LINE_MESSAGE_API_URL": "",
             "POWERTOOLS_LOG_LEVEL": "INFO",
           },
         },
@@ -171,6 +171,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
             "ERROR_BUCKET_NAME": {
               "Ref": "ErrorBucket8D38AF42",
             },
+            "LINE_MESSAGE_PARAMETER_NAME": "/dcp-ops-monitor/dummy-line-message-token",
             "LOGIN_PARAMETER_NAME": "/dcp-ops-monitor/dummy-login-parameters",
             "POWERTOOLS_LOG_LEVEL": "INFO",
             "START_URL": "https://example.com/login",
@@ -234,26 +235,48 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
             {
               "Action": "ssm:GetParameter",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":ssm:",
-                    {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":parameter/dcp-ops-monitor/dummy-login-parameters",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":parameter/dcp-ops-monitor/dummy-login-parameters",
+                    ],
                   ],
-                ],
-              },
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":parameter/dcp-ops-monitor/dummy-line-message-token",
+                    ],
+                  ],
+                },
+              ],
             },
             {
               "Action": "s3:PutObject",
