@@ -14,9 +14,8 @@ export interface DcpOpsMonitorStackProps extends cdk.StackProps {
   logLevel: string;
   startUrl: string;
   userAgent: string;
-  lineMessageApiUrl: string;
-  lineMessageApiToken: string;
   loginParameterName: string;
+  lineMessageTokenParameterName: string;
 }
 
 export class DcpOpsMonitorStack extends cdk.Stack {
@@ -29,6 +28,13 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       'LoginParametersForScraping',
       {
         parameterName: props.loginParameterName,
+      },
+    );
+    const lineMessageTokenParameter = ssm.StringParameter.fromSecureStringParameterAttributes(
+      this,
+      'LineMessageTokenParameter',
+      {
+        parameterName: props.lineMessageTokenParameterName,
       },
     );
 
@@ -59,13 +65,14 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         START_URL: props.startUrl,
         USER_AGENT: props.userAgent,
         LOGIN_PARAMETER_NAME: loginParametersForScraping.parameterName,
+        LINE_MESSAGE_PARAMETER_NAME: lineMessageTokenParameter.parameterName,
         ERROR_BUCKET_NAME: errorBucket.bucketName,
       },
     });
     webScrapingFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['ssm:GetParameter'],
-        resources: [loginParametersForScraping.parameterArn],
+        resources: [loginParametersForScraping.parameterArn, lineMessageTokenParameter.parameterArn],
       }),
     );
     webScrapingFunction.addToRolePolicy(
@@ -86,8 +93,8 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       },
       environment: {
         POWERTOOLS_LOG_LEVEL: props.logLevel,
-        LINE_MESSAGE_API_URL: props.lineMessageApiUrl,
-        LINE_MESSAGE_API_TOKEN: props.lineMessageApiToken,
+        LINE_MESSAGE_API_URL: '',
+        LINE_MESSAGE_API_TOKEN: '',
       },
     });
     errorNotificationFunction.addToRolePolicy(

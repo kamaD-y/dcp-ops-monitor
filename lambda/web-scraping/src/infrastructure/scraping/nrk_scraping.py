@@ -6,9 +6,9 @@ from bs4.element import Tag
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+from config.settings import get_logger, get_settings
 from domain.interface import ScraperInterface
 from domain.value_object import DcpAssetsInfo, DcpProductAssets, DcpTotalAssets
-from settings import get_logger, get_settings
 
 logger = get_logger()
 settings = get_settings()

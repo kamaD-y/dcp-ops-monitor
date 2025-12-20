@@ -28,7 +28,8 @@ class ScrapingSettings(BaseSettings):
     login_user_id: Optional[str] = None
     login_password: Optional[SecretStr] = None
     login_birthdate: Optional[str] = None
-    login_parameter_name: Optional[str] = None
+    login_parameter_name: str = ""
+    line_message_parameter_name: str = ""
     user_agent: str = (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
@@ -36,9 +37,6 @@ class ScrapingSettings(BaseSettings):
 
     # エラー関連設定
     error_bucket_name: str
-
-    # 通知関連設定
-    sns_topic_arn: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
