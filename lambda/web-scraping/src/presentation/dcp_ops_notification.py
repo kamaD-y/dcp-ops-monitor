@@ -9,11 +9,11 @@ settings = get_settings()
 
 
 def main():
-    login_parameter = get_ssm_json_parameter(name="/dcp-ops-monitor/login-parameters-for-scraping", decrypt=True)
+    login_parameter = get_ssm_json_parameter(name=settings.login_parameter_name, decrypt=True)
     login_params = LoginParams(
-        user_id=login_parameter.get("user_id", ""),
-        password=login_parameter.get("password", ""),
-        birthdate=login_parameter.get("birthdate", ""),
+        user_id=login_parameter.get("LOGIN_USER_ID", ""),
+        password=login_parameter.get("LOGIN_PASSWORD", ""),
+        birthdate=login_parameter.get("LOGIN_BIRTHDATE", ""),
     )
     scraper = SeleniumDcpScraper(
         user_agent=settings.user_agent,
@@ -24,7 +24,7 @@ def main():
     html_source = web_scraping_service.scrape(settings.start_url)
     assets_info = web_scraping_service.extract_asset_valuation(html_source)
     operational_indicators = to_operational_indicators(total_assets=assets_info.total)
-    line_message_token = get_ssm_parameter(name="/dcp-ops-monitor/line-message-token", decrypt=True)
+    line_message_token = get_ssm_parameter(name=settings.line_message_parameter_name, decrypt=True)
     notifier = LineNotifier(
         "https://api.line.me/v2/bot/message/broadcast",
         token=line_message_token,
