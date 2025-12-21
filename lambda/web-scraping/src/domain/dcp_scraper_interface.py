@@ -11,11 +11,8 @@ class IDcpScraper(ABC):
         pass
 
     @abstractmethod
-    def fetch_asset_valuation_html(self, start_url: str) -> str:
+    def fetch_asset_valuation_html(self) -> str:
         """資産評価情報ページの HTML ソースを取得するメソッド
-
-        Args:
-            start_url (str): スクレイピングを開始する URL
 
         Returns:
             str: 資産評価情報ページの HTML ソース

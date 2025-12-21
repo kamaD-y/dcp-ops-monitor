@@ -14,9 +14,9 @@ class WebScrapingService:
     def __init__(self, scraper: IDcpScraper) -> None:
         self.scraper: IDcpScraper = scraper
 
-    def scrape(self, start_url: str) -> str:
+    def scrape(self) -> str:
         try:
-            return self.scraper.fetch_asset_valuation_html(start_url)
+            return self.scraper.fetch_asset_valuation_html()
         except Exception as e:
             error_image_path = self.scraper.get_error_image_path()
             if error_image_path:

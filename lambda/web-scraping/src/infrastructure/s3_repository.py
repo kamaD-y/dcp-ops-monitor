@@ -12,7 +12,7 @@ class S3Repository(IS3Repository):
     def __init__(self) -> None:
         self.client = (
             boto3.client("s3")
-            if os.environ.get("ENV") != "test"
+            if os.environ.get("ENV") not in ["local", "test"]
             else boto3.client("s3", endpoint_url=os.environ["LOCAL_STACK_CONTAINER_URL"])
         )
 

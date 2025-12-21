@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - .env.test
+      - .env.local
     depends_on:
       - localstack
 
@@ -20,4 +20,4 @@ services:
       - ./localstack/ready.sh:/etc/localstack/init/ready.d/ready.sh
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:
-      - .env.test
+      - .env.local

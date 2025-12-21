@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 from config.settings import get_logger
-from domain import IDcpScraper, LoginParams
+from domain import IDcpScraper, ScrapingParams
 
 logger = get_logger()
 
@@ -18,15 +18,16 @@ class SeleniumDcpScraper(IDcpScraper):
         user_agent: str,
         chrome_binary_location: str = "/opt/chrome/chrome",
         chrome_driver_path: str = "/opt/chromedriver",
-        login_params: LoginParams = LoginParams(),
+        scraping_params: ScrapingParams = ScrapingParams(),
     ) -> None:
         self.chrome_binary_location = chrome_binary_location
         self.chrome_driver_path = chrome_driver_path
         self.user_agent = user_agent
         self.driver = self._get_driver()
-        self.user_id = login_params.user_id
-        self.password = login_params.password
-        self.birthdate = login_params.birthdate
+        self.user_id = scraping_params.login_user_id
+        self.password = scraping_params.login_password
+        self.birthdate = scraping_params.login_birthdate
+        self.start_url = scraping_params.start_url
         self.error_image_path: Optional[str] = None
 
     def _get_driver(self) -> webdriver.Chrome:
@@ -58,16 +59,13 @@ class SeleniumDcpScraper(IDcpScraper):
 
         return driver
 
-    def fetch_asset_valuation_html(self, start_url: str) -> str:
+    def fetch_asset_valuation_html(self) -> str:
         """資産評価情報ページの HTML ソースを取得する
-
-        Args:
-            start_url (str): スクレイピングを開始する URL
 
         Returns:
             str: 資産評価情報ページの HTML ソース
         """
-        self.driver.get(start_url)
+        self.driver.get(self.start_url)
 
         self._login()
         asset_valuation_html = self._get_asset_valuation_page()
