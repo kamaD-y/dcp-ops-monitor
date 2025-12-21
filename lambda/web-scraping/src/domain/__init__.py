@@ -1,4 +1,4 @@
-from .dcp_asset_valuation import DcpAssetInfo, DcpAssets
+from .dcp_assets import DcpAssetInfo, DcpAssets
 from .dcp_ops_indicators import DcpOpsIndicators
 from .dcp_scraper_interface import IDcpScraper
 from .notifier_interface import INotifier
