@@ -33,33 +33,31 @@ $ cdk bootstrap aws://ACCOUNT-NUMBER/REGION --profile xxx
 1. サンプルの環境変数ファイルをコピーします
 
 ```bash
-$ cp .env.example .env
-$ cp .env.example .env.test # docker-compose で使用します
+$ cp .env.example .env.local # docker-compose で使用します
+$ cp .env.example .env.test  # ユニットテストで使用します
 ```
 
-2. テキストエディタで`.env`ファイルを開きます
+2. テキストエディタで`.env.xxx`ファイルを開きます
 
 3. 以下の環境変数を適切な値で設定します  
-  本番環境へのデプロイは GitHub Actions を介して行う為、GitHub に変数を設定しておくこと
+  (本番環境へのデプロイは GitHub Actions を介して行う為、GitHub 変数及び、CDK Parameter を使用します)
 
-- `LOG_LEVEL`: アプリケーションのログレベル
-- `START_URL`: スクレイピング対象サイトのページ URL
+- `POWERTOOLS_LOG_LEVEL`: アプリケーションのログレベル
 - `USER_AGENT`: スクレイピングで使用するユーザーエージェント
-- `LINE_MESSAGE_API_URL`: LINE Messaging API の URL
-- `LINE_MESSAGE_API_TOKEN`: LINE Messaging API の TOKEN
-- 以下は、docker-compose を使用したテスト用の設定
-  - `ENV`: boto3 endpoint 切り替えの為、test を代入
+- `SCRAPING_PARAMETER_NAME`: スクレイピングに必要な各種パラメータを格納したパラメータストア名
+- `LINE_MESSAGE_PARAMETER_NAME`: LINE Message API 接続に必要な URL, Token を格納したパラメータストア名
+- `ERROR_BUCKET_NAME`: エラー保存用 S3 バケット
+- 以下は、開発環境での Docker-Compose を使用した動作確認で使用する設定
+  - `ENV`: boto3 endpoint 切り替えの為、test もしくは local を代入
+  - `SCRAPING_PARAMETER_VALUE`: スクレイピングに必要な各種パラメータ (JSON)
+  - `LINE_MESSAGE_PARAMETER_VALUE`: LINE Message API 接続に必要な URL, Token (JSON)
+- 以下は、LocalStack 用の設定
   - `AWS_DEFAULT_REGION`: LocalStack 用
   - `AWS_ACCESS_KEY_ID`: LocalStack 用のダミー
   - `AWS_SECRET_ACCESS_KEY`: LocalStack 用のダミー
   - `LOCAL_STACK_CONTAINER_URL`: LocalStack URL
   - `SERVICES`: LocalStack で使用する AWS サービス
-- 以下は、LocalStack に作成するダミーリソース用の設定
-  - `LOGIN_PARAMETER_NAME`: スクレピング先ページへのログイン情報を保存したパラメータストア名
-  - `LOGIN_PARAMETER_VALUE`: スクレイピング先ページへのログイン情報
-  - `ERROR_BUCKET_NAME`: エラー情報を保存する S3 バケット
-  - `SNS_TOPIC_NAME`: ETL 完了時の通知先の SNS 名
-  - `SNS_TOPIC_ARN`: ETL 完了時の通知先の SNS ARN
+
 
 #### Node 環境のセットアップ
 
@@ -131,7 +129,7 @@ $ python
 >>> import os
 >>> from dotenv import load_dotenv
 >>> from selenium import webdriver
->>> env_path = os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), ".env")
+>>> env_path = os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), ".env.local")
 >>> load_dotenv(env_path)
 >>> options = webdriver.ChromeOptions()
 >>> options.add_argument(f'--user-agent={os.environ["USER_AGENT"]}')

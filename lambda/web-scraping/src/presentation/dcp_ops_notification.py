@@ -2,32 +2,30 @@ from datetime import datetime, timedelta
 
 from application import NotificationService, WebScrapingService
 from config.settings import get_settings
-from domain import DcpAssetsInfo, DcpOpsIndicators, DcpTotalAssets, LoginParams
-from infrastructure import LineNotifier, SeleniumDcpScraper, get_ssm_json_parameter, get_ssm_parameter
+from domain import DcpAssetsInfo, DcpOpsIndicators, DcpTotalAssets, ScrapingParams
+from infrastructure import LineNotifier, SeleniumDcpScraper, get_ssm_json_parameter
 
 settings = get_settings()
 
 
 def main():
-    login_parameter = get_ssm_json_parameter(name=settings.login_parameter_name, decrypt=True)
-    login_params = LoginParams(
-        user_id=login_parameter.get("LOGIN_USER_ID", ""),
-        password=login_parameter.get("LOGIN_PASSWORD", ""),
-        birthdate=login_parameter.get("LOGIN_BIRTHDATE", ""),
+    scraping_parameter = get_ssm_json_parameter(name=settings.scraping_parameter_name, decrypt=True)
+    scraping_params = ScrapingParams(
+        login_user_id=scraping_parameter.get("login_user_id", ""),
+        login_password=scraping_parameter.get("login_password", ""),
+        login_birthdate=scraping_parameter.get("login_birthdate", ""),
+        start_url=scraping_parameter.get("start_url", ""),
     )
-    scraper = SeleniumDcpScraper(
-        user_agent=settings.user_agent,
-        login_params=login_params,
-    )
+    scraper = SeleniumDcpScraper(user_agent=settings.user_agent, scraping_params=scraping_params)
 
     web_scraping_service = WebScrapingService(scraper=scraper)
-    html_source = web_scraping_service.scrape(settings.start_url)
+    html_source = web_scraping_service.scrape()
     assets_info = web_scraping_service.extract_asset_valuation(html_source)
     operational_indicators = to_operational_indicators(total_assets=assets_info.total)
-    line_message_token = get_ssm_parameter(name=settings.line_message_parameter_name, decrypt=True)
+    line_message_parameter = get_ssm_json_parameter(name=settings.line_message_parameter_name, decrypt=True)
     notifier = LineNotifier(
-        "https://api.line.me/v2/bot/message/broadcast",
-        token=line_message_token,
+        url=line_message_parameter.get("url", ""),
+        token=line_message_parameter.get("token", ""),
     )
     notification_service = NotificationService(notifier=notifier)
     notification_service.send_notification(assets_info, operational_indicators)
