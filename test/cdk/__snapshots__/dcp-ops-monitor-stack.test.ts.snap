@@ -171,10 +171,9 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
             "ERROR_BUCKET_NAME": {
               "Ref": "ErrorBucket8D38AF42",
             },
-            "LINE_MESSAGE_PARAMETER_NAME": "/dcp-ops-monitor/dummy-line-message-token",
-            "LOGIN_PARAMETER_NAME": "/dcp-ops-monitor/dummy-login-parameters",
+            "LINE_MESSAGE_PARAMETER_NAME": "/dcp-ops-monitor/dummy-line-message-parameters",
             "POWERTOOLS_LOG_LEVEL": "INFO",
-            "START_URL": "https://example.com/login",
+            "SCRAPING_PARAMETER_NAME": "/dcp-ops-monitor/dummy-scraping-parameters",
             "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
           },
         },
@@ -252,7 +251,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
                       {
                         "Ref": "AWS::AccountId",
                       },
-                      ":parameter/dcp-ops-monitor/dummy-login-parameters",
+                      ":parameter/dcp-ops-monitor/dummy-scraping-parameters",
                     ],
                   ],
                 },
@@ -272,7 +271,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
                       {
                         "Ref": "AWS::AccountId",
                       },
-                      ":parameter/dcp-ops-monitor/dummy-line-message-token",
+                      ":parameter/dcp-ops-monitor/dummy-line-message-parameters",
                     ],
                   ],
                 },

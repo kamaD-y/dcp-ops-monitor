@@ -12,10 +12,9 @@ import type { Construct } from 'constructs';
 
 export interface DcpOpsMonitorStackProps extends cdk.StackProps {
   logLevel: string;
-  startUrl: string;
   userAgent: string;
-  loginParameterName: string;
-  lineMessageTokenParameterName: string;
+  scrapingParameterName: string;
+  lineMessageParameterName: string;
 }
 
 export class DcpOpsMonitorStack extends cdk.Stack {
@@ -23,20 +22,12 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     super(scope, id, props);
 
     // Parameter Store
-    const loginParametersForScraping = ssm.StringParameter.fromSecureStringParameterAttributes(
-      this,
-      'LoginParametersForScraping',
-      {
-        parameterName: props.loginParameterName,
-      },
-    );
-    const lineMessageTokenParameter = ssm.StringParameter.fromSecureStringParameterAttributes(
-      this,
-      'LineMessageTokenParameter',
-      {
-        parameterName: props.lineMessageTokenParameterName,
-      },
-    );
+    const scrapingParameter = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'ScrapingParameter', {
+      parameterName: props.scrapingParameterName,
+    });
+    const lineMessageParameter = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'LineMessageParameter', {
+      parameterName: props.lineMessageParameterName,
+    });
 
     // S3 Bucket
     const errorBucket = new s3.Bucket(this, 'ErrorBucket', {
@@ -62,17 +53,16 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       applicationLogLevel: props.logLevel,
       environment: {
         POWERTOOLS_LOG_LEVEL: props.logLevel,
-        START_URL: props.startUrl,
         USER_AGENT: props.userAgent,
-        LOGIN_PARAMETER_NAME: loginParametersForScraping.parameterName,
-        LINE_MESSAGE_PARAMETER_NAME: lineMessageTokenParameter.parameterName,
+        SCRAPING_PARAMETER_NAME: scrapingParameter.parameterName,
+        LINE_MESSAGE_PARAMETER_NAME: lineMessageParameter.parameterName,
         ERROR_BUCKET_NAME: errorBucket.bucketName,
       },
     });
     webScrapingFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['ssm:GetParameter'],
-        resources: [loginParametersForScraping.parameterArn, lineMessageTokenParameter.parameterArn],
+        resources: [scrapingParameter.parameterArn, lineMessageParameter.parameterArn],
       }),
     );
     webScrapingFunction.addToRolePolicy(

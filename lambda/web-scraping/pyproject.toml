@@ -32,10 +32,8 @@ extend = "../../pyproject.toml"
 pythonpath = ["src/../", "src"]
 testpaths = ["tests",]
 env = [
-    "START_URL=https://example.com/login",
-    "SNS_TOPIC_ARN=arn:aws:sns:ap-northeast-1:123456789012:DcpOpsMonitorStack-SuccessTopic",
-    "SCRAPING_PARAMETER_NAME=/test/scraping/params",
-    "LINE_MESSAGE_PARAMETER_NAME=/test/line/message/params",
+    "SCRAPING_PARAMETER_NAME=/test/scraping-parameters",
+    "LINE_MESSAGE_PARAMETER_NAME=/test/line-message-parameters",
     "ERROR_BUCKET_NAME=test-error-bucket"
 ]
 
