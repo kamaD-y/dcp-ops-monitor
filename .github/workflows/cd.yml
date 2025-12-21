@@ -18,11 +18,8 @@ jobs:
   cd:
     runs-on: ubuntu-latest
     env:
-      LOG_LEVEL: ${{ vars.LOG_LEVEL }}
-      START_URL: ${{ vars.START_URL }}
+      POWERTOOLS_LOG_LEVEL: ${{ vars.LOG_LEVEL }}
       USER_AGENT: ${{ vars.USER_AGENT }}
-      LINE_MESSAGE_API_URL: ${{ vars.LINE_MESSAGE_API_URL }}
-      LINE_MESSAGE_API_TOKEN: ${{ secrets.LINE_MESSAGE_API_TOKEN }}
 
     steps:
       - name: Checkout code
