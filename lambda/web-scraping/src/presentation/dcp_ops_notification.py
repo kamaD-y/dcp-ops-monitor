@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from application import NotificationService, WebScrapingService
 from config.settings import get_settings
-from domain import DcpAssetsInfo, DcpOpsIndicators, DcpTotalAssets, ScrapingParams
+from domain import DcpAssetInfo, DcpAssets, DcpOpsIndicators, ScrapingParams
 from infrastructure import LineNotifier, SeleniumDcpScraper, get_ssm_json_parameter
 
 settings = get_settings()
@@ -35,14 +35,14 @@ def yen_to_int(yen: str) -> int:
     return int(yen.replace("円", "").replace(",", ""))
 
 
-def to_operational_indicators(total_assets: DcpTotalAssets) -> DcpOpsIndicators:
+def to_operational_indicators(total_assets: DcpAssetInfo) -> DcpOpsIndicators:
     # 運用年数の算出
     operation_years = calculate_year_diff(start_dt=datetime(2016, 10, 1), end_dt=datetime.today())
 
     # 年間利回りの算出
     actual_yield_rate = calculate_annual_operation_yield_rate(
         cumulative_contributions=total_assets.cumulative_contributions,
-        gains_or_losses=total_assets.total_gains_or_losses,
+        gains_or_losses=total_assets.gains_or_losses,
         operation_years=operation_years,
     )
 
@@ -54,7 +54,7 @@ def to_operational_indicators(total_assets: DcpTotalAssets) -> DcpOpsIndicators:
         annual_reserve_amount * (((1 + actual_yield_rate) ** years_to_60age - 1) / actual_yield_rate)
     )
     # NOTE: 計算方法が正しいか分からないが、計算実行時点での資産評価額を加算する
-    total_amount_at_60age_int += yen_to_int(total_assets.total_asset_valuation)
+    total_amount_at_60age_int += yen_to_int(total_assets.asset_valuation)
     total_amount_at_60age = f"{total_amount_at_60age_int:,.0f}円"
 
     # 計算した値で運用指標オブジェクトを作成
