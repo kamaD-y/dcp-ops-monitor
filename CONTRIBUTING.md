@@ -34,10 +34,9 @@ $ cdk bootstrap aws://ACCOUNT-NUMBER/REGION --profile xxx
 
 ```bash
 $ cp .env.example .env.local # docker-compose で使用します
-$ cp .env.example .env.test  # ユニットテストで使用します
 ```
 
-2. テキストエディタで`.env.xxx`ファイルを開きます
+2. テキストエディタで`.env.local`ファイルを開きます
 
 3. 以下の環境変数を適切な値で設定します  
   (本番環境へのデプロイは GitHub Actions を介して行う為、GitHub 変数及び、CDK Parameter を使用します)
