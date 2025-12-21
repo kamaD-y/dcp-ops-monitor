@@ -11,11 +11,10 @@ test('Snapshot test for DcpOpsStatusNotificationStack', () => {
       region: process.env.CDK_DEFAULT_REGION,
     },
     logLevel: 'INFO',
-    startUrl: 'https://example.com/login',
     userAgent:
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-    loginParameterName: '/dcp-ops-monitor/dummy-login-parameters',
-    lineMessageTokenParameterName: '/dcp-ops-monitor/dummy-line-message-token',
+    scrapingParameterName: '/dcp-ops-monitor/dummy-scraping-parameters',
+    lineMessageParameterName: '/dcp-ops-monitor/dummy-line-message-parameters',
   });
   // THEN
   expect(Template.fromStack(stack)).toMatchSnapshot();

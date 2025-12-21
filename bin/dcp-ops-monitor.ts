@@ -12,10 +12,9 @@ new DcpOpsMonitorStack(app, 'DcpOpsMonitorStack', {
     region: process.env.CDK_DEFAULT_REGION || 'ap-northeast-1',
   },
   logLevel: process.env.LOG_LEVEL || 'INFO',
-  startUrl: process.env.START_URL || 'https://example.com/login',
   userAgent:
     process.env.USER_AGENT ||
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-  loginParameterName: '/dcp-ops-monitor/login-parameters-for-scraping',
-  lineMessageTokenParameterName: '/dcp-ops-monitor/line-message-token',
+  scrapingParameterName: '/dcp-ops-monitor/scraping-parameters',
+  lineMessageParameterName: '/dcp-ops-monitor/line-message-parameters',
 });
