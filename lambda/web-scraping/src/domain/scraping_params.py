@@ -1,15 +1,11 @@
-import dataclasses
-from typing import Dict
-
-from pydantic.dataclasses import dataclass
+from pydantic import BaseModel
 
 
-@dataclass
-class ScrapingParams:
+class ScrapingParams(BaseModel):
     """Web ページ スクレイピング用のパラメータを扱う値クラス"""
 
-    login_user_id: str = dataclasses.field(default="")
-    login_password: str = dataclasses.field(default="")
-    login_birthdate: str = dataclasses.field(default="")
+    login_user_id: str
+    login_password: str
+    login_birthdate: str
 
-    start_url: str = dataclasses.field(default="")
+    start_url: str
