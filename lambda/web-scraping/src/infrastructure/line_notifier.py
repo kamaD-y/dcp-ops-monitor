@@ -43,7 +43,7 @@ class LineNotifier(INotifier):
         message += f"運用年数: {ops_indicators.operation_years}年\n"
         message += f"運用利回り: {ops_indicators.actual_yield_rate}\n"
         message += "目標利回り: 0.06\n"
-        message += f"想定受取額(60歳): {ops_indicators.total_amount_at_60age}\n"
+        message += f"想定受取額(60歳): {ops_indicators.total_amount_at_60age:,.0f}円\n"
         message += "\n"
 
         message += "商品別\n"

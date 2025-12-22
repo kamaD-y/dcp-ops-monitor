@@ -16,9 +16,9 @@ class SeleniumDcpScraper(IDcpScraper):
     def __init__(
         self,
         user_agent: str,
+        scraping_params: ScrapingParams,
         chrome_binary_location: str = "/opt/chrome/chrome",
         chrome_driver_path: str = "/opt/chromedriver",
-        scraping_params: ScrapingParams = ScrapingParams(),
     ) -> None:
         self.chrome_binary_location = chrome_binary_location
         self.chrome_driver_path = chrome_driver_path

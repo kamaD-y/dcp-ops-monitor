@@ -61,10 +61,10 @@ class WebScrapingService:
 
         total = soup.find(class_="total")
 
-        total_assets = DcpAssetInfo(
-            cumulative_contributions=total.find_all("dd")[0].text,
-            gains_or_losses=total.find_all("dd")[1].text,
-            asset_valuation=total.find_all("dd")[2].text,
+        total_assets = DcpAssetInfo.from_html_strings(
+            cumulative_contributions_str=total.find_all("dd")[0].text,
+            gains_or_losses_str=total.find_all("dd")[1].text,
+            asset_valuation_str=total.find_all("dd")[2].text,
         )
         logger.info(
             "_extract_total_assets end.",
@@ -94,10 +94,10 @@ class WebScrapingService:
 
             table_rows = table_body.find_all("tr")
 
-            product_assets = DcpAssetInfo(
-                cumulative_contributions=table_rows[2].find_all("td")[-1].text,
-                gains_or_losses=table_rows[5].find_all("td")[-1].text,
-                asset_valuation=table_rows[2].find_all("td")[2].text,
+            product_assets = DcpAssetInfo.from_html_strings(
+                cumulative_contributions_str=table_rows[2].find_all("td")[-1].text,
+                gains_or_losses_str=table_rows[5].find_all("td")[-1].text,
+                asset_valuation_str=table_rows[2].find_all("td")[2].text,
             )
 
             product_info = product.find(class_="infoHdWrap00")
