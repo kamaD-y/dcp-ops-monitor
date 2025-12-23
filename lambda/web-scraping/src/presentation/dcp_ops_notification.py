@@ -9,10 +9,10 @@ settings = get_settings()
 def main():
     scraping_parameter = get_ssm_json_parameter(name=settings.scraping_parameter_name, decrypt=True)
     scraping_params = ScrapingParams(
-        login_user_id=scraping_parameter.get("login_user_id", ""),
-        login_password=scraping_parameter.get("login_password", ""),
-        login_birthdate=scraping_parameter.get("login_birthdate", ""),
-        start_url=scraping_parameter.get("start_url", ""),
+        login_user_id=scraping_parameter["login_user_id"],
+        login_password=scraping_parameter["login_password"],
+        login_birthdate=scraping_parameter["login_birthdate"],
+        start_url=scraping_parameter["start_url"],
     )
     scraper = SeleniumDcpScraper(user_agent=settings.user_agent, scraping_params=scraping_params)
 
@@ -24,8 +24,8 @@ def main():
 
     line_message_parameter = get_ssm_json_parameter(name=settings.line_message_parameter_name, decrypt=True)
     notifier = LineNotifier(
-        url=line_message_parameter.get("url", ""),
-        token=line_message_parameter.get("token", ""),
+        url=line_message_parameter["url"],
+        token=line_message_parameter["token"],
     )
     notification_service = NotificationService(notifier=notifier)
     notification_service.send_notification(assets_info, operational_indicators)
