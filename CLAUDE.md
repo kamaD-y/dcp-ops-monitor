@@ -117,7 +117,7 @@ $ cp .env.example .env.local # docker compose で使用します
 3. 以下の環境変数を適切な値で設定します  
   (本番環境へのデプロイは GitHub Actions を介して行う為、GitHub 変数及び、CDK Parameter を使用します)
 
-- `POWERTOOLS_LOG_LEVEL`: アプリケーションのログレベル
+- `LOG_LEVEL`: アプリケーションのログレベル
 - `USER_AGENT`: スクレイピングで使用するユーザーエージェント
 - `SCRAPING_PARAMETER_NAME`: スクレイピングに必要な各種パラメータを格納したパラメータストア名
 - `LINE_MESSAGE_PARAMETER_NAME`: LINE Message API 接続に必要な URL, Token を格納したパラメータストア名
