@@ -56,7 +56,6 @@
 │       ├── tests
 │       └── uv.lock
 ├── CLAUDE.md
-├── CONTRIBUTING.md
 ├── README.md
 ├── biome.jsonc
 ├── cdk.json
