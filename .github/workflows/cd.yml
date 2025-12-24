@@ -18,7 +18,7 @@ jobs:
   cd:
     runs-on: ubuntu-latest
     env:
-      POWERTOOLS_LOG_LEVEL: ${{ vars.LOG_LEVEL }}
+      LOG_LEVEL: ${{ vars.LOG_LEVEL }}
       USER_AGENT: ${{ vars.USER_AGENT }}
 
     steps:
