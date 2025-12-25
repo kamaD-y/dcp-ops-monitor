@@ -75,8 +75,9 @@
 
 - 環境のブートストラップ
 
-```
-$ cdk bootstrap aws://ACCOUNT-NUMBER/REGION --profile xxx
+```bash
+$ aws login
+$ cdk bootstrap aws://ACCOUNT-NUMBER/REGION
 ```
 
 ### ツールのインストール
@@ -227,13 +228,21 @@ $ docker compose down
 ### 事前作業
 
 1. パラメータストアを手動で作成します (CDK で暗号化文字列を使用したパラメータを作成できない為手動としています)
+
 - スクレイピング用パラメータ
-```json
-{"start_url": "https://xxx", "login_user_id":"xxxx","login_password":"xxxx","login_birthdate":"19701201"}
+```bash
+$ aws ssm put-parameter \
+  --name "/dcp-ops-monitor/scraping-parameters" \
+  --value '{"start_url": "https://xxx", "login_user_id":"xxxx","login_password":"xxxx","login_birthdate":"19701201"}' \
+  --type "SecureString"
 ```
+
 - LINE Message 用パラメータ
-```json
-{"url": "https://xxx", "token": "xxx"}
+```bash
+$ aws ssm put-parameter \
+  --name "/dcp-ops-monitor/line-message-parameters" \
+  --value '{"url": "https://xxx", "token": "xxx"}' \
+  --type "SecureString"
 ```
 
 2. 作成したパラメータ名を props にセットします
