@@ -16,5 +16,11 @@ __pycache__/
 .coverage
 
 # Environment
-.env.local
-.env.test
+.env
+.env.*
+
+# Claude settings
+.claude/settings.local.json
+.claude/.gitignore
+CLAUDE.local.md
+.mcp.json
