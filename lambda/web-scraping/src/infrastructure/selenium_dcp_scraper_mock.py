@@ -81,36 +81,55 @@ class MockSeleniumDcpScraper(IDcpScraper):
         except FileNotFoundError:
             # ファイルが見つからない場合はシンプルなHTMLを返す（フォールバック）
             print(f"[Mock] Warning: Fixture file not found at {fixture_path}, using fallback HTML")
-            return """<html><body class="cate01"><div class="dataArea">
-<div class="total">
-  <dl class="sum01 pc_mr15"><dt data-lang="jp">拠出金額累計</dt><dd>900,000円</dd></dl>
-  <dl class="sum01 pc_mr15"><dt data-lang="jp">評価損益</dt><dd>300,000円</dd></dl>
-  <dl class="sum02"><dt data-lang="jp">資産評価額</dt><dd>1,200,000円</dd></dl>
-</div>
-<div class="infoDetail" id="prodInfo">
-  <div class="infoDetailUnit_02 pc_mb30">
-    <div class="infoHdWrap">
-      <dl class="infoHdDl00" data-lang="jp">
-        <dt>商品名</dt>
-        <dd class="infoHdWrap00">テスト商品</dd>
-      </dl>
+            return """
+<html>
+  <body class="cate01">
+    <div class="dataArea">
+      <div class="total">
+        <dl class="sum01 pc_mr15">
+          <dt data-lang="jp">拠出金額累計</dt>
+          <dd>900,000円</dd>
+        </dl>
+        <dl class="sum01 pc_mr15">
+          <dt data-lang="jp">評価損益</dt>
+          <dd>300,000円</dd>
+        </dl>
+        <dl class="sum02">
+          <dt data-lang="jp">資産評価額</dt>
+          <dd>1,200,000円</dd>
+        </dl>
+      </div>
+      <div class="infoDetail" id="prodInfo">
+        <div class="infoDetailUnit_02 pc_mb30">
+          <div class="infoHdWrap">
+            <dl class="infoHdDl00" data-lang="jp">
+              <dt>商品名</dt>
+              <dd class="infoHdWrap00">テスト商品</dd>
+            </dl>
+          </div>
+          <div class="infoDataWrap_02 idw-prov01">
+            <div class="tblDataList listStyle01">
+              <table>
+                <tbody>
+                  <tr>
+                    <td rowspan="3">1</td>
+                    <td>100,000円</td>
+                    <td>100,000円</td>
+                    <td>100,000円</td>
+                  </tr>
+                  <tr>
+                    <td>100,000円</td>
+                    <td>100,000円</td>
+                    <td>0円</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="infoDataWrap_02 idw-prov01">
-      <div class="tblDataList listStyle01">
-        <table>
-          <tbody>
-            <tr>
-            <td rowspan="3">1</td>
-            <td>100,000円</td>
-            <td>100,000円</td>
-            <td>100,000円</td>
-            </tr>
-      <tr>
-      <td>100,000円</td>
-      <td>100,000円</td>
-      <td>0円</td>
-      </tr>
-    </tbody></table></div></div>
-  </div>
-</div>
-</div></body></html>"""
+  </body>
+</html>
+
+"""
