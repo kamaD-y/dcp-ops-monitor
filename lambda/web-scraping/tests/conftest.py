@@ -23,7 +23,7 @@ def invalid_assets_page() -> str:
 
 
 @pytest.fixture(scope="package", autouse=True)
-def local_stack_container() -> LocalStackContainer:
+def local_stack_container() -> LocalStackContainer: # type: ignore (invalid-return-type)
     """LocalStackのコンテナを起動する
 
     Returns:
@@ -40,19 +40,5 @@ def local_stack_container() -> LocalStackContainer:
 @pytest.fixture(scope="package", autouse=True)
 def create_test_bucket(local_stack_container: LocalStackContainer) -> None:
     os.environ["error_bucket_name"] = bucket_name
-    client = local_stack_container.get_client("s3")
+    client = local_stack_container.get_client("s3") # type: ignore (missing-argument)
     client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={"LocationConstraint": local_stack_container.region_name})
-
-
-@pytest.fixture(scope="function")
-def put_login_parameter(local_stack_container: LocalStackContainer) -> None:
-    parameter_name="/test/parameter"
-    parameter_value = '{"LOGIN_USER_ID": "test-user", "LOGIN_PASSWORD": "test-password", "LOGIN_BIRTHDATE": "19800101"}'
-
-    client = local_stack_container.get_client("ssm")
-    client.put_parameter(
-        Name=parameter_name,
-        Value=parameter_value,
-        Type="String",
-        Overwrite=True
-    )
