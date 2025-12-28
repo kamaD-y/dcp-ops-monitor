@@ -11,11 +11,11 @@ class MockSeleniumDcpScraper(IDcpScraper):
 
     def __init__(
         self,
+        mock_html: str,
         user_agent: str = "",
         scraping_params: Optional[ScrapingParams] = None,
         chrome_binary_location: str = "",
         chrome_driver_path: str = "",
-        mock_html: Optional[str] = None,
         should_fail: bool = False,
     ) -> None:
         """コンストラクタ
@@ -32,7 +32,7 @@ class MockSeleniumDcpScraper(IDcpScraper):
         self.scraping_params = scraping_params
         self.chrome_binary_location = chrome_binary_location
         self.chrome_driver_path = chrome_driver_path
-        self.mock_html = mock_html or self._get_default_html()
+        self.mock_html = mock_html
         self.should_fail = should_fail
         self.error_image_path: Optional[str] = None
         self.fetch_called = False
@@ -63,73 +63,3 @@ class MockSeleniumDcpScraper(IDcpScraper):
             Optional[str]: エラー時のスクリーンショット画像のパス
         """
         return self.error_image_path
-
-    @staticmethod
-    def _get_default_html() -> str:
-        """デフォルトのHTMLを返す（テストフィクスチャから読み込む）
-
-        Returns:
-            str: テスト用のデフォルトHTML
-        """
-        import os
-
-        # テストフィクスチャのHTMLファイルを読み込む
-        fixture_path = os.path.join(os.path.dirname(__file__), "../../tests/fixtures/html/valid_assets_page.html")
-        try:
-            with open(fixture_path, encoding="utf-8") as f:
-                return f.read()
-        except FileNotFoundError:
-            # ファイルが見つからない場合はシンプルなHTMLを返す（フォールバック）
-            print(f"[Mock] Warning: Fixture file not found at {fixture_path}, using fallback HTML")
-            return """
-<html>
-  <body class="cate01">
-    <div class="dataArea">
-      <div class="total">
-        <dl class="sum01 pc_mr15">
-          <dt data-lang="jp">拠出金額累計</dt>
-          <dd>900,000円</dd>
-        </dl>
-        <dl class="sum01 pc_mr15">
-          <dt data-lang="jp">評価損益</dt>
-          <dd>300,000円</dd>
-        </dl>
-        <dl class="sum02">
-          <dt data-lang="jp">資産評価額</dt>
-          <dd>1,200,000円</dd>
-        </dl>
-      </div>
-      <div class="infoDetail" id="prodInfo">
-        <div class="infoDetailUnit_02 pc_mb30">
-          <div class="infoHdWrap">
-            <dl class="infoHdDl00" data-lang="jp">
-              <dt>商品名</dt>
-              <dd class="infoHdWrap00">テスト商品</dd>
-            </dl>
-          </div>
-          <div class="infoDataWrap_02 idw-prov01">
-            <div class="tblDataList listStyle01">
-              <table>
-                <tbody>
-                  <tr>
-                    <td rowspan="3">1</td>
-                    <td>100,000円</td>
-                    <td>100,000円</td>
-                    <td>100,000円</td>
-                  </tr>
-                  <tr>
-                    <td>100,000円</td>
-                    <td>100,000円</td>
-                    <td>0円</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </body>
-</html>
-
-"""

@@ -41,30 +41,6 @@ def test_main_e2e_with_mocks(valid_assets_page):
     assert "プロダクト_2" in sent_message
 
 
-def test_main_e2e_with_scraping_error():
-    """スクレイピングエラー時のE2Eテスト
-
-    スクレイピングが失敗した場合、例外が発生することを確認する
-    """
-    # given
-    from src.infrastructure.line_notifier_mock import MockLineNotifier
-    from src.infrastructure.selenium_dcp_scraper_mock import MockSeleniumDcpScraper
-    from src.presentation.dcp_ops_notification import main
-
-    scraper = MockSeleniumDcpScraper(should_fail=True)
-    notifier = MockLineNotifier()
-
-    # when, then
-    with pytest.raises(Exception, match="Mock scraping error"):
-        main(scraper=scraper, notifier=notifier)
-
-    # スクレイピングは試みられたが失敗したことを確認
-    assert scraper.fetch_called is True
-
-    # 通知は送信されていないことを確認
-    assert notifier.call_count == 0
-
-
 def test_main_e2e_with_invalid_html(invalid_assets_page):
     """不正なHTMLでのE2Eテスト
 
@@ -89,4 +65,27 @@ def test_main_e2e_with_invalid_html(invalid_assets_page):
     assert scraper.fetch_called is True
 
     # 通知は送信されていないことを確認（パースエラーで処理が中断）
+    assert notifier.call_count == 0
+
+def test_main_e2e_with_scraping_error(valid_assets_page):
+    """スクレイピングエラー時のE2Eテスト
+
+    スクレイピングが失敗した場合、例外が発生することを確認する
+    """
+    # given
+    from src.infrastructure.line_notifier_mock import MockLineNotifier
+    from src.infrastructure.selenium_dcp_scraper_mock import MockSeleniumDcpScraper
+    from src.presentation.dcp_ops_notification import main
+
+    scraper = MockSeleniumDcpScraper(mock_html=valid_assets_page, should_fail=True)
+    notifier = MockLineNotifier()
+
+    # when, then
+    with pytest.raises(Exception, match="Mock scraping error"):
+        main(scraper=scraper, notifier=notifier)
+
+    # スクレイピングは試みられたが失敗したことを確認
+    assert scraper.fetch_called is True
+
+    # 通知は送信されていないことを確認
     assert notifier.call_count == 0
