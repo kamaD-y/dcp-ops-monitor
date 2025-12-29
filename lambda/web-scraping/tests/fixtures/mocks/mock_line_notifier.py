@@ -1,6 +1,6 @@
 from typing import List
 
-from domain import DcpAssets, DcpOpsIndicators, INotifier
+from src.domain import DcpAssets, DcpOpsIndicators, INotifier
 
 
 class MockLineNotifier(INotifier):

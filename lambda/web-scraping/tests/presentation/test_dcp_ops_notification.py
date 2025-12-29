@@ -9,8 +9,7 @@ def test_main_e2e_with_mocks(valid_assets_page):
     # given
     import os
 
-    from src.infrastructure.line_notifier_mock import MockLineNotifier
-    from src.infrastructure.selenium_dcp_scraper_mock import MockSeleniumDcpScraper
+    from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
     from src.presentation.dcp_ops_notification import main
 
     scraper = MockSeleniumDcpScraper(mock_html=valid_assets_page)
@@ -49,8 +48,7 @@ def test_main_e2e_with_invalid_html(invalid_assets_page):
     # given
     import os
 
-    from src.infrastructure.line_notifier_mock import MockLineNotifier
-    from src.infrastructure.selenium_dcp_scraper_mock import MockSeleniumDcpScraper
+    from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
     from src.presentation.dcp_ops_notification import main
 
     scraper = MockSeleniumDcpScraper(mock_html=invalid_assets_page)
@@ -73,8 +71,7 @@ def test_main_e2e_with_scraping_error(valid_assets_page):
     スクレイピングが失敗した場合、例外が発生することを確認する
     """
     # given
-    from src.infrastructure.line_notifier_mock import MockLineNotifier
-    from src.infrastructure.selenium_dcp_scraper_mock import MockSeleniumDcpScraper
+    from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
     from src.presentation.dcp_ops_notification import main
 
     scraper = MockSeleniumDcpScraper(mock_html=valid_assets_page, should_fail=True)
