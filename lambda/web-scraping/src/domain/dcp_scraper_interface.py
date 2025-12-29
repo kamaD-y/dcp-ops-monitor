@@ -5,7 +5,6 @@ from typing import Optional
 class IDcpScraper(ABC):
     """スクレイピングドライバー抽象クラス"""
 
-    @abstractmethod
     def __init__(self) -> None:
         """コンストラクタ"""
         pass

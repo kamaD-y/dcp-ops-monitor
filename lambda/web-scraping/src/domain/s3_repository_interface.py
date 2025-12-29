@@ -4,10 +4,9 @@ from abc import ABC, abstractmethod
 class IS3Repository(ABC):
     """S3リポジトリ抽象クラス"""
 
-    @abstractmethod
     def __init__(self, bucket: str) -> None:
         """コンストラクタ"""
-        self.bucket: str = bucket
+        pass
 
     @abstractmethod
     def upload_file(self, key: str, file_path: str) -> None:
