@@ -33,20 +33,21 @@ class WebScrapingService:
         try:
             soup = BeautifulSoup(html_source, "html.parser")
 
+            logger.info("資産情報の抽出開始")
             # 総評価額を取得
             total_assets = self._extract_total_assets(soup)
 
             # 商品別
             assets_each_product = self._extract_product_assets(soup)
 
+            logger.info("資産情報の抽出完了")
             return DcpAssets(
                 total=total_assets,
                 products=assets_each_product,
             )
 
         except Exception as e:
-            logger.exception("An error occurred during the extracting process.")
-            raise
+            raise Exception("資産情報の抽出に失敗しました。") from e
 
     def _extract_total_assets(self, soup: BeautifulSoup) -> DcpAssetInfo:
         """総評価額を抽出する
@@ -57,7 +58,7 @@ class WebScrapingService:
         Returns:
             DcpAssetInfo: 抽出した総評価額情報
         """
-        logger.info("_extract_total_assets start.")
+        logger.info("総評価額の抽出開始")
 
         total = soup.find(class_="total")
 
@@ -67,7 +68,7 @@ class WebScrapingService:
             asset_valuation_str=total.find_all("dd")[2].text,
         )
         logger.info(
-            "_extract_total_assets end.",
+            "総評価額の抽出完了",
             extra=total_assets.__dict__,
         )
         return total_assets
@@ -81,7 +82,7 @@ class WebScrapingService:
         Returns:
             Dict[str, DcpAssetInfo]: 商品別の資産評価額情報
         """
-        logger.info("_extract_product_assets start.")
+        logger.info("商品別の資産評価額の抽出開始")
 
         product_info = soup.find(id="prodInfo")
 
@@ -105,12 +106,12 @@ class WebScrapingService:
             product_name = product_info.text.strip()
             assets_each_product[product_name] = product_assets
             logger.debug(
-                f"product asset info: {product_name}.",
+                f"商品別資産評価額情報: {product_name}.",
                 extra=product_assets.__dict__,
             )
 
         logger.info(
-            "_extract_product_assets end.",
+            "商品別の資産評価額の抽出完了",
             extra={
                 "product_count": len(assets_each_product),
                 "product_names": list(assets_each_product.keys()),
