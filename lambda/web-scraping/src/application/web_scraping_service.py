@@ -1,18 +1,20 @@
+from datetime import datetime
 from typing import Any, Dict, Optional, TypeGuard
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 from config.settings import get_logger
-from domain import DcpAssetInfo, DcpAssets, IDcpScraper
+from domain import AssetExtractionError, DcpAssetInfo, DcpAssets, IDcpScraper, IS3Repository, ScrapingError
 from infrastructure import SeleniumDcpScraper
 
 logger = get_logger()
 
 
 class WebScrapingService:
-    def __init__(self, scraper: IDcpScraper) -> None:
+    def __init__(self, scraper: IDcpScraper, s3_repository: IS3Repository) -> None:
         self.scraper: IDcpScraper = scraper
+        self.s3_repository: IS3Repository = s3_repository
 
     def scrape(self) -> str:
         try:
@@ -20,9 +22,16 @@ class WebScrapingService:
         except Exception as e:
             error_image_path = self.scraper.get_error_image_path()
             if error_image_path:
-                # S3 などにスクリーンショットを保存する処理をここに追加可能
-                pass
-            raise
+                logger.info("スクレイピングエラー画像の S3 アップロード開始")
+                self.s3_repository.upload_file(
+                    key=f"{datetime.now().strftime('%Y%m%d')}/error.png",
+                    file_path=error_image_path,
+                )
+                logger.info(
+                    "エラー画像を S3 にアップロードしました。",
+                    extra={"error_image_path": error_image_path},
+                )
+            raise ScrapingError("スクレイピング処理に失敗しました。", error_image_path=error_image_path) from e
 
     def extract_asset_valuation(self, html_source: str) -> DcpAssets:
         """HTML から資産情報を抽出する
@@ -47,7 +56,13 @@ class WebScrapingService:
             )
 
         except Exception as e:
-            raise Exception("資産情報の抽出に失敗しました。") from e
+            logger.info("資産情報 HTML ファイルの S3 アップロード開始")
+            self.s3_repository.put_object(
+                key=f"{datetime.now().strftime('%Y%m%d')}/asset_valuation.html",
+                body=html_source,
+            )
+            logger.info("資産情報 HTML ファイルを S3 にアップロードしました。")
+            raise AssetExtractionError("資産情報の抽出に失敗しました。", html_source=html_source) from e
 
     def _extract_total_assets(self, soup: BeautifulSoup) -> DcpAssetInfo:
         """総評価額を抽出する

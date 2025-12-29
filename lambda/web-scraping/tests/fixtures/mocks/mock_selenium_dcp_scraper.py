@@ -50,6 +50,8 @@ class MockSeleniumDcpScraper(IDcpScraper):
 
         if self.should_fail:
             self.error_image_path = "/tmp/mock_error.png"
+            with open(self.error_image_path, "wb") as f:
+                f.write(b"Mock error image content")
             print("[Mock] Scraping failed (simulated)")
             raise Exception("Mock scraping error")
 

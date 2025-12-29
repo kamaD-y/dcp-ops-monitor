@@ -1,3 +1,4 @@
+import os
 import pytest
 
 
@@ -7,10 +8,8 @@ def test_main_e2e_with_mocks(valid_assets_page):
     エンドツーエンドで処理が正常に完了することを確認する
     """
     # given
-    import os
-
     from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
-    from src.presentation.dcp_ops_notification import main
+    from presentation.dcp_ops_notification import main # type: ignore (import-error)
 
     scraper = MockSeleniumDcpScraper(mock_html=valid_assets_page)
     notifier = MockLineNotifier()
@@ -40,24 +39,64 @@ def test_main_e2e_with_mocks(valid_assets_page):
     assert "プロダクト_2" in sent_message
 
 
-def test_main_e2e_with_invalid_html(invalid_assets_page):
+def test_main_e2e_with_scraping_error(valid_assets_page, local_stack_container):
+    """スクレイピングエラー時のE2Eテスト
+
+    スクレイピングが失敗した場合、例外が発生することを確認する
+    また、エラー画像がS3にアップロードされることを確認する
+    """
+    # given
+    from domain import ScrapingError # type: ignore (import-error)
+    from presentation.dcp_ops_notification import main # type: ignore (import-error)
+    from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
+
+    scraper = MockSeleniumDcpScraper(mock_html=valid_assets_page, should_fail=True)
+    notifier = MockLineNotifier()
+
+    # when, then
+    with pytest.raises(ScrapingError) as exc_info:
+        main(scraper=scraper, notifier=notifier)
+
+    # エラーオブジェクトにerror_image_pathが含まれることを確認
+    assert exc_info.value.error_image_path is not None
+
+    # スクレイピングは試みられたが失敗したことを確認
+    assert scraper.fetch_called is True
+
+    # 通知は送信されていないことを確認
+    assert notifier.call_count == 0
+
+    # エラー画像パスが設定されていることを確認
+    assert scraper.error_image_path is not None
+
+    # S3 バケットにエラー画像ファイルが存在することを確認
+    client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
+    response = client.list_objects_v2(Bucket=os.environ["error_bucket_name"])
+    object_keys = [obj["Key"] for obj in response.get("Contents", [])]
+    assert any(key.endswith("error.png") for key in object_keys)
+
+
+def test_main_e2e_with_invalid_html(invalid_assets_page, local_stack_container):
     """不正なHTMLでのE2Eテスト
 
     必要な要素が欠けているHTMLの場合、パースエラーが発生することを確認する
+    また、エラー HTML ファイルがS3にアップロードされることを確認する
     """
     # given
-    import os
-
+    from domain import AssetExtractionError # type: ignore (import-error)
+    from presentation.dcp_ops_notification import main # type: ignore (import-error)
     from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
-    from src.presentation.dcp_ops_notification import main
 
     scraper = MockSeleniumDcpScraper(mock_html=invalid_assets_page)
     notifier = MockLineNotifier()
 
     # when, then
     # HTMLパースエラーが発生することを確認
-    with pytest.raises(Exception):
+    with pytest.raises(AssetExtractionError) as exc_info:
         main(scraper=scraper, notifier=notifier)
+
+    # エラーオブジェクトにhtml_sourceが含まれることを確認
+    assert exc_info.value.html_source is not None
 
     # スクレイピングは実行されたことを確認
     assert scraper.fetch_called is True
@@ -65,24 +104,8 @@ def test_main_e2e_with_invalid_html(invalid_assets_page):
     # 通知は送信されていないことを確認（パースエラーで処理が中断）
     assert notifier.call_count == 0
 
-def test_main_e2e_with_scraping_error(valid_assets_page):
-    """スクレイピングエラー時のE2Eテスト
-
-    スクレイピングが失敗した場合、例外が発生することを確認する
-    """
-    # given
-    from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
-    from src.presentation.dcp_ops_notification import main
-
-    scraper = MockSeleniumDcpScraper(mock_html=valid_assets_page, should_fail=True)
-    notifier = MockLineNotifier()
-
-    # when, then
-    with pytest.raises(Exception, match="Mock scraping error"):
-        main(scraper=scraper, notifier=notifier)
-
-    # スクレイピングは試みられたが失敗したことを確認
-    assert scraper.fetch_called is True
-
-    # 通知は送信されていないことを確認
-    assert notifier.call_count == 0
+    # S3 バケットにエラー HTML ファイルが存在することを確認
+    client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
+    response = client.list_objects_v2(Bucket=os.environ["error_bucket_name"])
+    object_keys = [obj["Key"] for obj in response.get("Contents", [])]
+    assert any(key.endswith("asset_valuation.html") for key in object_keys)
