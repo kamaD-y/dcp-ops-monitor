@@ -5,15 +5,14 @@ class IS3Repository(ABC):
     """S3リポジトリ抽象クラス"""
 
     @abstractmethod
-    def __init__(self) -> None:
+    def __init__(self, bucket: str) -> None:
         """コンストラクタ"""
-        pass
+        self.bucket: str = bucket
 
     @abstractmethod
-    def upload_file(self, bucket: str, key: str, file_path: str) -> None:
+    def upload_file(self, key: str, file_path: str) -> None:
         """S3バケットにファイルをアップロードする
         Args:
-            bucket (str): S3バケット名
             key (str): S3オブジェクトのキー
             file_path (str): アップロードするファイルのパス
         Returns:
@@ -22,11 +21,10 @@ class IS3Repository(ABC):
         pass
 
     @abstractmethod
-    def put_object(self, bucket: str, key: str, body: str) -> None:
+    def put_object(self, key: str, body: str) -> None:
         """S3バケットにオブジェクトをアップロードする
 
         Args:
-            bucket (str): S3バケット名
             key (str): S3オブジェクトのキー
             body (str): アップロードするオブジェクトの内容
 
