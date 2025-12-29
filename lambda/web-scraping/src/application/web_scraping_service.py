@@ -24,7 +24,7 @@ class WebScrapingService:
             key = None
             if error_image_path:
                 logger.info("スクレイピングエラー画像の S3 アップロード開始")
-                key = f"{datetime.now().strftime('%Y%m%d')}/error.png"
+                key = f"files/{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
                 try:
                     self.s3_repository.upload_file(
                         key=key,
@@ -66,7 +66,7 @@ class WebScrapingService:
 
         except Exception as e:
             logger.info("エラーになった資産情報 HTML ファイルの S3 アップロード開始")
-            key = f"{datetime.now().strftime('%Y%m%d')}/asset_valuation.html"
+            key = f"files/{datetime.now().strftime('%Y%m%d%H%M%S')}.html"
             try:
                 self.s3_repository.put_object(
                     key=key,

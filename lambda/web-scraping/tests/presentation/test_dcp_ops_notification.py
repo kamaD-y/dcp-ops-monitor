@@ -70,7 +70,7 @@ def test_main_e2e_with_scraping_error(valid_assets_page, local_stack_container):
     client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
     response = client.list_objects_v2(Bucket=os.environ["error_bucket_name"])
     object_keys = [obj["Key"] for obj in response.get("Contents", [])]
-    assert any(key.endswith("error.png") for key in object_keys)
+    assert any(key.endswith(".png") for key in object_keys)
 
 
 def test_main_e2e_with_invalid_html(invalid_assets_page, local_stack_container):
@@ -105,4 +105,4 @@ def test_main_e2e_with_invalid_html(invalid_assets_page, local_stack_container):
     client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
     response = client.list_objects_v2(Bucket=os.environ["error_bucket_name"])
     object_keys = [obj["Key"] for obj in response.get("Contents", [])]
-    assert any(key.endswith("asset_valuation.html") for key in object_keys)
+    assert any(key.endswith(".html") for key in object_keys)
