@@ -53,12 +53,12 @@ def main(
     except ScrapingError as e:
         logger.error(
             "スクレイピング処理でエラーが発生しました。",
-            extra={"error_image_path": e.error_image_path},
+            extra={"error_file_key": e.error_file_key},
         )
         raise
     except AssetExtractionError as e:
         logger.error(
             "資産情報の抽出でエラーが発生しました。",
-            extra={"html_source_length": len(e.html_source) if e.html_source else 0},
+            extra={"error_file_key": e.error_file_key},
         )
         raise

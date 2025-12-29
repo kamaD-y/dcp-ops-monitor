@@ -57,17 +57,14 @@ def test_main_e2e_with_scraping_error(valid_assets_page, local_stack_container):
     with pytest.raises(ScrapingError) as exc_info:
         main(scraper=scraper, notifier=notifier)
 
-    # エラーオブジェクトにerror_image_pathが含まれることを確認
-    assert exc_info.value.error_image_path is not None
+    # エラーオブジェクトにerror_file_keyが含まれることを確認
+    assert exc_info.value.error_file_key is not None
 
     # スクレイピングは試みられたが失敗したことを確認
     assert scraper.fetch_called is True
 
     # 通知は送信されていないことを確認
     assert notifier.call_count == 0
-
-    # エラー画像パスが設定されていることを確認
-    assert scraper.error_image_path is not None
 
     # S3 バケットにエラー画像ファイルが存在することを確認
     client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
@@ -95,8 +92,8 @@ def test_main_e2e_with_invalid_html(invalid_assets_page, local_stack_container):
     with pytest.raises(AssetExtractionError) as exc_info:
         main(scraper=scraper, notifier=notifier)
 
-    # エラーオブジェクトにhtml_sourceが含まれることを確認
-    assert exc_info.value.html_source is not None
+    # エラーオブジェクトにerror_file_keyが含まれることを確認
+    assert exc_info.value.error_file_key is not None
 
     # スクレイピングは実行されたことを確認
     assert scraper.fetch_called is True

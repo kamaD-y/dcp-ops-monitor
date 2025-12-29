@@ -6,12 +6,12 @@ class ScrapingError(Exception):
 
     Attributes:
         message (str): エラーメッセージ
-        error_image_path (Optional[str]): エラー時のスクリーンショット画像パス
+        error_file_key (Optional[str]): エラー時のスクリーンショット画像のS3キー
     """
 
-    def __init__(self, message: str, error_image_path: Optional[str] = None):
+    def __init__(self, message: str, error_file_key: Optional[str] = None):
         super().__init__(message)
-        self.error_image_path = error_image_path
+        self.error_file_key = error_file_key
 
 
 class AssetExtractionError(Exception):
@@ -19,9 +19,9 @@ class AssetExtractionError(Exception):
 
     Attributes:
         message (str): エラーメッセージ
-        html_source (Optional[str]): エラー時のHTMLソース
+        error_file_key (Optional[str]): エラー時のHTMLソース
     """
 
-    def __init__(self, message: str, html_source: Optional[str] = None):
+    def __init__(self, message: str, error_file_key: Optional[str] = None):
         super().__init__(message)
-        self.html_source = html_source
+        self.error_file_key = error_file_key
