@@ -65,16 +65,19 @@ class SeleniumDcpScraper(IDcpScraper):
         Returns:
             str: 資産評価情報ページの HTML ソース
         """
+        logger.info("資産評価情報ページの HTML ソース取得開始")
         self.driver.get(self.start_url)
 
         self._login()
         asset_valuation_html = self._get_asset_valuation_page()
         self._logout()
         self.driver.quit()
+        logger.info("資産評価情報ページの HTML ソース取得完了")
         return asset_valuation_html
 
     def _login(self) -> None:
         try:
+            logger.info("ログイン処理開始")
             input_user_id = self.driver.find_element(By.NAME, "userId")
             input_password = self.driver.find_element(By.NAME, "password")
             input_birthdate = self.driver.find_element(By.NAME, "birthDate")
@@ -87,36 +90,40 @@ class SeleniumDcpScraper(IDcpScraper):
 
             # ログアウトボタンがなければログイン失敗とする
             self.driver.find_element(By.LINK_TEXT, "ログアウト")
+            logger.info("ログイン処理完了")
 
-        except Exception:
+        except Exception as e:
             self.error_image_path = "/tmp/error_login.png"
             self.driver.save_screenshot(self.error_image_path)
             self.driver.quit()
-            raise
+            raise Exception("ログイン処理に失敗しました。") from e
 
     def _get_asset_valuation_page(self) -> str:
         try:
+            logger.info("資産評価額照会ページへの遷移開始")
             link_asset_valuation = self.driver.find_element(By.ID, "mainMenu01")
             link_asset_valuation.click()
 
             # 資産評価額照会ページ取得
             self.driver.find_element(By.CLASS_NAME, "total")
+            logger.info("資産評価額照会ページ取得完了")
             return self.driver.page_source
-        except Exception:
+        except Exception as e:
             self.error_image_path = "/tmp/error_asset_valuation.png"
             self.driver.save_screenshot(self.error_image_path)
             self._logout()
             self.driver.quit()
-            raise
+            raise Exception("資産評価額照会ページの取得に失敗しました。") from e
 
     def _logout(self) -> None:
         try:
+            logger.info("ログアウト処理開始")
             link_logout = self.driver.find_element(By.LINK_TEXT, "ログアウト")
             link_logout.click()
-        except Exception:
-            # ログアウト失敗はエラーログのみ出力して無視
-            logger.exception("ログアウト処理中に問題が発生しました。")
-            pass
+            logger.info("ログアウト処理完了")
+        except Exception as e:
+            # ログアウト失敗はログのみ出力して無視
+            logger.warning("ログアウト処理中に問題が発生しました。")
 
     def get_error_image_path(self) -> Optional[str]:
         return self.error_image_path

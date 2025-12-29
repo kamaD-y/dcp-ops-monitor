@@ -8,10 +8,6 @@ from domain import DcpAssets, DcpOpsIndicators, INotifier
 logger = get_logger()
 
 
-class LineNotifierError(Exception):
-    pass
-
-
 class LineNotifier(INotifier):
     """LINE通知クラス"""
 
@@ -28,10 +24,10 @@ class LineNotifier(INotifier):
         try:
             r = requests.post(self.url, headers=self.headers, data=json.dumps(payload))
             r.raise_for_status()
-            logger.info("LINE message api send success", result=r)
+            logger.info("LINE Message API への送信成功", result=r)
             return True
         except Exception as e:
-            raise LineNotifierError("LINE message api send failed") from e
+            raise Exception("LINE Message API への送信失敗") from e
 
     def create_message_by(self, assets_info: DcpAssets, ops_indicators: DcpOpsIndicators) -> str:
         message = "確定拠出年金 運用状況通知Bot\n\n"
