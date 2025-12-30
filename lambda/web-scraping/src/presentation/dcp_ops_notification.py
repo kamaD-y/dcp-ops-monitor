@@ -2,7 +2,7 @@ from typing import Optional
 
 from application import NotificationService, WebScrapingService, to_operational_indicators
 from config.settings import get_logger, get_settings
-from domain import AssetExtractionError, IDcpScraper, INotifier, ScrapingError, ScrapingParams
+from domain import IDcpScraper, INotifier, ScrapingParams
 from infrastructure import LineNotifier, S3Repository, SeleniumDcpScraper, get_ssm_json_parameter
 
 settings = get_settings()
@@ -49,16 +49,5 @@ def main(
 
         notification_service = NotificationService(notifier=notifier)
         notification_service.send_notification(assets_info, operational_indicators)
-
-    except ScrapingError as e:
-        logger.error(
-            "スクレイピング処理でエラーが発生しました。",
-            extra={"error_file_key": e.error_file_key},
-        )
-        raise
-    except AssetExtractionError as e:
-        logger.error(
-            "資産情報の抽出でエラーが発生しました。",
-            extra={"error_file_key": e.error_file_key},
-        )
+    except Exception:
         raise
