@@ -1,13 +1,30 @@
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from config.settings import get_logger
+from domain import AssetExtractionError, ScrapingError
 from presentation.dcp_ops_notification import main
 
 logger = get_logger()
 
 
 @logger.inject_lambda_context
-def handler(event: dict, context: LambdaContext) -> str:
+def handler(event: dict, context: LambdaContext) -> str | None:
     """Lambda handler エントリーポイント"""
-    main()
-    return "Success"
+    try:
+        main()
+        return "Success"
+    except ScrapingError as e:
+        logger.exception(
+            "スクレイピング処理でエラーが発生しました。",
+            extra={"error_file_key": e.error_file_key},
+        )
+        raise
+    except AssetExtractionError as e:
+        logger.exception(
+            "資産情報の抽出でエラーが発生しました。",
+            extra={"error_file_key": e.error_file_key},
+        )
+        raise
+    except Exception as e:
+        logger.exception("予期せぬエラーが発生しました。")
+        raise

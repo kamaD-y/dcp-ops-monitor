@@ -15,6 +15,43 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
     },
+    "ErrorLogSubscriptionFilter932A293A": {
+      "DependsOn": [
+        "ErrorLogSubscriptionFilterCanInvokeLambdaFAB40D9F",
+      ],
+      "Properties": {
+        "DestinationArn": {
+          "Fn::GetAtt": [
+            "ErrorNotificationFunction68DA9498",
+            "Arn",
+          ],
+        },
+        "FilterPattern": "{ $.level = "ERROR" }",
+        "LogGroupName": {
+          "Ref": "LogGroupF5B46931",
+        },
+      },
+      "Type": "AWS::Logs::SubscriptionFilter",
+    },
+    "ErrorLogSubscriptionFilterCanInvokeLambdaFAB40D9F": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ErrorNotificationFunction68DA9498",
+            "Arn",
+          ],
+        },
+        "Principal": "logs.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "LogGroupF5B46931",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "ErrorNotificationFunction68DA9498": {
       "DependsOn": [
         "ErrorNotificationFunctionServiceRoleDefaultPolicyB61EBDA9",
@@ -32,6 +69,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
             "LINE_MESSAGE_API_TOKEN": "",
             "LINE_MESSAGE_API_URL": "",
             "POWERTOOLS_LOG_LEVEL": "INFO",
+            "POWERTOOLS_SERVICE_NAME": "error-notification",
           },
         },
         "Handler": "src.handler.handler",
@@ -173,6 +211,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
             },
             "LINE_MESSAGE_PARAMETER_NAME": "/dcp-ops-monitor/dummy-line-message-parameters",
             "POWERTOOLS_LOG_LEVEL": "INFO",
+            "POWERTOOLS_SERVICE_NAME": "web-scraping",
             "SCRAPING_PARAMETER_NAME": "/dcp-ops-monitor/dummy-scraping-parameters",
             "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
           },
