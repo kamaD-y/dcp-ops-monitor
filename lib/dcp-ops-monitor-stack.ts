@@ -52,6 +52,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       logGroup: logGroup,
       applicationLogLevel: props.logLevel,
       environment: {
+        POWERTOOLS_SERVICE_NAME: 'web-scraping',
         POWERTOOLS_LOG_LEVEL: props.logLevel,
         USER_AGENT: props.userAgent,
         SCRAPING_PARAMETER_NAME: scrapingParameter.parameterName,
@@ -82,6 +83,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         assetExcludes: ['.venv'],
       },
       environment: {
+        POWERTOOLS_SERVICE_NAME: 'error-notification',
         POWERTOOLS_LOG_LEVEL: props.logLevel,
         LINE_MESSAGE_API_URL: '',
         LINE_MESSAGE_API_TOKEN: '',
