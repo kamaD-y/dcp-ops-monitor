@@ -6,6 +6,7 @@ import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import type { Construct } from 'constructs';
@@ -95,6 +96,14 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         resources: [`${errorBucket.bucketArn}/*`],
       }),
     );
+
+    // CloudWatch Logs Subscription Filter
+    new logs.SubscriptionFilter(this, 'ErrorLogSubscriptionFilter', {
+      logGroup: logGroup,
+      destination: new destinations.LambdaDestination(errorNotificationFunction),
+      filterPattern: logs.FilterPattern.stringValue('$.level', '=', 'ERROR'),
+    });
+
     // 毎週月曜日 09:00 に実行する Rule を作成
     new events.Rule(this, 'EventRule', {
       schedule: events.Schedule.cron({
