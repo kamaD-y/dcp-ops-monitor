@@ -26,6 +26,7 @@ jobs:
         run: |
           npm ci
           cd lambda/web-scraping && python -m pip install uv && uv sync
+          cd ../error-notification && python -m pip install uv && uv sync
 
       - name: Run Lint
         run: |
@@ -39,4 +40,4 @@ jobs:
       - name: Run Tests
         run: |
           npm run test:cdk
-          npm run test:unit
+          npm run test:web-scraping

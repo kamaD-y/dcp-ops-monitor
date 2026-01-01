@@ -86,14 +86,20 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       environment: {
         POWERTOOLS_SERVICE_NAME: 'error-notification',
         POWERTOOLS_LOG_LEVEL: props.logLevel,
-        LINE_MESSAGE_API_URL: '',
-        LINE_MESSAGE_API_TOKEN: '',
+        LINE_MESSAGE_PARAMETER_NAME: lineMessageParameter.parameterName,
+        ERROR_BUCKET_NAME: errorBucket.bucketName,
       },
     });
     errorNotificationFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['s3:GetObject'],
         resources: [`${errorBucket.bucketArn}/*`],
+      }),
+    );
+    errorNotificationFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['ssm:GetParameter'],
+        resources: [lineMessageParameter.parameterArn],
       }),
     );
 
