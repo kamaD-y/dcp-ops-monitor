@@ -6,11 +6,12 @@ from typing import Any
 
 import boto3
 
-client = (
-    boto3.client("ssm", region_name="ap-northeast-1")
-    if os.environ.get("ENV") not in ["local", "test"]
-    else boto3.client("ssm", region_name="ap-northeast-1", endpoint_url=os.environ["LOCAL_STACK_CONTAINER_URL"])
-)
+
+def _get_client():
+    """SSM クライアントを取得（遅延初期化）"""
+    if os.environ.get("ENV") in ["local", "test"]:
+        return boto3.client("ssm", region_name="ap-northeast-1", endpoint_url=os.environ["LOCAL_STACK_CONTAINER_URL"])
+    return boto3.client("ssm", region_name="ap-northeast-1")
 
 
 def get_ssm_json_parameter(name: str, decrypt: bool = True) -> dict[str, Any]:  # noqa: FBT001, FBT002
@@ -23,6 +24,7 @@ def get_ssm_json_parameter(name: str, decrypt: bool = True) -> dict[str, Any]:  
     Returns:
         dict[str, Any]: JSON パラメータの辞書
     """
+    client = _get_client()
     response = client.get_parameter(Name=name, WithDecryption=decrypt)
     parameters_json = response["Parameter"]["Value"]
     return json.loads(parameters_json)
