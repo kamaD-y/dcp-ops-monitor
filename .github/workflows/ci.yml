@@ -41,3 +41,4 @@ jobs:
         run: |
           npm run test:cdk
           npm run test:web-scraping
+          npm run test:error-notification

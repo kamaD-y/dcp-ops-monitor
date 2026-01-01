@@ -42,4 +42,4 @@ source = ["src"]
 omit = ["tests/*", "*/test_*"]
 
 [tool.coverage.report]
-fail_under = 50
+fail_under = 60
