@@ -31,7 +31,7 @@ def create_cloudwatch_logs_event(
     for idx, msg in enumerate(log_messages):
         log_events.append({
             "id": str(idx),
-            "timestamp": 1704067200000 + idx * 1000,  # 2025-01-01 00:00:00 UTC
+            "timestamp": 1735689600000 + idx * 1000,  # 2025-01-01 00:00:00 UTC
             "message": json.dumps(msg, ensure_ascii=False),
         })
 
