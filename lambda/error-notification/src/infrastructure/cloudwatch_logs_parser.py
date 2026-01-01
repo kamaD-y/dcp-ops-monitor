@@ -40,8 +40,6 @@ class CloudWatchLogsParser(ICloudWatchLogsParser):
                         error_records.append(error_record)
 
                 except (json.JSONDecodeError, ValueError) as e:
-                    # 個別のログイベントのパース失敗は警告としてスキップ
-                    # (全体の処理は継続)
                     msg = f"ログイベントのパースに失敗しました: {e}"
                     raise CloudWatchLogsParseError(msg) from e
 
