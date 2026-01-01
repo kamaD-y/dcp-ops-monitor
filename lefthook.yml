@@ -24,6 +24,10 @@ pre-commit:
       glob: "lambda/**/*.py"
       run: npm run type-check
 
-    test:lambda:
-      glob: "lambda/**/*.py"
+    test:web-scraping:
+      glob: "lambda/web-scraping/*.py"
       run: cd lambda/web-scraping && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1
+
+    test:error-notification:
+      glob: "lambda/error-notification/*.py"
+      run: cd lambda/error-notification && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1
