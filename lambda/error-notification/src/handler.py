@@ -1,19 +1,36 @@
+"""Lambda handler エントリーポイント"""
+
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent, event_source
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
-from src.application.notification import send
-from src.settings import get_logger
+from src.config.settings import get_logger
+from src.domain import CloudWatchLogsParseError, LineNotificationError
+from src.presentation import main
 
 logger = get_logger()
 
 
 @event_source(data_class=CloudWatchLogsEvent)
 @logger.inject_lambda_context
-def handler(event: CloudWatchLogsEvent, context: LambdaContext) -> str:
-    """Lambda handler エントリーポイント"""
-    logger.info("Received CloudWatch Logs event", event=event)
-    for log_event in event.parse_logs_data().log_events:
-        logger.info("Received CloudWatch Logs message", record=log_event)
-        # send(log_event)
-        logger.info("Processed CloudWatch Logs message successfully", record=log_event)
-    return "Success"
+def handler(event: CloudWatchLogsEvent, context: LambdaContext) -> str | None:
+    """Lambda handler エントリーポイント
+
+    Args:
+        event: CloudWatch Logs イベント
+        context: Lambda コンテキスト
+
+    Returns:
+        str | None: 成功時は "Success"
+    """
+    try:
+        main(event)
+        return "Success"
+    except CloudWatchLogsParseError:
+        logger.exception("CloudWatch Logs イベントの解析に失敗しました")
+        raise
+    except LineNotificationError:
+        logger.exception("LINE 通知の送信に失敗しました")
+        raise
+    except Exception:
+        logger.exception("予期せぬエラーが発生しました")
+        raise

@@ -1,22 +1,42 @@
 [project]
-name = "dcp-ops-monitor-error-notification"
+name = "error-notification"
 version = "0.1.0"
-description = "Notifies the execution result of web scraping"
+description = "CloudWatch Logs からエラーを検知し LINE に通知する Lambda 関数"
 readme = "README.md"
-requires-python = ">=3.13.1"
+requires-python = ">=3.13"
 dependencies = [
-    "aws-lambda-powertools>=3.13.0",
-    "boto3>=1.38.27",
-    "mypy-boto3-logs>=1.38.16",
-    "pydantic>=2.11.5",
-    "pydantic-settings>=2.9.1",
+    "aws-lambda-powertools[parser]>=3.11.0",
+    "boto3>=1.38.8",
+    "pydantic>=2.11.4",
+    "pydantic-settings>=2.8.3",
     "requests>=2.32.3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-cov>=6.2.1",
+    "pytest-env>=1.1.5",
+    "pytest-mock>=3.15.0",
+    "requests-mock>=1.12.1",
+    "ruff>=0.11.8",
+    "testcontainers[localstack]>=4.10.0",
 ]
 
 [tool.ruff]
 extend = "../../pyproject.toml"
 
-[dependency-groups]
-dev = [
-    "types-requests>=2.32.0.20250515",
+[tool.pytest.ini_options]
+pythonpath = ["src/../", "src"]
+testpaths = ["tests"]
+env = [
+    "LINE_MESSAGE_PARAMETER_NAME=/test/line-message-parameters",
+    "ERROR_BUCKET_NAME=test-error-bucket"
 ]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*", "*/__pycache__/*", "*/.venv/*"]
+
+[tool.coverage.report]
+fail_under = 50
