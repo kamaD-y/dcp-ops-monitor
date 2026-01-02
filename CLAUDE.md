@@ -28,33 +28,7 @@
 ├── docs/                         # 設計/アーキテクチャ
 ├── localstack/ready.sh           # localstack 起動スクリプト (docker compose で使用)
 ├── test/cdk/                     # CDK 関連テスト
-├── lambda                        # Lambda コード
-│   ├── error-notification        # エラー通知用 Lambda
-│   │   ├── README.md
-│   │   ├── pyproject.toml
-│   │   ├── requirements.txt
-│   │   ├── src
-│   |   │   ├── application
-│   |   │   ├── config
-│   |   │   ├── domain
-│   |   │   ├── infrastructure
-│   |   │   ├── presentation
-│   |   │   └── handler.py
-│   |   ├── tests
-│   │   └── uv.lock
-│   └── web-scraping              # Web スクレイピング Lambda (コンテナ利用)
-│       ├── Dockerfile
-│       ├── README.md
-│       ├── pyproject.toml
-│       ├── src
-│       │   ├── application
-│       │   ├── config
-│       │   ├── domain
-│       │   ├── infrastructure
-│       │   ├── presentation
-│       │   └── handler.py
-│       ├── tests
-│       └── uv.lock
+├── lambda/                       # Lambda コード
 ├── CLAUDE.md
 ├── README.md
 ├── biome.jsonc
@@ -153,75 +127,56 @@ $ npm run format:ci
 $ npm run test:cdk
 
 # Lambda コードテスト
-$ npm run test:unit
+$ npm run test:{feature}
 ```
 
 ### コミット
 
 .husky/lefthook を使用し、コミット時に Lint/Format/Test を自動的に実行します。
 
-## ローカル環境でのスクレイピング実行方法
+## テスト戦略
 
-### Python インタプリタからインタラクティブに Selenium を使用する
+- **LocalStack使用**: TestContainers を使用して実環境に近いテスト環境を構築
+- **Mock最小限の原則**: 外部APIのみMockを使用し、AWS サービスは LocalStack で実行
+- **カバレッジ要件**: 60%以上
 
-> [!NOTE]  
-> スクレイピングの接続先は本物を使用します。
+## Lambda 共通のディレクトリ構成
 
-1. selenium/standalone-chrome を起動
+各Lambdaはクリーンアーキテクチャに基づいた4層構造で実装されています。
 
-```bash
-# https://hub.docker.com/r/selenium/standalone-chrome
-$ docker run -d -p 4444:4444 -p 7900:7900 --shm-size="2g" selenium/standalone-chrome:latest
+```
+lambda/{feature}/
+├── src/
+│   ├── handler.py              # Lambda エントリーポイント
+│   ├── config/
+│   │   └── settings.py         # 環境設定管理
+│   ├── presentation/
+│   │   └── *.py                # Lambda イベント処理、依存性注入
+│   ├── application/
+│   │   └── *.py                # ビジネスロジック
+│   ├── domain/
+│   │   ├── *.py                # ドメインモデル
+│   │   └── *_interface.py      # インターフェース定義
+│   └── infrastructure/
+│       └── *.py                # AWS サービス実装、外部 API 連携
+├── tests/
+│   ├── conftest.py             # pytest 設定
+│   ├── presentation/
+│   ├── application/
+│   ├── domain/
+│   ├── infrastructure/
+│   └── fixtures/
+├── pyproject.toml
+├── uv.lock
+└── README.md
 ```
 
-2. ブラウザに接続  
-  http://localhost:7900 に接続  
-  パスワードは`secret`を入力
+### 各レイヤーの責務
 
-3. Python インタプリタから driver を操作
-
-```bash
-$ python
-
->>> import os
->>> from dotenv import load_dotenv
->>> from selenium import webdriver
->>> env_path = os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), ".env.local")
->>> load_dotenv(env_path)
->>> options = webdriver.ChromeOptions()
->>> options.add_argument(f'--user-agent={os.environ["USER_AGENT"]}')
->>> driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', options=options)
->>> driver.get(os.environ["START_URL"])
-# localhost:7900 で、ブラウザが操作されていること
-...
-
-# 操作終了時は quit する
->>> driver.quit()
-```
-
-### docker-compose で Lambda コンテナを実行する
-
-> [!NOTE]  
-> Lambda コンテナでスクレイピングが正常に動作するか確認する為使用します。
-> AWS リソースについては LocalStack を使用しますが、スクレイピングの接続先は本物を使用します。
-
-1. docker-compose で起動する
-
-```bash
-$ docker compose up -d --build
-```
-
-2. 起動した Lambda を呼び出す
-
-```bash
-$ curl -d "{}" http://localhost:8080/2015-03-31/functions/function/invocations
-```
-
-3. docker-compose を終了する
-
-```bash
-$ docker compose down
-```
+- **Presentation**: Lambda イベント受け取り、依存性注入、レスポンス返却
+- **Application**: 複数のドメインモデルを組み合わせた業務ロジック実行
+- **Domain**: ビジネスルールとモデル定義（外部依存なし）
+- **Infrastructure**: AWS サービスや外部 API との連携
 
 ## デプロイ
 
