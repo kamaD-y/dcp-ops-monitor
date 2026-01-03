@@ -82,6 +82,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
           ],
         },
         "Runtime": "python3.13",
+        "Timeout": 60,
       },
       "Type": "AWS::Lambda::Function",
     },

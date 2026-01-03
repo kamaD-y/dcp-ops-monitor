@@ -80,6 +80,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       entry: path.join(__dirname, '../lambda/error-notification'),
       index: 'src/handler.py',
       handler: 'handler',
+      timeout: cdk.Duration.seconds(60),
       bundling: {
         assetExcludes: ['.venv'],
       },
