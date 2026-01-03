@@ -70,12 +70,12 @@ class TestErrorNotificationHandlerMain:
         # then
         assert mock_line_notifier.send_messages_called is False
 
-    def test_main__s3_download_error(self):
-        """S3ダウンロード失敗時、テキストのみ送信"""
+    def test_main__with_screenshot_url_generation(self):
+        """スクリーンショット有り（実ファイル無し）でも署名付きURL生成により画像メッセージ送信（Stage 7）"""
         # given
-        error_log = create_error_log_message(
-            error_file_key="errors/2025/01/01/not_exist.png"  # S3に存在しない
-        )
+        # NOTE: generate_presigned_url はオブジェクトの存在チェックをしないため、
+        #       実際にS3にファイルが無くてもURL生成は成功する
+        error_log = create_error_log_message(error_file_key="errors/2025/01/01/screenshot.png")
         event_dict = create_cloudwatch_logs_event(log_messages=[error_log])
         event = CloudWatchLogsEvent(event_dict)
         mock_line_notifier = MockLineNotifier()
@@ -85,38 +85,46 @@ class TestErrorNotificationHandlerMain:
 
         # then
         assert mock_line_notifier.send_messages_called is True
-        # テキストメッセージのみ
-        assert len(mock_line_notifier.messages_sent) == 1
+        # 署名付きURLは生成されるため、テキスト + 画像メッセージ
+        assert len(mock_line_notifier.messages_sent) == 2
         assert mock_line_notifier.messages_sent[0].type == "text"
+        assert mock_line_notifier.messages_sent[1].type == "image"
 
-    def test_main__upload_image_not_implemented(self, local_stack_container):
-        """画像アップロード未実装（Stage 7）のため、スクリーンショット有りでもテキストのみ送信"""
+    def test_main__with_screenshot(self, local_stack_container):
+        """スクリーンショット有りでテキスト + 画像メッセージを送信（Stage 7）"""
         # given
-        error_log = create_error_log_message(
-            error_file_key="errors/2025/01/01/screenshot.png"
-        )
+        import os
+
+        from src.domain import LineImageMessage
+
+        # ERROR_BUCKET_NAME 環境変数で指定されたバケットを使用
+        bucket_name = os.environ["ERROR_BUCKET_NAME"]
+        object_key = "errors/2025/01/01/screenshot.png"
+        content = b"fake screenshot data"
+
+        # S3にスクリーンショットを作成
+        s3_local = local_stack_container.get_client("s3")  # type: ignore
+        s3_local.put_object(Bucket=bucket_name, Key=object_key, Body=content)
+
+        error_log = create_error_log_message(error_file_key=object_key)
         event_dict = create_cloudwatch_logs_event(log_messages=[error_log])
         event = CloudWatchLogsEvent(event_dict)
-
-        # S3にダミー画像配置
-        s3 = local_stack_container.get_client("s3")
-        s3.put_object(
-            Bucket="test-error-bucket",
-            Key="errors/2025/01/01/screenshot.png",
-            Body=b"dummy_image_data",
-        )
-
-        # upload_image_and_get_url()でNotImplementedError発生
-        mock_line_notifier = MockLineNotifier(upload_should_fail=True)
+        mock_line_notifier = MockLineNotifier()
 
         # when
         main(event, line_notifier=mock_line_notifier)
 
         # then
         assert mock_line_notifier.send_messages_called is True
-        # S3ダウンロードは成功するが、upload_image_and_get_url()が未実装のためテキストのみ送信
-        assert len(mock_line_notifier.messages_sent) == 1
+        # テキスト + 画像メッセージ
+        assert len(mock_line_notifier.messages_sent) == 2
         assert mock_line_notifier.messages_sent[0].type == "text"
+        assert mock_line_notifier.messages_sent[1].type == "image"
+        # 画像メッセージに署名付きURLが含まれることを確認
+        image_message = mock_line_notifier.messages_sent[1]
+        assert isinstance(image_message, LineImageMessage)
+        assert bucket_name in image_message.originalContentUrl
+        assert object_key in image_message.originalContentUrl
 
     def test_main__cloudwatch_logs_parse_error(self):
         """CloudWatch Logsパースエラーが伝播すること"""

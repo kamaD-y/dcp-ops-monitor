@@ -87,18 +87,11 @@ class ErrorNotificationService:
             return None
 
         try:
-            # S3 から画像取得
-            image_data = self.s3_client.download_object(bucket_name, record.error_file_key)
-
-            # 画像 URL 生成 (Stage 7 で実装予定)
-            image_url = self.line_notifier.upload_image_and_get_url(image_data)
+            # S3 署名付き URL 生成 (有効期限: 1時間)
+            image_url = self.s3_client.generate_presigned_url(bucket_name, record.error_file_key, expires_in=3600)
 
             return LineImageMessage(originalContentUrl=image_url, previewImageUrl=image_url)
 
         except S3ImageDownloadError as e:
-            logger.warning("S3 からの画像取得に失敗しました。テキストのみ送信します。", error=str(e))
-            return None
-        except NotImplementedError:
-            # Stage 7 未実装のため、画像送信はスキップ
-            logger.info("画像送信機能は未実装です (Stage 7 で実装予定)")
+            logger.warning("S3 署名付き URL の生成に失敗しました。テキストのみ送信します。", error=str(e))
             return None
