@@ -29,11 +29,13 @@ def create_cloudwatch_logs_event(
     # CloudWatch Logs の内部形式
     log_events = []
     for idx, msg in enumerate(log_messages):
-        log_events.append({
-            "id": str(idx),
-            "timestamp": 1735689600000 + idx * 1000,  # 2025-01-01 00:00:00 UTC
-            "message": json.dumps(msg, ensure_ascii=False),
-        })
+        log_events.append(
+            {
+                "id": str(idx),
+                "timestamp": 1735689600000 + idx * 1000,  # 2025-01-01 00:00:00 UTC
+                "message": json.dumps(msg, ensure_ascii=False),
+            }
+        )
 
     logs_data = {
         "messageType": "DATA_MESSAGE",

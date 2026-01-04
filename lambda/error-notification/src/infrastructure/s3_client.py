@@ -39,3 +39,28 @@ class S3Client(IS3Client):
         except Exception as e:
             msg = f"S3 からのオブジェクトダウンロードに失敗しました (bucket={bucket}, key={key}): {e}"
             raise S3ImageDownloadError(msg) from e
+
+    def generate_presigned_url(self, bucket: str, key: str, expires_in: int = 3600) -> str:
+        """S3 オブジェクトの署名付き URL を生成
+
+        Args:
+            bucket: バケット名
+            key: オブジェクトキー
+            expires_in: URL の有効期限 (秒)、デフォルトは 3600秒 (1時間)
+
+        Returns:
+            str: 署名付き URL
+
+        Raises:
+            S3ImageDownloadError: URL 生成失敗時
+        """
+        try:
+            url = self.client.generate_presigned_url(
+                ClientMethod="get_object",
+                Params={"Bucket": bucket, "Key": key},
+                ExpiresIn=expires_in,
+            )
+            return url
+        except Exception as e:
+            msg = f"S3 署名付き URL の生成に失敗しました (bucket={bucket}, key={key}): {e}"
+            raise S3ImageDownloadError(msg) from e
