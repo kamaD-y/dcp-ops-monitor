@@ -71,7 +71,7 @@ class TestErrorNotificationHandlerMain:
         assert mock_line_notifier.send_messages_called is False
 
     def test_main__with_screenshot_url_generation(self):
-        """スクリーンショット有り（実ファイル無し）でも署名付きURL生成により画像メッセージ送信（Stage 7）"""
+        """スクリーンショット有り（実ファイル無し）でも署名付きURL生成により画像メッセージ送信"""
         # given
         # NOTE: generate_presigned_url はオブジェクトの存在チェックをしないため、
         #       実際にS3にファイルが無くてもURL生成は成功する
@@ -91,7 +91,7 @@ class TestErrorNotificationHandlerMain:
         assert mock_line_notifier.messages_sent[1].type == "image"
 
     def test_main__with_screenshot(self, local_stack_container):
-        """スクリーンショット有りでテキスト + 画像メッセージを送信（Stage 7）"""
+        """スクリーンショット有りでテキスト + 画像メッセージを送信"""
         # given
         import os
 
