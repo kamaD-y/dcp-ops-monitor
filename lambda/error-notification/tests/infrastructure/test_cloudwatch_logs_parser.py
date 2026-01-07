@@ -7,7 +7,7 @@ import json
 import pytest
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
-from src.domain import CloudWatchLogsParseError, ErrorLogRecord
+from src.domain import CloudWatchLogsParseError, ErrorLogRecord, ParsedCloudWatchLogsData
 from src.infrastructure import CloudWatchLogsParser
 from tests.fixtures import create_cloudwatch_logs_event, create_error_log_message
 
@@ -28,17 +28,23 @@ class TestCloudWatchLogsParserParse:
             exception_name="TimeoutException",
             exception="Traceback (most recent call last)...",
         )
-        event_dict = create_cloudwatch_logs_event(log_messages=[error_log])
+        event_dict = create_cloudwatch_logs_event(
+            log_group="/aws/lambda/test-function-log-group",
+            log_stream="2025/01/01/[$LATEST]test-log-stream",
+            log_messages=[error_log])
         event = CloudWatchLogsEvent(event_dict)
 
         parser = CloudWatchLogsParser()
 
         # when
-        result = parser.parse(event)
+        parsed_data = parser.parse(event)
 
         # then
-        assert len(result) == 1
-        record = result[0]
+        assert isinstance(parsed_data, ParsedCloudWatchLogsData)
+        assert len(parsed_data.error_records) == 1
+        assert parsed_data.log_group == "/aws/lambda/test-function-log-group"
+        assert parsed_data.log_stream == "2025/01/01/[$LATEST]test-log-stream"
+        record = parsed_data.error_records[0]
         assert isinstance(record, ErrorLogRecord)
         assert record.level == "ERROR"
         assert record.location == "handler.handler:17"
@@ -63,13 +69,14 @@ class TestCloudWatchLogsParserParse:
         parser = CloudWatchLogsParser()
 
         # when
-        result = parser.parse(event)
+        parsed_data = parser.parse(event)
 
         # then
-        assert len(result) == 3
-        assert result[0].message == "エラー1"
-        assert result[1].message == "エラー2"
-        assert result[2].message == "エラー3"
+        assert isinstance(parsed_data, ParsedCloudWatchLogsData)
+        assert len(parsed_data.error_records) == 3
+        assert parsed_data.error_records[0].message == "エラー1"
+        assert parsed_data.error_records[1].message == "エラー2"
+        assert parsed_data.error_records[2].message == "エラー3"
 
     def test_parse__ignore_non_error_logs(self):
         """ERROR以外のログレベルは無視されること"""
@@ -85,12 +92,13 @@ class TestCloudWatchLogsParserParse:
         parser = CloudWatchLogsParser()
 
         # when
-        result = parser.parse(event)
+        parsed_data = parser.parse(event)
 
         # then
-        assert len(result) == 1
-        assert result[0].level == "ERROR"
-        assert result[0].message == "エラーログ"
+        assert isinstance(parsed_data, ParsedCloudWatchLogsData)
+        assert len(parsed_data.error_records) == 1
+        assert parsed_data.error_records[0].level == "ERROR"
+        assert parsed_data.error_records[0].message == "エラーログ"
 
     def test_parse__empty_event(self):
         """ログが0件の場合、空のリストが返されること"""
@@ -101,10 +109,11 @@ class TestCloudWatchLogsParserParse:
         parser = CloudWatchLogsParser()
 
         # when
-        result = parser.parse(event)
+        parsed_data = parser.parse(event)
 
         # then
-        assert result == []
+        assert isinstance(parsed_data, ParsedCloudWatchLogsData)
+        assert parsed_data.error_records == []
 
     def test_parse__invalid_json(self):
         """不正なJSON文字列でCloudWatchLogsParseErrorがraiseされること"""

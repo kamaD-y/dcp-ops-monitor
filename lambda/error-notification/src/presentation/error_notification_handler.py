@@ -42,12 +42,10 @@ def main(
         )
 
     # CloudWatch Logs イベントパース
-    error_records = parser.parse(event)
-
-    # log_group と log_stream を取得
-    decoded_data = event.parse_logs_data()
-    log_group = decoded_data.log_group
-    log_stream = decoded_data.log_stream
+    parsed_data = parser.parse(event)
+    error_records = parsed_data.error_records
+    log_group = parsed_data.log_group
+    log_stream = parsed_data.log_stream
 
     # エラー通知サービス実行
     message_formatter = MessageFormatter()

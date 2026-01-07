@@ -4,20 +4,25 @@ import json
 
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
-from src.domain import CloudWatchLogsParseError, ErrorLogRecord, ICloudWatchLogsParser
+from src.domain import (
+    CloudWatchLogsParseError,
+    ErrorLogRecord,
+    ICloudWatchLogsParser,
+    ParsedCloudWatchLogsData,
+)
 
 
 class CloudWatchLogsParser(ICloudWatchLogsParser):
     """CloudWatch Logs パーサー実装"""
 
-    def parse(self, event: CloudWatchLogsEvent) -> list[ErrorLogRecord]:
+    def parse(self, event: CloudWatchLogsEvent) -> ParsedCloudWatchLogsData:
         """CloudWatch Logs イベントをパース
 
         Args:
             event: AWS Lambda Powertools の CloudWatchLogsEvent
 
         Returns:
-            list[ErrorLogRecord]: パースされたエラーログレコードリスト
+            ParsedCloudWatchLogsData: パース済みデータ (エラーレコード + メタデータ)
 
         Raises:
             CloudWatchLogsParseError: パース失敗時
@@ -43,7 +48,12 @@ class CloudWatchLogsParser(ICloudWatchLogsParser):
                     msg = f"ログイベントのパースに失敗しました: {e}"
                     raise CloudWatchLogsParseError(msg) from e
 
-            return error_records
+            # 新しいドメインモデルで返却
+            return ParsedCloudWatchLogsData(
+                error_records=error_records,
+                log_group=decoded_data.log_group,
+                log_stream=decoded_data.log_stream,
+            )
 
         except Exception as e:
             if isinstance(e, CloudWatchLogsParseError):
