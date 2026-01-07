@@ -10,11 +10,13 @@ from .exceptions import (
 )
 from .line_message import LineImageMessage, LineMessage, LineTextMessage
 from .line_notifier_interface import ILineNotifier
+from .parsed_cloudwatch_logs_data import ParsedCloudWatchLogsData
 from .s3_client_interface import IS3Client
 
 __all__ = [
     # Models
     "ErrorLogRecord",
+    "ParsedCloudWatchLogsData",
     "LineTextMessage",
     "LineImageMessage",
     "LineMessage",
