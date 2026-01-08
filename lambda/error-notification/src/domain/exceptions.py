@@ -7,24 +7,6 @@ class ErrorNotificationError(Exception):
     pass
 
 
-class CloudWatchLogsParseError(ErrorNotificationError):
-    """CloudWatch Logs イベントのパースエラー"""
-
-    pass
-
-
-class S3ImageDownloadError(ErrorNotificationError):
-    """S3 からの画像ダウンロードエラー"""
-
-    pass
-
-
-class LineNotificationError(ErrorNotificationError):
-    """LINE 通知送信エラー"""
-
-    pass
-
-
 class ObjectDownloadError(ErrorNotificationError):
     """オブジェクトストレージからのダウンロードエラー"""
 

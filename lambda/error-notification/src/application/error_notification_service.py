@@ -3,16 +3,10 @@
 from src.config.settings import get_logger
 from src.domain import (
     ErrorLogRecord,
-    ILineNotifier,
     INotifier,
     IObjectRepository,
-    IS3Client,
-    LineImageMessage,
-    LineMessage,
-    LineTextMessage,
     NotificationMessage,
     ObjectDownloadError,
-    S3ImageDownloadError,
     StorageLocation,
 )
 

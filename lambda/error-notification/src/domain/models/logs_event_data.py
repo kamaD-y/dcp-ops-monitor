@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel
 
-from ..error_log_record import ErrorLogRecord
+from .error_log_record import ErrorLogRecord
 
 
 class LogsEventData(BaseModel):
