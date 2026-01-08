@@ -29,3 +29,9 @@ class ObjectDownloadError(ErrorNotificationError):
     """オブジェクトストレージからのダウンロードエラー"""
 
     pass
+
+
+class NotificationError(ErrorNotificationError):
+    """通知送信エラー"""
+
+    pass
