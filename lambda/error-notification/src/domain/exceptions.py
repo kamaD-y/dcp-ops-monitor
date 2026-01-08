@@ -23,3 +23,9 @@ class LineNotificationError(ErrorNotificationError):
     """LINE 通知送信エラー"""
 
     pass
+
+
+class ObjectDownloadError(ErrorNotificationError):
+    """オブジェクトストレージからのダウンロードエラー"""
+
+    pass

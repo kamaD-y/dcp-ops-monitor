@@ -4,11 +4,14 @@ from src.config.settings import get_logger
 from src.domain import (
     ErrorLogRecord,
     ILineNotifier,
+    IObjectRepository,
     IS3Client,
     LineImageMessage,
     LineMessage,
     LineTextMessage,
+    ObjectDownloadError,
     S3ImageDownloadError,
+    StorageLocation,
 )
 
 from .message_formatter import MessageFormatter
@@ -21,18 +24,18 @@ class ErrorNotificationService:
 
     def __init__(
         self,
-        s3_client: IS3Client,
+        object_repository: IObjectRepository,
         line_notifier: ILineNotifier,
         message_formatter: MessageFormatter,
     ) -> None:
         """エラー通知サービスを初期化
 
         Args:
-            s3_client: S3 クライアント
+            object_repository: オブジェクトリポジトリ
             line_notifier: LINE 通知クライアント
             message_formatter: メッセージフォーマッター
         """
-        self.s3_client = s3_client
+        self.object_repository = object_repository
         self.line_notifier = line_notifier
         self.message_formatter = message_formatter
 
@@ -87,11 +90,12 @@ class ErrorNotificationService:
             return None
 
         try:
-            # S3 署名付き URL 生成 (有効期限: 1時間)
-            image_url = self.s3_client.generate_presigned_url(bucket_name, record.error_file_key, expires_in=3600)
+            # オブジェクトストレージの一時 URL 生成 (有効期限: 1時間)
+            location = StorageLocation(container=bucket_name, path=record.error_file_key)
+            image_url = self.object_repository.generate_temporary_url(location, expires_in=3600)
 
             return LineImageMessage(originalContentUrl=image_url, previewImageUrl=image_url)
 
-        except S3ImageDownloadError as e:
-            logger.warning("S3 署名付き URL の生成に失敗しました。テキストのみ送信します。", error=str(e))
+        except ObjectDownloadError as e:
+            logger.warning("一時 URL の生成に失敗しました。テキストのみ送信します。", error=str(e))
             return None
