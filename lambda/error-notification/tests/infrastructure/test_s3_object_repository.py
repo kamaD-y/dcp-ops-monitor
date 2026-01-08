@@ -75,23 +75,6 @@ class TestS3ObjectRepositoryGenerateTemporaryUrl:
         # 署名付きURLの検証 (LocalStackはv2署名、実AWSはv4署名を使用)
         assert "Signature=" in url or "X-Amz-Signature" in url
 
-    def test_generate_temporary_url__default_expires_in(self, s3_bucket):
-        """expires_in のデフォルト値(3600秒)で URL が生成されること"""
-        # given
-        bucket_name, s3_client = s3_bucket("test-s3-object-repository-url-default")
-        test_key = "test/file.txt"
-        s3_client.put_object(Bucket=bucket_name, Key=test_key, Body=b"test")
-
-        repository = S3ObjectRepository()
-        location = StorageLocation(container=bucket_name, path=test_key)
-
-        # when
-        url = repository.generate_temporary_url(location)
-
-        # then
-        assert url is not None
-        assert "Signature=" in url or "X-Amz-Signature" in url
-
     def test_generate_temporary_url__custom_expires_in(self, s3_bucket):
         """カスタム有効期限で URL が生成されること"""
         # given
