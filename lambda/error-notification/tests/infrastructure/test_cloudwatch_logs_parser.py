@@ -31,7 +31,8 @@ class TestCloudWatchLogsParserParse:
         event_dict = create_cloudwatch_logs_event(
             log_group="/aws/lambda/test-function-log-group",
             log_stream="2025/01/01/[$LATEST]test-log-stream",
-            log_messages=[error_log])
+            log_messages=[error_log],
+        )
         event = CloudWatchLogsEvent(event_dict)
 
         parser = CloudWatchLogsParser()

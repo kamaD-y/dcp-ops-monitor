@@ -4,9 +4,9 @@ from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
 from src.application import ErrorNotificationService, MessageFormatter
 from src.config.settings import get_logger, get_settings
-from src.domain import ICloudWatchLogsParser, INotifier, IObjectRepository
+from src.domain import INotifier, IObjectRepository, LogsEventData
 from src.infrastructure import (
-    CloudWatchLogsParser,
+    CloudWatchLogsAdapter,
     LineNotifierAdapter,
     S3ObjectRepository,
     get_ssm_json_parameter,
@@ -18,21 +18,22 @@ logger = get_logger()
 
 def main(
     event: CloudWatchLogsEvent,
-    parser: ICloudWatchLogsParser | None = None,
+    logs_event_data: LogsEventData | None = None,
     object_repository: IObjectRepository | None = None,
     notifier: INotifier | None = None,
 ) -> None:
     """メイン処理
 
     Args:
-        event: CloudWatch Logs イベント
-        parser: CloudWatch Logs パーサー (テスト時に Mock 注入可能)
+        event: CloudWatch Logs イベント (handler.py境界でのAWS型)
+        logs_event_data: ログイベントデータ (テスト時に直接注入可能)
         object_repository: オブジェクトリポジトリ (テスト時に Mock 注入可能)
         notifier: 通知クライアント (テスト時に Mock 注入可能)
     """
-    # parser が指定されていない場合のみ実装を使用
-    if parser is None:
-        parser = CloudWatchLogsParser()
+    # logs_event_data が指定されていない場合、Adapter で変換
+    if logs_event_data is None:
+        adapter = CloudWatchLogsAdapter()
+        logs_event_data = adapter.convert(event)
 
     # オブジェクトリポジトリが指定されていない場合のみ実装を使用
     if object_repository is None:
@@ -46,11 +47,10 @@ def main(
             token=line_message_parameter["token"],
         )
 
-    # CloudWatch Logs イベントパース
-    parsed_data = parser.parse(event)
-    error_records = parsed_data.error_records
-    log_group = parsed_data.log_group
-    log_stream = parsed_data.log_stream
+    # LogsEventData から必要な情報を取得
+    error_records = logs_event_data.error_records
+    log_group = logs_event_data.log_group
+    log_stream = logs_event_data.log_stream
 
     # エラー通知サービス実行
     message_formatter = MessageFormatter()

@@ -6,6 +6,7 @@ from .exceptions import (
     CloudWatchLogsParseError,
     ErrorNotificationError,
     LineNotificationError,
+    LogsParseError,
     NotificationError,
     ObjectDownloadError,
     S3ImageDownloadError,
@@ -13,13 +14,14 @@ from .exceptions import (
 from .interfaces import INotifier, IObjectRepository
 from .line_message import LineImageMessage, LineMessage, LineTextMessage
 from .line_notifier_interface import ILineNotifier
-from .models import NotificationMessage, StorageLocation
+from .models import LogsEventData, NotificationMessage, StorageLocation
 from .parsed_cloudwatch_logs_data import ParsedCloudWatchLogsData
 from .s3_client_interface import IS3Client
 
 __all__ = [
     # Models
     "ErrorLogRecord",
+    "LogsEventData",
     "ParsedCloudWatchLogsData",
     "StorageLocation",
     "NotificationMessage",
@@ -35,6 +37,7 @@ __all__ = [
     # Exceptions
     "ErrorNotificationError",
     "CloudWatchLogsParseError",
+    "LogsParseError",
     "S3ImageDownloadError",
     "ObjectDownloadError",
     "NotificationError",

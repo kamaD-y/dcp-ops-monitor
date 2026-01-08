@@ -5,7 +5,7 @@ from unittest.mock import Mock
 import pytest
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
-from src.domain import CloudWatchLogsParseError, INotifier, NotificationError
+from src.domain import ErrorLogRecord, INotifier, LogsEventData, LogsParseError, NotificationError
 from src.presentation import main
 from tests.fixtures import create_cloudwatch_logs_event, create_error_log_message
 from tests.fixtures.mocks import MockNotifier
@@ -17,16 +17,24 @@ class TestErrorNotificationHandlerMain:
     def test_main__single_error_without_screenshot(self):
         """1件のエラー（スクリーンショット無し）でテキストメッセージのみ送信"""
         # given
-        error_log = create_error_log_message(
+        error_record = ErrorLogRecord(
+            level="ERROR",
+            location="handler:17",
             message="スクレイピングタイムアウト",
+            timestamp="2025-01-01 00:00:00,000+0000",
+            service="test-service",
             error_file_key=None,
         )
-        event_dict = create_cloudwatch_logs_event(log_messages=[error_log])
-        event = CloudWatchLogsEvent(event_dict)
+        logs_event_data = LogsEventData(
+            error_records=[error_record],
+            log_group="/aws/lambda/test-function",
+            log_stream="2025/01/01/[$LATEST]test",
+        )
+        event = CloudWatchLogsEvent({"awslogs": {"data": "dummy"}})
         mock_notifier = MockNotifier()
 
         # when
-        main(event, notifier=mock_notifier)
+        main(event, logs_event_data=logs_event_data, notifier=mock_notifier)
 
         # then
         assert mock_notifier.notify_called is True
@@ -38,17 +46,39 @@ class TestErrorNotificationHandlerMain:
     def test_main__multiple_errors(self):
         """複数のエラーログが正しくフォーマットされること"""
         # given
-        error_logs = [
-            create_error_log_message(message="エラー1"),
-            create_error_log_message(message="エラー2"),
-            create_error_log_message(message="エラー3"),
+        error_records = [
+            ErrorLogRecord(
+                level="ERROR",
+                location="handler:17",
+                message="エラー1",
+                timestamp="2025-01-01 00:00:00,000+0000",
+                service="test-service",
+            ),
+            ErrorLogRecord(
+                level="ERROR",
+                location="handler:20",
+                message="エラー2",
+                timestamp="2025-01-01 00:00:01,000+0000",
+                service="test-service",
+            ),
+            ErrorLogRecord(
+                level="ERROR",
+                location="handler:25",
+                message="エラー3",
+                timestamp="2025-01-01 00:00:02,000+0000",
+                service="test-service",
+            ),
         ]
-        event_dict = create_cloudwatch_logs_event(log_messages=error_logs)
-        event = CloudWatchLogsEvent(event_dict)
+        logs_event_data = LogsEventData(
+            error_records=error_records,
+            log_group="/aws/lambda/test-function",
+            log_stream="2025/01/01/[$LATEST]test",
+        )
+        event = CloudWatchLogsEvent({"awslogs": {"data": "dummy"}})
         mock_notifier = MockNotifier()
 
         # when
-        main(event, notifier=mock_notifier)
+        main(event, logs_event_data=logs_event_data, notifier=mock_notifier)
 
         # then
         assert mock_notifier.notify_called is True
@@ -61,12 +91,16 @@ class TestErrorNotificationHandlerMain:
     def test_main__no_error_logs(self):
         """エラーレコード0件で早期リターン"""
         # given
-        event_dict = create_cloudwatch_logs_event(log_messages=[])
-        event = CloudWatchLogsEvent(event_dict)
+        logs_event_data = LogsEventData(
+            error_records=[],
+            log_group="/aws/lambda/test-function",
+            log_stream="2025/01/01/[$LATEST]test",
+        )
+        event = CloudWatchLogsEvent({"awslogs": {"data": "dummy"}})
         mock_notifier = MockNotifier()
 
         # when
-        main(event, notifier=mock_notifier)
+        main(event, logs_event_data=logs_event_data, notifier=mock_notifier)
 
         # then
         assert mock_notifier.notify_called is False
@@ -76,15 +110,24 @@ class TestErrorNotificationHandlerMain:
         # given
         # NOTE: generate_presigned_url はオブジェクトの存在チェックをしないため、
         #       実際にS3にファイルが無くてもURL生成は成功する
-        error_log = create_error_log_message(
-            error_file_key="errors/2025/01/01/screenshot.png"
+        error_record = ErrorLogRecord(
+            level="ERROR",
+            location="handler:17",
+            message="エラー",
+            timestamp="2025-01-01 00:00:00,000+0000",
+            service="test-service",
+            error_file_key="errors/2025/01/01/screenshot.png",
         )
-        event_dict = create_cloudwatch_logs_event(log_messages=[error_log])
-        event = CloudWatchLogsEvent(event_dict)
+        logs_event_data = LogsEventData(
+            error_records=[error_record],
+            log_group="/aws/lambda/test-function",
+            log_stream="2025/01/01/[$LATEST]test",
+        )
+        event = CloudWatchLogsEvent({"awslogs": {"data": "dummy"}})
         mock_notifier = MockNotifier()
 
         # when
-        main(event, notifier=mock_notifier)
+        main(event, logs_event_data=logs_event_data, notifier=mock_notifier)
 
         # then
         assert mock_notifier.notify_called is True
@@ -108,13 +151,24 @@ class TestErrorNotificationHandlerMain:
         s3_local = local_stack_container.get_client("s3")  # type: ignore
         s3_local.put_object(Bucket=bucket_name, Key=object_key, Body=content)
 
-        error_log = create_error_log_message(error_file_key=object_key)
-        event_dict = create_cloudwatch_logs_event(log_messages=[error_log])
-        event = CloudWatchLogsEvent(event_dict)
+        error_record = ErrorLogRecord(
+            level="ERROR",
+            location="handler:17",
+            message="エラー",
+            timestamp="2025-01-01 00:00:00,000+0000",
+            service="test-service",
+            error_file_key=object_key,
+        )
+        logs_event_data = LogsEventData(
+            error_records=[error_record],
+            log_group="/aws/lambda/test-function",
+            log_stream="2025/01/01/[$LATEST]test",
+        )
+        event = CloudWatchLogsEvent({"awslogs": {"data": "dummy"}})
         mock_notifier = MockNotifier()
 
         # when
-        main(event, notifier=mock_notifier)
+        main(event, logs_event_data=logs_event_data, notifier=mock_notifier)
 
         # then
         assert mock_notifier.notify_called is True
@@ -133,15 +187,26 @@ class TestErrorNotificationHandlerMain:
         mock_notifier = MockNotifier()
 
         # when, then
-        with pytest.raises(CloudWatchLogsParseError):
+        # logs_event_data が None の場合、Adapter が呼ばれて LogsParseError が発生
+        with pytest.raises(LogsParseError):
             main(invalid_event, notifier=mock_notifier)
 
     def test_main__notification_error(self):
         """通知送信エラーが伝播すること"""
         # given
-        error_log = create_error_log_message()
-        event_dict = create_cloudwatch_logs_event(log_messages=[error_log])
-        event = CloudWatchLogsEvent(event_dict)
+        error_record = ErrorLogRecord(
+            level="ERROR",
+            location="handler:17",
+            message="エラー",
+            timestamp="2025-01-01 00:00:00,000+0000",
+            service="test-service",
+        )
+        logs_event_data = LogsEventData(
+            error_records=[error_record],
+            log_group="/aws/lambda/test-function",
+            log_stream="2025/01/01/[$LATEST]test",
+        )
+        event = CloudWatchLogsEvent({"awslogs": {"data": "dummy"}})
 
         # 通知送信時にエラーを発生させるMock
         mock_notifier = Mock(spec=INotifier)
@@ -149,4 +214,4 @@ class TestErrorNotificationHandlerMain:
 
         # when, then
         with pytest.raises(NotificationError):
-            main(event, notifier=mock_notifier)
+            main(event, logs_event_data=logs_event_data, notifier=mock_notifier)

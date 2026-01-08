@@ -35,3 +35,9 @@ class NotificationError(ErrorNotificationError):
     """通知送信エラー"""
 
     pass
+
+
+class LogsParseError(ErrorNotificationError):
+    """ログイベントのパースエラー"""
+
+    pass
