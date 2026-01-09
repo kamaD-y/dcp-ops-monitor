@@ -6,22 +6,7 @@ from ..models import StorageLocation
 
 
 class IObjectRepository(ABC):
-    """オブジェクトストレージリポジトリインターフェース（S3非依存）"""
-
-    @abstractmethod
-    def download(self, location: StorageLocation) -> bytes:
-        """オブジェクトをダウンロード
-
-        Args:
-            location: ストレージ上の位置
-
-        Returns:
-            bytes: ダウンロードされたオブジェクトのバイトデータ
-
-        Raises:
-            ObjectDownloadError: ダウンロード失敗時
-        """
-        pass
+    """オブジェクトストレージリポジトリインターフェース"""
 
     @abstractmethod
     def generate_temporary_url(self, location: StorageLocation, expires_in: int = 3600) -> str:

@@ -2,54 +2,8 @@
 
 import pytest
 
-from src.domain import ObjectDownloadError, StorageLocation
+from src.domain import StorageLocation
 from src.infrastructure import S3ObjectRepository
-
-
-class TestS3ObjectRepositoryDownload:
-    """S3ObjectRepository の download メソッドのテスト"""
-
-    def test_download__success(self, s3_bucket):
-        """オブジェクトが正常にダウンロードされること"""
-        # given
-        bucket_name, s3_client = s3_bucket("test-s3-object-repository-download")
-        test_key = "test/sample.txt"
-        test_content = b"test content"
-        s3_client.put_object(Bucket=bucket_name, Key=test_key, Body=test_content)
-
-        repository = S3ObjectRepository()
-        location = StorageLocation(container=bucket_name, path=test_key)
-
-        # when
-        result = repository.download(location)
-
-        # then
-        assert result == test_content
-
-    def test_download__object_not_found(self, s3_bucket):
-        """存在しないオブジェクトで ObjectDownloadError が発生すること"""
-        # given
-        bucket_name, _ = s3_bucket("test-s3-object-repository-not-found")
-        repository = S3ObjectRepository()
-        location = StorageLocation(container=bucket_name, path="not/exists.txt")
-
-        # when, then
-        with pytest.raises(ObjectDownloadError) as exc_info:
-            repository.download(location)
-
-        assert "オブジェクトのダウンロードに失敗しました" in str(exc_info.value)
-
-    def test_download__bucket_not_found(self):
-        """存在しないバケットで ObjectDownloadError が発生すること"""
-        # given
-        repository = S3ObjectRepository()
-        location = StorageLocation(container="not-exists-bucket", path="test.txt")
-
-        # when, then
-        with pytest.raises(ObjectDownloadError) as exc_info:
-            repository.download(location)
-
-        assert "オブジェクトのダウンロードに失敗しました" in str(exc_info.value)
 
 
 class TestS3ObjectRepositoryGenerateTemporaryUrl:

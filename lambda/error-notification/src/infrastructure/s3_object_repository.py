@@ -4,7 +4,7 @@ import os
 
 import boto3
 
-from src.domain import IObjectRepository, ObjectDownloadError, StorageLocation
+from src.domain import IObjectRepository, StorageLocation, TemporaryUrlGenerationError
 
 
 class S3ObjectRepository(IObjectRepository):
@@ -20,25 +20,6 @@ class S3ObjectRepository(IObjectRepository):
         else:
             self.client = boto3.client("s3")
 
-    def download(self, location: StorageLocation) -> bytes:
-        """オブジェクトをダウンロード
-
-        Args:
-            location: ストレージ上の位置
-
-        Returns:
-            bytes: ダウンロードされたオブジェクトのバイトデータ
-
-        Raises:
-            ObjectDownloadError: ダウンロード失敗時
-        """
-        try:
-            response = self.client.get_object(Bucket=location.container, Key=location.path)
-            return response["Body"].read()
-        except Exception as e:
-            msg = f"オブジェクトのダウンロードに失敗しました ({location}): {e}"
-            raise ObjectDownloadError(msg) from e
-
     def generate_temporary_url(self, location: StorageLocation, expires_in: int = 3600) -> str:
         """一時アクセス URL を生成
 
@@ -50,7 +31,7 @@ class S3ObjectRepository(IObjectRepository):
             str: 一時アクセス URL
 
         Raises:
-            ObjectDownloadError: URL 生成失敗時
+            TemporaryUrlGenerationError: URL 生成失敗時
         """
         try:
             url = self.client.generate_presigned_url(
@@ -61,4 +42,4 @@ class S3ObjectRepository(IObjectRepository):
             return url
         except Exception as e:
             msg = f"一時アクセス URL の生成に失敗しました ({location}): {e}"
-            raise ObjectDownloadError(msg) from e
+            raise TemporaryUrlGenerationError(msg) from e

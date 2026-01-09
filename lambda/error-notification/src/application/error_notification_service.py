@@ -6,8 +6,8 @@ from src.domain import (
     INotifier,
     IObjectRepository,
     NotificationMessage,
-    ObjectDownloadError,
     StorageLocation,
+    TemporaryUrlGenerationError,
 )
 
 from .message_formatter import MessageFormatter
@@ -89,6 +89,6 @@ class ErrorNotificationService:
             image_url = self.object_repository.generate_temporary_url(location, expires_in=3600)
             return image_url
 
-        except ObjectDownloadError as e:
+        except TemporaryUrlGenerationError as e:
             logger.warning("一時 URL の生成に失敗しました。テキストのみ送信します。", error=str(e))
             return None

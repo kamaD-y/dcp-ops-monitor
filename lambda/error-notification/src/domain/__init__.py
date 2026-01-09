@@ -4,7 +4,7 @@ from .exceptions import (
     ErrorNotificationError,
     LogsParseError,
     NotificationError,
-    ObjectDownloadError,
+    TemporaryUrlGenerationError,
 )
 from .interfaces import INotifier, IObjectRepository
 from .models import ErrorLogRecord, LogsEventData, NotificationMessage, StorageLocation
@@ -21,6 +21,6 @@ __all__ = [
     # Exceptions
     "ErrorNotificationError",
     "LogsParseError",
-    "ObjectDownloadError",
     "NotificationError",
+    "TemporaryUrlGenerationError",
 ]

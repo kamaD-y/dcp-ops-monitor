@@ -7,8 +7,8 @@ class ErrorNotificationError(Exception):
     pass
 
 
-class ObjectDownloadError(ErrorNotificationError):
-    """オブジェクトストレージからのダウンロードエラー"""
+class TemporaryUrlGenerationError(ErrorNotificationError):
+    """一時アクセス URL 生成エラー"""
 
     pass
 
