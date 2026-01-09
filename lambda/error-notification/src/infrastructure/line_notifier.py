@@ -10,7 +10,7 @@ from src.domain import INotifier, NotificationError, NotificationMessage
 logger = get_logger()
 
 
-class LineNotifierAdapter(INotifier):
+class LineNotifier(INotifier):
     """LINE 通知アダプター
 
     汎用的な NotificationMessage を LINE 固有のメッセージ形式に変換し、

@@ -7,7 +7,7 @@ from src.config.settings import get_logger, get_settings
 from src.domain import INotifier, IObjectRepository, LogsEventData
 from src.infrastructure import (
     CloudWatchLogsAdapter,
-    LineNotifierAdapter,
+    LineNotifier,
     S3ObjectRepository,
     get_ssm_json_parameter,
 )
@@ -42,7 +42,7 @@ def main(
     # 通知クライアントが指定されていない場合のみ実装を使用
     if notifier is None:
         line_message_parameter = get_ssm_json_parameter(name=settings.line_message_parameter_name, decrypt=True)
-        notifier = LineNotifierAdapter(
+        notifier = LineNotifier(
             url=line_message_parameter["url"],
             token=line_message_parameter["token"],
         )

@@ -14,7 +14,7 @@ class ErrorLogRecord(BaseModel):
     message: str  # エラーメッセージ本文
     timestamp: str  # タイムスタンプ (UTC、例: "2025-12-31 16:30:00,123+0000")
     service: str  # サービス名 (web-scraping)
-    error_file_key: Optional[str] = None  # S3 オブジェクトキー
+    error_file_key: Optional[str] = None  # エラーオブジェクトのキー
     exception_name: Optional[str] = None  # 例外クラス名
     exception: Optional[str] = None  # スタックトレース
 
