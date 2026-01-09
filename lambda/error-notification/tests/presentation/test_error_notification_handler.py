@@ -7,7 +7,6 @@ from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
 from src.domain import ErrorLogRecord, INotifier, LogsEventData, LogsParseError, NotificationError
 from src.presentation import main
-from tests.fixtures import create_cloudwatch_logs_event, create_error_log_message
 from tests.fixtures.mocks import MockNotifier
 
 
