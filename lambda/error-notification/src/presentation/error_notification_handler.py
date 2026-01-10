@@ -2,7 +2,7 @@
 
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
-from src.application import ErrorNotificationService, MessageFormatter
+from src.application import ErrorNotificationService
 from src.config.settings import get_logger, get_settings
 from src.domain import INotifier, IObjectRepository, LogsEventData
 from src.infrastructure import (
@@ -53,8 +53,7 @@ def main(
     log_stream = logs_event_data.log_stream
 
     # エラー通知サービス実行
-    message_formatter = MessageFormatter()
-    notification_service = ErrorNotificationService(object_repository, notifier, message_formatter)
+    notification_service = ErrorNotificationService(object_repository, notifier)
     notification_service.send_error_notification(
         error_records,
         log_group,

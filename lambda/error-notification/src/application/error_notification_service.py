@@ -10,7 +10,7 @@ from src.domain import (
     TemporaryUrlGenerationError,
 )
 
-from .message_formatter import MessageFormatter
+from .message_formatter import format_error_message
 
 logger = get_logger()
 
@@ -22,18 +22,15 @@ class ErrorNotificationService:
         self,
         object_repository: IObjectRepository,
         notifier: INotifier,
-        message_formatter: MessageFormatter,
     ) -> None:
         """エラー通知サービスを初期化
 
         Args:
             object_repository: オブジェクトリポジトリ
             notifier: 通知クライアント
-            message_formatter: メッセージフォーマッター
         """
         self.object_repository = object_repository
         self.notifier = notifier
-        self.message_formatter = message_formatter
 
     def send_error_notification(
         self,
@@ -55,7 +52,7 @@ class ErrorNotificationService:
             return
 
         # テキストメッセージ生成
-        message_text = self.message_formatter.format_error_message(error_records, log_group, log_stream)
+        message_text = format_error_message(error_records, log_group, log_stream)
 
         # 画像URL取得 (最初のレコードにスクリーンショットがあれば)
         image_url = None
