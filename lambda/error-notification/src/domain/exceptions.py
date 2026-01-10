@@ -7,19 +7,19 @@ class ErrorNotificationError(Exception):
     pass
 
 
-class CloudWatchLogsParseError(ErrorNotificationError):
-    """CloudWatch Logs イベントのパースエラー"""
+class TemporaryUrlGenerationError(ErrorNotificationError):
+    """一時アクセス URL 生成エラー"""
 
     pass
 
 
-class S3ImageDownloadError(ErrorNotificationError):
-    """S3 からの画像ダウンロードエラー"""
+class NotificationError(ErrorNotificationError):
+    """通知送信エラー"""
 
     pass
 
 
-class LineNotificationError(ErrorNotificationError):
-    """LINE 通知送信エラー"""
+class LogsParseError(ErrorNotificationError):
+    """ログイベントのパースエラー"""
 
     pass

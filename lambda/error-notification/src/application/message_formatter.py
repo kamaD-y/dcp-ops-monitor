@@ -1,6 +1,6 @@
 """エラーメッセージのフォーマット"""
 
-from src.domain.error_log_record import ErrorLogRecord
+from src.domain import ErrorLogRecord
 
 
 class MessageFormatter:
