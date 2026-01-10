@@ -42,18 +42,12 @@ class LineNotifier(INotifier):
         try:
             # NotificationMessage を LINE メッセージ形式に変換
             line_messages = self._convert_to_line_format(messages)
-            # LINE API 経由で送信
-            payload = {"messages": line_messages}
 
-            response = requests.post(
-                self.url,
-                headers=self.headers,
-                data=json.dumps(payload),
-                timeout=30,
-            )
-            response.raise_for_status()
-
-            logger.info("LINE Message API への送信成功", response=response.text)
+            # LINE API の制限（最大5件）に対応して分割送信
+            max_messages_per_request = 5
+            for i in range(0, len(line_messages), max_messages_per_request):
+                batch = line_messages[i : i + max_messages_per_request]
+                self._send_batch(batch)
 
         except requests.exceptions.RequestException as e:
             msg = f"LINE Message API への送信失敗: {e}"
@@ -61,6 +55,27 @@ class LineNotifier(INotifier):
         except Exception as e:
             msg = f"通知の送信に失敗しました: {e}"
             raise NotificationError(msg) from e
+
+    def _send_batch(self, line_messages: list[dict]) -> None:
+        """LINE API へメッセージを送信
+
+        Args:
+            line_messages: LINE メッセージ形式のリスト
+
+        Raises:
+            requests.exceptions.RequestException: 送信失敗時
+        """
+        payload = {"messages": line_messages}
+
+        response = requests.post(
+            self.url,
+            headers=self.headers,
+            data=json.dumps(payload),
+            timeout=30,
+        )
+        response.raise_for_status()
+
+        logger.info("LINE Message API への送信成功", response=response.text)
 
     def _convert_to_line_format(self, messages: list[NotificationMessage]) -> list[dict]:
         """NotificationMessage を LINE メッセージ形式に変換
