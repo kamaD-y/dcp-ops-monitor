@@ -19,8 +19,6 @@ class TestFormatErrorMessage:
         )
         logs_event_data = LogsEventData(
             error_records=[error_record],
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
             logs_url="https://ap-northeast-1.console.aws.amazon.com/cloudwatch/home",
         )
 
@@ -46,8 +44,6 @@ class TestFormatErrorMessage:
         )
         logs_event_data = LogsEventData(
             error_records=[error_record],
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
             logs_url=None,
         )
 
@@ -64,8 +60,6 @@ class TestFormatErrorMessage:
         # Arrange
         logs_event_data = LogsEventData(
             error_records=[],
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
         )
 
         # Act
@@ -96,8 +90,6 @@ class TestFormatErrorMessage:
         ]
         logs_event_data = LogsEventData(
             error_records=error_records,
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
         )
 
         # Act

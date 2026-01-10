@@ -90,9 +90,9 @@ class TestCloudWatchLogsAdapter:
         assert len(result.error_records) == 2
         assert result.error_records[0].message == "エラー1"
         assert result.error_records[1].message == "エラー2"
-        assert result.log_group == "/aws/lambda/test-function"
-        assert result.log_stream == "2025/01/01/[$LATEST]test"
-        assert result.logs_url is None  # 新規フィールド（この時点ではNone）
+        assert result.logs_url is not None
+        assert "ap-northeast-1" in result.logs_url
+        assert "console.aws.amazon.com/cloudwatch/home" in result.logs_url
 
     def test_convert__no_error_logs(self):
         """正常系: ERROR レベルのログがない場合"""
@@ -114,9 +114,7 @@ class TestCloudWatchLogsAdapter:
         # Assert
         assert isinstance(result, LogsEventData)
         assert len(result.error_records) == 0
-        assert result.log_group == "/aws/lambda/test-function"
-        assert result.log_stream == "2025/01/01/[$LATEST]test"
-        assert result.logs_url is None
+        assert result.logs_url is not None
 
     def test_convert__invalid_json_in_message(self):
         """正常系: JSON パース失敗時は該当ログをスキップ"""

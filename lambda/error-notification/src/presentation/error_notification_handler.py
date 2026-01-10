@@ -30,27 +30,10 @@ def main(
         object_repository: オブジェクトリポジトリ (テスト時に Mock 注入可能)
         notifier: 通知クライアント (テスト時に Mock 注入可能)
     """
-    # logs_event_data が指定されていない場合、Adapter で変換
+    # logs_event_data が指定されていない場合、Adapter で変換（URL生成も含む）
     if logs_event_data is None:
         adapter = CloudWatchLogsAdapter()
         logs_event_data = adapter.convert(event)
-
-        # CloudWatch Logs URL を生成して設定
-        try:
-            logs_url = adapter.generate_logs_url(
-                logs_event_data.log_group,
-                logs_event_data.log_stream,
-            )
-            # Pydanticモデルなので再代入で新しいインスタンス作成
-            logs_event_data = LogsEventData(
-                error_records=logs_event_data.error_records,
-                log_group=logs_event_data.log_group,
-                log_stream=logs_event_data.log_stream,
-                logs_url=logs_url,
-            )
-        except Exception as e:
-            # URL生成失敗時はログを出して続行（URLなしで通知）
-            logger.warning("CloudWatch Logs URL の生成に失敗しました", error=str(e))
 
     # オブジェクトリポジトリが指定されていない場合のみ実装を使用
     if object_repository is None:

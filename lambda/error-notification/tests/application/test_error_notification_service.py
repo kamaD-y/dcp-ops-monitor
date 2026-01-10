@@ -23,8 +23,6 @@ class TestErrorNotificationService:
         )
         logs_event_data = LogsEventData(
             error_records=[error_record],
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
             logs_url="https://console.aws.amazon.com/cloudwatch/home",
         )
 
@@ -47,8 +45,6 @@ class TestErrorNotificationService:
         # Arrange
         logs_event_data = LogsEventData(
             error_records=[],
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
         )
 
         mock_repo = S3ObjectRepository()
@@ -81,8 +77,6 @@ class TestErrorNotificationService:
         )
         logs_event_data = LogsEventData(
             error_records=[error_record],
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
         )
 
         repo = S3ObjectRepository()

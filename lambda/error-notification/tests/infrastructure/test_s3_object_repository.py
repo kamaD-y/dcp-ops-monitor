@@ -1,6 +1,7 @@
 """S3ObjectRepository のテスト"""
+from urllib.parse import parse_qs, unquote, urlparse
+
 import pytest
-from urllib.parse import urlparse, parse_qs, unquote
 
 from src.domain import StorageLocation
 from src.infrastructure import S3ObjectRepository

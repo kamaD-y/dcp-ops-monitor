@@ -26,8 +26,6 @@ class TestErrorNotificationHandlerMain:
         )
         logs_event_data = LogsEventData(
             error_records=[error_record],
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
         )
         event = CloudWatchLogsEvent({"awslogs": {"data": "dummy"}})
         mock_notifier = MockNotifier()
@@ -70,8 +68,6 @@ class TestErrorNotificationHandlerMain:
         ]
         logs_event_data = LogsEventData(
             error_records=error_records,
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
         )
         event = CloudWatchLogsEvent({"awslogs": {"data": "dummy"}})
         mock_notifier = MockNotifier()
@@ -92,8 +88,6 @@ class TestErrorNotificationHandlerMain:
         # given
         logs_event_data = LogsEventData(
             error_records=[],
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
         )
         event = CloudWatchLogsEvent({"awslogs": {"data": "dummy"}})
         mock_notifier = MockNotifier()
@@ -119,8 +113,6 @@ class TestErrorNotificationHandlerMain:
         )
         logs_event_data = LogsEventData(
             error_records=[error_record],
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
         )
         event = CloudWatchLogsEvent({"awslogs": {"data": "dummy"}})
         mock_notifier = MockNotifier()
@@ -160,8 +152,6 @@ class TestErrorNotificationHandlerMain:
         )
         logs_event_data = LogsEventData(
             error_records=[error_record],
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
         )
         event = CloudWatchLogsEvent({"awslogs": {"data": "dummy"}})
         mock_notifier = MockNotifier()
@@ -202,8 +192,6 @@ class TestErrorNotificationHandlerMain:
         )
         logs_event_data = LogsEventData(
             error_records=[error_record],
-            log_group="/aws/lambda/test-function",
-            log_stream="2025/01/01/[$LATEST]test",
         )
         event = CloudWatchLogsEvent({"awslogs": {"data": "dummy"}})
 
