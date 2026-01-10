@@ -1,25 +1,19 @@
 """エラーメッセージのフォーマット"""
 
-from urllib.parse import quote
-
-from src.domain import ErrorLogRecord
+from src.domain import LogsEventData
 
 
-def format_error_message(
-    error_records: list[ErrorLogRecord],
-    log_group: str,
-    log_stream: str,
-) -> str:
+def format_error_message(logs_event_data: LogsEventData) -> str:
     """エラーメッセージをフォーマット
 
     Args:
-        error_records: エラーログレコードリスト
-        log_group: CloudWatch Logs ロググループ名
-        log_stream: CloudWatch Logs ログストリーム名
+        logs_event_data: ログイベントデータ
 
     Returns:
         str: フォーマットされたメッセージ
     """
+    error_records = logs_event_data.error_records
+
     if not error_records:
         return "エラーログがありませんでした。"
 
@@ -46,32 +40,8 @@ def format_error_message(
 
         lines.append("")
 
-    # CloudWatch Logs リンク
-    cloudwatch_url = _generate_cloudwatch_logs_url(log_group, log_stream)
-    lines.append(f"📊 CloudWatch Logs: {cloudwatch_url}")
+    # CloudWatch Logs リンク（URLが存在する場合のみ）
+    if logs_event_data.logs_url:
+        lines.append(f"📊 CloudWatch Logs: {logs_event_data.logs_url}")
 
     return "\n".join(lines)
-
-
-def _generate_cloudwatch_logs_url(log_group: str, log_stream: str) -> str:
-    """CloudWatch Logs URL を生成
-
-    Args:
-        log_group: ロググループ名
-        log_stream: ログストリーム名
-
-    Returns:
-        str: CloudWatch Logs URL
-    """
-    region = "ap-northeast-1"
-    # URL エンコードが必要な文字列は urllib.parse.quote で処理
-    log_group_encoded = quote(log_group, safe="")
-    log_stream_encoded = quote(log_stream, safe="")
-
-    url = (
-        f"https://{region}.console.aws.amazon.com/cloudwatch/home?"
-        f"region={region}#logsV2:log-groups/log-group/{log_group_encoded}/"
-        f"log-events/{log_stream_encoded}"
-    )
-
-    return url

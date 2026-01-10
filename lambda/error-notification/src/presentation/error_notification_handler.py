@@ -35,6 +35,23 @@ def main(
         adapter = CloudWatchLogsAdapter()
         logs_event_data = adapter.convert(event)
 
+        # CloudWatch Logs URL を生成して設定
+        try:
+            logs_url = adapter.generate_logs_url(
+                logs_event_data.log_group,
+                logs_event_data.log_stream,
+            )
+            # Pydanticモデルなので再代入で新しいインスタンス作成
+            logs_event_data = LogsEventData(
+                error_records=logs_event_data.error_records,
+                log_group=logs_event_data.log_group,
+                log_stream=logs_event_data.log_stream,
+                logs_url=logs_url,
+            )
+        except Exception as e:
+            # URL生成失敗時はログを出して続行（URLなしで通知）
+            logger.warning("CloudWatch Logs URL の生成に失敗しました", error=str(e))
+
     # オブジェクトリポジトリが指定されていない場合のみ実装を使用
     if object_repository is None:
         object_repository = S3ObjectRepository()
@@ -47,18 +64,11 @@ def main(
             token=line_message_parameter["token"],
         )
 
-    # LogsEventData から必要な情報を取得
-    error_records = logs_event_data.error_records
-    log_group = logs_event_data.log_group
-    log_stream = logs_event_data.log_stream
-
     # エラー通知サービス実行
     notification_service = ErrorNotificationService(object_repository, notifier)
     notification_service.send_error_notification(
-        error_records,
-        log_group,
-        log_stream,
+        logs_event_data,
         settings.error_bucket_name,
     )
 
-    logger.info("エラー通知処理が完了しました", error_count=len(error_records))
+    logger.info("エラー通知処理が完了しました", error_count=len(logs_event_data.error_records))
