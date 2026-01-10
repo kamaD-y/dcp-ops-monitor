@@ -92,6 +92,7 @@ class TestCloudWatchLogsAdapter:
         assert result.error_records[1].message == "エラー2"
         assert result.log_group == "/aws/lambda/test-function"
         assert result.log_stream == "2025/01/01/[$LATEST]test"
+        assert result.logs_url is None  # 新規フィールド（この時点ではNone）
 
     def test_convert__no_error_logs(self):
         """正常系: ERROR レベルのログがない場合"""
@@ -115,6 +116,7 @@ class TestCloudWatchLogsAdapter:
         assert len(result.error_records) == 0
         assert result.log_group == "/aws/lambda/test-function"
         assert result.log_stream == "2025/01/01/[$LATEST]test"
+        assert result.logs_url is None
 
     def test_convert__invalid_json_in_message(self):
         """正常系: JSON パース失敗時は該当ログをスキップ"""
@@ -177,3 +179,19 @@ class TestCloudWatchLogsAdapter:
             adapter.convert(invalid_event)
 
         assert "CloudWatch Logs イベントの変換に失敗しました" in str(exc_info.value)
+
+    def test_generate_logs_url__success(self):
+        """正常系: CloudWatch Logs URL を正しく生成"""
+        # Arrange
+        adapter = CloudWatchLogsAdapter()
+        log_group = "/aws/lambda/test-function"
+        log_stream = "2025/01/01/[$LATEST]test"
+
+        # Act
+        url = adapter.generate_logs_url(log_group, log_stream)
+
+        # Assert
+        assert "ap-northeast-1" in url
+        assert "console.aws.amazon.com/cloudwatch/home" in url
+        assert "%2Faws%2Flambda%2Ftest-function" in url  # URL エンコードされたlog_group
+        assert "2025%2F01%2F01%2F%5B%24LATEST%5Dtest" in url  # URL エンコードされたlog_stream

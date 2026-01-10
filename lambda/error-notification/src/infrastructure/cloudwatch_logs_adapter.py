@@ -1,6 +1,7 @@
 """CloudWatch Logs アダプター"""
 
 import json
+from urllib.parse import quote
 
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
@@ -16,6 +17,8 @@ class CloudWatchLogsAdapter:
     AWS固有の CloudWatchLogsEvent 型をドメイン独自の LogsEventData に変換し、
     ドメイン層への技術詳細の侵入を防ぐ
     """
+
+    REGION = "ap-northeast-1"  # CloudWatch Logs リージョン（定数）
 
     def convert(self, event: CloudWatchLogsEvent) -> LogsEventData:
         """CloudWatchLogsEvent を LogsEventData に変換
@@ -49,8 +52,30 @@ class CloudWatchLogsAdapter:
                 error_records=error_records,
                 log_group=decoded_data.log_group,
                 log_stream=decoded_data.log_stream,
+                logs_url=None,  # 新規フィールド（この時点ではNone）
             )
 
         except Exception as e:
             msg = f"CloudWatch Logs イベントの変換に失敗しました: {e}"
             raise LogsParseError(msg) from e
+
+    def generate_logs_url(self, log_group: str, log_stream: str) -> str:
+        """CloudWatch Logs コンソールURLを生成
+
+        Args:
+            log_group: ロググループ名
+            log_stream: ログストリーム名
+
+        Returns:
+            str: CloudWatch Logs URL
+        """
+        log_group_encoded = quote(log_group, safe="")
+        log_stream_encoded = quote(log_stream, safe="")
+
+        url = (
+            f"https://{self.REGION}.console.aws.amazon.com/cloudwatch/home?"
+            f"region={self.REGION}#logsV2:log-groups/log-group/{log_group_encoded}/"
+            f"log-events/{log_stream_encoded}"
+        )
+
+        return url
