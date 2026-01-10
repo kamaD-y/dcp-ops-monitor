@@ -20,6 +20,6 @@ class IObjectRepository(ABC):
             str: 一時アクセス URL
 
         Raises:
-            ObjectDownloadError: URL 生成失敗時
+            TemporaryUrlGenerationError: URL 生成失敗時
         """
         pass
