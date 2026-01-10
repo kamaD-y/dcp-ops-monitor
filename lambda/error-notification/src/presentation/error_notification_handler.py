@@ -2,7 +2,7 @@
 
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
-from src.application import ErrorNotificationService, MessageFormatter
+from src.application import ErrorNotificationService
 from src.config.settings import get_logger, get_settings
 from src.domain import INotifier, IObjectRepository, LogsEventData
 from src.infrastructure import (
@@ -30,7 +30,7 @@ def main(
         object_repository: オブジェクトリポジトリ (テスト時に Mock 注入可能)
         notifier: 通知クライアント (テスト時に Mock 注入可能)
     """
-    # logs_event_data が指定されていない場合、Adapter で変換
+    # logs_event_data が指定されていない場合、Adapter で変換（URL生成も含む）
     if logs_event_data is None:
         adapter = CloudWatchLogsAdapter()
         logs_event_data = adapter.convert(event)
@@ -47,19 +47,11 @@ def main(
             token=line_message_parameter["token"],
         )
 
-    # LogsEventData から必要な情報を取得
-    error_records = logs_event_data.error_records
-    log_group = logs_event_data.log_group
-    log_stream = logs_event_data.log_stream
-
     # エラー通知サービス実行
-    message_formatter = MessageFormatter()
-    notification_service = ErrorNotificationService(object_repository, notifier, message_formatter)
+    notification_service = ErrorNotificationService(object_repository, notifier)
     notification_service.send_error_notification(
-        error_records,
-        log_group,
-        log_stream,
+        logs_event_data,
         settings.error_bucket_name,
     )
 
-    logger.info("エラー通知処理が完了しました", error_count=len(error_records))
+    logger.info("エラー通知処理が完了しました", error_count=len(logs_event_data.error_records))

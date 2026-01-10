@@ -6,12 +6,10 @@ from .error_log_record import ErrorLogRecord
 
 
 class LogsEventData(BaseModel):
-    """CloudWatch Logs イベントから抽出したドメインデータ
+    """ログイベントから抽出したドメインデータ
 
-    CloudWatchLogsEvent から AWS固有の詳細を排除し、
-    ビジネスロジックに必要な情報のみを保持する
+    技術詳細に依存しない形でログイベント情報を保持する
     """
 
     error_records: list[ErrorLogRecord]  # エラーログレコードのリスト
-    log_group: str  # ロググループ名
-    log_stream: str  # ログストリーム名
+    logs_url: str | None = None  # 生ログの閲覧URL（オプション）

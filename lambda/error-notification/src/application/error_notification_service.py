@@ -5,12 +5,13 @@ from src.domain import (
     ErrorLogRecord,
     INotifier,
     IObjectRepository,
+    LogsEventData,
     NotificationMessage,
     StorageLocation,
     TemporaryUrlGenerationError,
 )
 
-from .message_formatter import MessageFormatter
+from .message_formatter import format_error_message
 
 logger = get_logger()
 
@@ -22,41 +23,37 @@ class ErrorNotificationService:
         self,
         object_repository: IObjectRepository,
         notifier: INotifier,
-        message_formatter: MessageFormatter,
     ) -> None:
         """エラー通知サービスを初期化
 
         Args:
             object_repository: オブジェクトリポジトリ
             notifier: 通知クライアント
-            message_formatter: メッセージフォーマッター
         """
         self.object_repository = object_repository
         self.notifier = notifier
-        self.message_formatter = message_formatter
 
     def send_error_notification(
         self,
-        error_records: list[ErrorLogRecord],
-        log_group: str,
-        log_stream: str,
+        logs_event_data: LogsEventData,
         bucket_name: str,
     ) -> None:
         """エラー通知を送信
 
         Args:
-            error_records: エラーログレコードリスト
-            log_group: CloudWatch Logs ロググループ名
-            log_stream: CloudWatch Logs ログストリーム名
+            logs_event_data: ログイベントデータ
             bucket_name: S3 バケット名
         """
+        error_records = logs_event_data.error_records
+
         if not error_records:
             logger.info("エラーレコードが0件のため、通知をスキップします")
             return
 
         # テキストメッセージ生成
-        message_text = self.message_formatter.format_error_message(error_records, log_group, log_stream)
+        message_text = format_error_message(logs_event_data)
 
+        # NOTE: エラーが複数件同時に発生する想定をしておらず、最初のレコードのスクリーンショットのみを確認している
         # 画像URL取得 (最初のレコードにスクリーンショットがあれば)
         image_url = None
         first_record = error_records[0]

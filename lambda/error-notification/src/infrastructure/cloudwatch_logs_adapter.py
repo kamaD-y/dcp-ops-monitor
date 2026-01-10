@@ -1,6 +1,7 @@
 """CloudWatch Logs アダプター"""
 
 import json
+from urllib.parse import quote
 
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
@@ -17,6 +18,8 @@ class CloudWatchLogsAdapter:
     ドメイン層への技術詳細の侵入を防ぐ
     """
 
+    REGION = "ap-northeast-1"  # CloudWatch Logs リージョン（定数）
+
     def convert(self, event: CloudWatchLogsEvent) -> LogsEventData:
         """CloudWatchLogsEvent を LogsEventData に変換
 
@@ -30,10 +33,10 @@ class CloudWatchLogsAdapter:
             LogsParseError: イベントのパースに失敗した場合
         """
         try:
-            # CloudWatch Logs イベントをデコード
+            # 1. CloudWatch Logs イベントをデコード
             decoded_data = event.parse_logs_data()
 
-            # ERROR レベルのログのみ抽出
+            # 2. ERROR レベルのログのみ抽出
             error_records = []
             for log_event in decoded_data.log_events:
                 try:
@@ -44,13 +47,43 @@ class CloudWatchLogsAdapter:
                     logger.warning(f"ログメッセージのパースに失敗しました: {e}")
                     continue
 
-            # LogsEventData を生成
+            # 3. CloudWatch Logs URL を生成
+            try:
+                logs_url = self.generate_logs_url(
+                    decoded_data.log_group,
+                    decoded_data.log_stream,
+                )
+            except Exception as e:
+                logger.warning("CloudWatch Logs URL の生成に失敗しました", error=str(e))
+                logs_url = None
+
+            # 4. LogsEventData を生成
             return LogsEventData(
                 error_records=error_records,
-                log_group=decoded_data.log_group,
-                log_stream=decoded_data.log_stream,
+                logs_url=logs_url,
             )
 
         except Exception as e:
             msg = f"CloudWatch Logs イベントの変換に失敗しました: {e}"
             raise LogsParseError(msg) from e
+
+    def generate_logs_url(self, log_group: str, log_stream: str) -> str:
+        """CloudWatch Logs コンソールURLを生成
+
+        Args:
+            log_group: ロググループ名
+            log_stream: ログストリーム名
+
+        Returns:
+            str: CloudWatch Logs URL
+        """
+        log_group_encoded = quote(log_group, safe="")
+        log_stream_encoded = quote(log_stream, safe="")
+
+        url = (
+            f"https://{self.REGION}.console.aws.amazon.com/cloudwatch/home?"
+            f"region={self.REGION}#logsV2:log-groups/log-group/{log_group_encoded}/"
+            f"log-events/{log_stream_encoded}"
+        )
+
+        return url
