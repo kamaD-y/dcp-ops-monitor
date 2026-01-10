@@ -54,6 +54,7 @@ class ErrorNotificationService:
         # テキストメッセージ生成
         message_text = format_error_message(error_records, log_group, log_stream)
 
+        # NOTE: エラーが複数件同時に発生する想定をしておらず、最初のレコードのスクリーンショットのみを確認している
         # 画像URL取得 (最初のレコードにスクリーンショットがあれば)
         image_url = None
         first_record = error_records[0]
