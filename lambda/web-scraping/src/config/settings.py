@@ -5,15 +5,17 @@ from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-def get_logger(logger: Logger = Logger()) -> Logger:
+def get_logger(logger: Logger | None = None) -> Logger:
     """Logger のインスタンスを取得する
 
     Args:
-        logger (Logger, optional): Logger のインスタンス. Defaults to Logger().
+        logger (Logger | None, optional): Logger のインスタンス. Defaults to None.
 
     Returns:
         Logger: Logger のインスタンス
     """
+    if logger is None:
+        logger = Logger()
     return logger
 
 
@@ -41,13 +43,15 @@ class EnvSettings(BaseSettings):
     )
 
 
-def get_settings(settings_instance: EnvSettings = EnvSettings()) -> EnvSettings:  # type: ignore
+def get_settings(settings_instance: EnvSettings | None = None) -> EnvSettings:
     """設定インスタンスを取得する
 
     Args:
-        settings_instance (EnvSettings, optional): 設定インスタンス. Defaults to EnvSettings().
+        settings_instance (EnvSettings | None, optional): 設定インスタンス. Defaults to None.
 
     Returns:
         EnvSettings: 設定インスタンス
     """
+    if settings_instance is None:
+        settings_instance = EnvSettings()  # type: ignore (missing-argument)
     return settings_instance

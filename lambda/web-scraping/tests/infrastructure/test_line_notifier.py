@@ -7,8 +7,7 @@ class TestLineNotifierCreateMessageBy:
     def test_create_message_by__with_multiple_products(self):
         """複数の商品がある場合、正しいメッセージが生成されること"""
         # given
-        from src.domain.dcp_assets import DcpAssetInfo, DcpAssets
-        from src.domain.dcp_ops_indicators import DcpOpsIndicators
+        from src.domain import DcpAssetInfo, DcpAssets, DcpOpsIndicators
         from src.infrastructure.line_notifier import LineNotifier
 
         assets = DcpAssets(
@@ -64,8 +63,7 @@ class TestLineNotifierCreateMessageBy:
     def test_create_message_by__with_negative_gains(self):
         """評価損益がマイナスの場合、正しくメッセージが生成されること"""
         # given
-        from src.domain.dcp_assets import DcpAssetInfo, DcpAssets
-        from src.domain.dcp_ops_indicators import DcpOpsIndicators
+        from src.domain import DcpAssetInfo, DcpAssets, DcpOpsIndicators
         from src.infrastructure.line_notifier import LineNotifier
 
         assets = DcpAssets(
