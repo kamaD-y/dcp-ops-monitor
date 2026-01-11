@@ -1,10 +1,10 @@
 """Domain レイヤー: モデル、インターフェース、例外"""
 
 from .exceptions import (
+    CouldNotGenerateTemporaryUrl,
     ErrorNotificationError,
     LogsParseError,
     NotificationError,
-    TemporaryUrlGenerationError,
 )
 from .interfaces import INotifier, IObjectRepository
 from .models import ErrorLogRecord, LogsEventData, NotificationMessage, StorageLocation
@@ -22,5 +22,5 @@ __all__ = [
     "ErrorNotificationError",
     "LogsParseError",
     "NotificationError",
-    "TemporaryUrlGenerationError",
+    "CouldNotGenerateTemporaryUrl",
 ]

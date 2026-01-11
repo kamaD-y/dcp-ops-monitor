@@ -4,7 +4,7 @@ import os
 
 import boto3
 
-from src.domain import IObjectRepository, StorageLocation, TemporaryUrlGenerationError
+from src.domain import CouldNotGenerateTemporaryUrl, IObjectRepository, StorageLocation
 
 
 class S3ObjectRepository(IObjectRepository):
@@ -31,7 +31,7 @@ class S3ObjectRepository(IObjectRepository):
             str: 一時アクセス URL
 
         Raises:
-            TemporaryUrlGenerationError: URL 生成失敗時
+            CouldNotGenerateTemporaryUrl: URL 生成失敗時
         """
         try:
             url = self.client.generate_presigned_url(
@@ -41,5 +41,4 @@ class S3ObjectRepository(IObjectRepository):
             )
             return url
         except Exception as e:
-            msg = f"一時アクセス URL の生成に失敗しました ({location}): {e}"
-            raise TemporaryUrlGenerationError(msg) from e
+            raise CouldNotGenerateTemporaryUrl.from_location(str(location)) from e

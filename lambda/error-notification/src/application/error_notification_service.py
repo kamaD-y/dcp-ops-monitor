@@ -2,13 +2,13 @@
 
 from src.config.settings import get_logger
 from src.domain import (
+    CouldNotGenerateTemporaryUrl,
     ErrorLogRecord,
     INotifier,
     IObjectRepository,
     LogsEventData,
     NotificationMessage,
     StorageLocation,
-    TemporaryUrlGenerationError,
 )
 
 from .message_formatter import format_error_message
@@ -86,6 +86,6 @@ class ErrorNotificationService:
             image_url = self.object_repository.generate_temporary_url(location, expires_in=3600)
             return image_url
 
-        except TemporaryUrlGenerationError as e:
+        except CouldNotGenerateTemporaryUrl as e:
             logger.warning("一時 URL の生成に失敗しました。テキストのみ送信します。", error=str(e))
             return None
