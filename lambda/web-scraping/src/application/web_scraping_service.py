@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 from config.settings import get_logger
-from domain import AssetExtractionError, DcpAssetInfo, DcpAssets, IDcpScraper, IS3Repository, ScrapingError
+from domain import AssetExtractionError, DcpAssetInfo, DcpAssets, IDcpScraper, IS3Repository, ScrapingFailed
 from infrastructure import SeleniumDcpScraper
 
 logger = get_logger()
@@ -19,7 +19,7 @@ class WebScrapingService:
     def scrape(self) -> str:
         try:
             return self.scraper.fetch_asset_valuation_html()
-        except Exception as e:
+        except ScrapingFailed as e:
             error_image_path = self.scraper.get_error_image_path()
             key = None
             if error_image_path:
@@ -40,7 +40,9 @@ class WebScrapingService:
                         "エラー画像を S3 にアップロードしました。",
                         extra={"error_file_key": key},
                     )
-            raise ScrapingError("スクレイピング処理に失敗しました。", error_file_key=key) from e
+            # error_file_keyを設定して再raise
+            e.error_file_key = key
+            raise
 
     def extract_asset_valuation(self, html_source: str) -> DcpAssets:
         """HTML から資産情報を抽出する

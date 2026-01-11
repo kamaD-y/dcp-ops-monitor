@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 from config.settings import get_logger
-from domain import IDcpScraper, ScrapingParams
+from domain import IDcpScraper, ScrapingFailed, ScrapingParams
 
 logger = get_logger()
 
@@ -96,7 +96,7 @@ class SeleniumDcpScraper(IDcpScraper):
             self.error_image_path = "/tmp/error_login.png"
             self.driver.save_screenshot(self.error_image_path)
             self.driver.quit()
-            raise Exception("ログイン処理に失敗しました。") from e
+            raise ScrapingFailed.during_login() from e
 
     def _get_asset_valuation_page(self) -> str:
         try:
@@ -113,7 +113,7 @@ class SeleniumDcpScraper(IDcpScraper):
             self.driver.save_screenshot(self.error_image_path)
             self._logout()
             self.driver.quit()
-            raise Exception("資産評価額照会ページの取得に失敗しました。") from e
+            raise ScrapingFailed.during_page_fetch() from e
 
     def _logout(self) -> None:
         try:

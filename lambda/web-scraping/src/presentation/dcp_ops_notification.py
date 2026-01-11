@@ -22,7 +22,7 @@ def main(
         notifier (Optional[INotifier]): 通知サービス（テスト時にMockを注入可能）
 
     Raises:
-        ScrapingError: スクレイピング処理失敗時
+        ScrapingFailed: スクレイピング処理失敗時
         AssetExtractionError: 資産情報抽出処理失敗時
         NotificationFailed: 通知送信失敗時
     """
