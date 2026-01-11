@@ -3,7 +3,7 @@
 from .exceptions import (
     AssetExtractionError,
     NotificationFailed,
-    ScrapingError,
+    ScrapingFailed,
     WebScrapingFailed,
 )
 from .interfaces import IDcpScraper, INotifier, IS3Repository
@@ -29,6 +29,6 @@ __all__ = [
     # Exceptions
     "AssetExtractionError",
     "NotificationFailed",
-    "ScrapingError",
+    "ScrapingFailed",
     "WebScrapingFailed",
 ]
