@@ -26,17 +26,18 @@ def test_main_e2e_with_mocks(valid_assets_page):
 
     # 送信されたメッセージの内容を確認
     sent_message = notifier.get_last_sent_message()
-    assert "確定拠出年金 運用状況通知Bot" in sent_message
-    assert "総評価" in sent_message
-    assert "拠出金額累計:" in sent_message
-    assert "評価損益:" in sent_message
-    assert "資産評価額:" in sent_message
-    assert "運用年数:" in sent_message
-    assert "運用利回り:" in sent_message
-    assert "想定受取額(60歳):" in sent_message
-    assert "商品別" in sent_message
-    assert "プロダクト_1" in sent_message
-    assert "プロダクト_2" in sent_message
+    assert sent_message is not None
+    assert "確定拠出年金 運用状況通知Bot" in sent_message.text
+    assert "総評価" in sent_message.text
+    assert "拠出金額累計:" in sent_message.text
+    assert "評価損益:" in sent_message.text
+    assert "資産評価額:" in sent_message.text
+    assert "運用年数:" in sent_message.text
+    assert "運用利回り:" in sent_message.text
+    assert "想定受取額(60歳):" in sent_message.text
+    assert "商品別" in sent_message.text
+    assert "プロダクト_1" in sent_message.text
+    assert "プロダクト_2" in sent_message.text
 
 
 def test_main_e2e_with_scraping_error(valid_assets_page, local_stack_container):
