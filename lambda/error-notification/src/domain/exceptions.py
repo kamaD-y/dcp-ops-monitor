@@ -1,13 +1,13 @@
 """エラー通知機能のカスタム例外定義"""
 
 
-class ErrorNotificationError(Exception):
+class ErrorNotificationFailed(Exception):
     """エラー通知機能のベース例外"""
 
     pass
 
 
-class CouldNotGenerateTemporaryUrl(ErrorNotificationError):
+class CouldNotGenerateTemporaryUrl(ErrorNotificationFailed):
     """一時アクセス URL 生成エラー"""
 
     @classmethod
@@ -23,7 +23,7 @@ class CouldNotGenerateTemporaryUrl(ErrorNotificationError):
         return cls(f"一時アクセス URL の生成に失敗しました (Location: {location})")
 
 
-class NotificationFailed(ErrorNotificationError):
+class NotificationFailed(ErrorNotificationFailed):
     """通知送信エラー"""
 
     @classmethod
@@ -45,7 +45,7 @@ class NotificationFailed(ErrorNotificationError):
         return cls("通知送信前にエラーが発生しました")
 
 
-class LogsParseFailed(ErrorNotificationError):
+class LogsParseFailed(ErrorNotificationFailed):
     """ログイベントのパースエラー"""
 
     def __init__(self, message="ログイベントのパースに失敗しました") -> None:

@@ -2,7 +2,7 @@
 
 from .exceptions import (
     CouldNotGenerateTemporaryUrl,
-    ErrorNotificationError,
+    ErrorNotificationFailed,
     LogsParseFailed,
     NotificationFailed,
 )
@@ -19,7 +19,7 @@ __all__ = [
     "IObjectRepository",
     "INotifier",
     # Exceptions
-    "ErrorNotificationError",
+    "ErrorNotificationFailed",
     "LogsParseFailed",
     "NotificationFailed",
     "CouldNotGenerateTemporaryUrl",
