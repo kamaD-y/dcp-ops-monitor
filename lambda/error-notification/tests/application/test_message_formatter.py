@@ -9,7 +9,7 @@ class TestFormatErrorMessage:
 
     def test_format_error_message__single_error_with_url(self):
         """1件のエラーを正しくフォーマット（URL付き）"""
-        # Arrange
+        # given
         error_record = ErrorLogRecord(
             level="ERROR",
             location="handler:17",
@@ -22,19 +22,19 @@ class TestFormatErrorMessage:
             logs_url="https://ap-northeast-1.console.aws.amazon.com/cloudwatch/home",
         )
 
-        # Act
+        # when
         result = format_error_message(logs_event_data)
 
-        # Assert
+        # then
         assert "🚨 エラー通知 (1件)" in result
         assert "テストエラー" in result
         assert "test-service" in result
         assert "📊 CloudWatch Logs:" in result
-        assert logs_event_data.logs_url in result
+        assert logs_event_data.logs_url in result # type: ignore (unsupported operator)
 
     def test_format_error_message__no_url(self):
         """URLなしの場合はリンクを表示しない"""
-        # Arrange
+        # given
         error_record = ErrorLogRecord(
             level="ERROR",
             location="handler:17",
@@ -47,30 +47,30 @@ class TestFormatErrorMessage:
             logs_url=None,
         )
 
-        # Act
+        # when
         result = format_error_message(logs_event_data)
 
-        # Assert
+        # then
         assert "🚨 エラー通知 (1件)" in result
         assert "テストエラー" in result
         assert "📊 CloudWatch Logs:" not in result
 
     def test_format_error_message__empty_list(self):
         """エラーレコードが空の場合"""
-        # Arrange
+        # given
         logs_event_data = LogsEventData(
             error_records=[],
         )
 
-        # Act
+        # when
         result = format_error_message(logs_event_data)
 
-        # Assert
+        # then
         assert "エラーログがありませんでした" in result
 
     def test_format_error_message__multiple_errors(self):
         """複数エラーの場合、全てフォーマットされる"""
-        # Arrange
+        # given
         error_records = [
             ErrorLogRecord(
                 level="ERROR",
@@ -92,10 +92,10 @@ class TestFormatErrorMessage:
             error_records=error_records,
         )
 
-        # Act
+        # when
         result = format_error_message(logs_event_data)
 
-        # Assert
+        # then
         assert "🚨 エラー通知 (2件)" in result
         assert "エラー1" in result
         assert "エラー2" in result

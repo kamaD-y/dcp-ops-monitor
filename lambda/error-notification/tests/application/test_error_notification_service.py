@@ -13,7 +13,7 @@ class TestErrorNotificationService:
 
     def test_send_error_notification__with_logs_event_data(self):
         """LogsEventDataを渡して通知送信"""
-        # Arrange
+        # given
         error_record = ErrorLogRecord(
             level="ERROR",
             location="handler:17",
@@ -30,10 +30,10 @@ class TestErrorNotificationService:
         mock_notifier = MockNotifier()
         service = ErrorNotificationService(mock_repo, mock_notifier)
 
-        # Act
+        # when
         service.send_error_notification(logs_event_data, "test-bucket")
 
-        # Assert
+        # then
         assert mock_notifier.notify_called is True
         assert len(mock_notifier.messages_sent) == 1
         message = mock_notifier.messages_sent[0]
@@ -42,7 +42,7 @@ class TestErrorNotificationService:
 
     def test_send_error_notification__empty_records(self):
         """エラーレコードが空の場合は通知しない"""
-        # Arrange
+        # given
         logs_event_data = LogsEventData(
             error_records=[],
         )
@@ -51,15 +51,15 @@ class TestErrorNotificationService:
         mock_notifier = MockNotifier()
         service = ErrorNotificationService(mock_repo, mock_notifier)
 
-        # Act
+        # when
         service.send_error_notification(logs_event_data, "test-bucket")
 
-        # Assert
+        # then
         assert mock_notifier.notify_called is False
 
     def test_send_error_notification__with_screenshot(self, local_stack_container):
         """スクリーンショット付きエラーで画像URL付き通知送信"""
-        # Arrange
+        # given
         bucket_name = os.environ["ERROR_BUCKET_NAME"]
         object_key = "errors/test.png"
 
@@ -83,10 +83,10 @@ class TestErrorNotificationService:
         mock_notifier = MockNotifier()
         service = ErrorNotificationService(repo, mock_notifier)
 
-        # Act
+        # when
         service.send_error_notification(logs_event_data, bucket_name)
 
-        # Assert
+        # then
         assert mock_notifier.notify_called is True
         message = mock_notifier.messages_sent[0]
         assert message.image_url is not None

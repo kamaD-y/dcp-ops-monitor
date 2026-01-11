@@ -49,7 +49,7 @@ class TestCloudWatchLogsAdapter:
 
     def test_convert__success(self):
         """正常系: ERROR レベルのログのみ抽出される"""
-        # Arrange
+        # given
         log_events = [
             {
                 "level": "ERROR",
@@ -82,10 +82,10 @@ class TestCloudWatchLogsAdapter:
         )
         adapter = CloudWatchLogsAdapter()
 
-        # Act
+        # when
         result = adapter.convert(event)
 
-        # Assert
+        # then
         assert isinstance(result, LogsEventData)
         assert len(result.error_records) == 2
         assert result.error_records[0].message == "エラー1"
@@ -96,7 +96,7 @@ class TestCloudWatchLogsAdapter:
 
     def test_convert__no_error_logs(self):
         """正常系: ERROR レベルのログがない場合"""
-        # Arrange
+        # given
         log_events = [
             {"level": "INFO", "message": "情報ログ"},
             {"level": "DEBUG", "message": "デバッグログ"},
@@ -108,17 +108,17 @@ class TestCloudWatchLogsAdapter:
         )
         adapter = CloudWatchLogsAdapter()
 
-        # Act
+        # when
         result = adapter.convert(event)
 
-        # Assert
+        # then
         assert isinstance(result, LogsEventData)
         assert len(result.error_records) == 0
         assert result.logs_url is not None
 
     def test_convert__invalid_json_in_message(self):
         """正常系: JSON パース失敗時は該当ログをスキップ"""
-        # Arrange
+        # given
         log_events = [
             {
                 "level": "ERROR",
@@ -157,8 +157,7 @@ class TestCloudWatchLogsAdapter:
 
         adapter = CloudWatchLogsAdapter()
 
-        # Act
-        # Act & Assert
+        # when & then
         with pytest.raises(LogsParseFailed) as exc_info:
             adapter.convert(invalid_event)
 
@@ -166,11 +165,11 @@ class TestCloudWatchLogsAdapter:
 
     def test_convert__invalid_event_structure(self):
         """異常系: CloudWatch Logs イベントの構造が不正"""
-        # Arrange
+        # given
         invalid_event = CloudWatchLogsEvent({"invalid": "structure"})
         adapter = CloudWatchLogsAdapter()
 
-        # Act & Assert
+        # when & then
         with pytest.raises(LogsParseFailed) as exc_info:
             adapter.convert(invalid_event)
 
@@ -178,15 +177,15 @@ class TestCloudWatchLogsAdapter:
 
     def test_generate_logs_url__success(self):
         """正常系: CloudWatch Logs URL を正しく生成"""
-        # Arrange
+        # given
         adapter = CloudWatchLogsAdapter()
         log_group = "/aws/lambda/test-function"
         log_stream = "2025/01/01/[$LATEST]test"
 
-        # Act
+        # when
         url = adapter.generate_logs_url(log_group, log_stream)
 
-        # Assert
+        # then
         assert "ap-northeast-1" in url
         assert "console.aws.amazon.com/cloudwatch/home" in url
         assert "%2Faws%2Flambda%2Ftest-function" in url  # URL エンコードされたlog_group
