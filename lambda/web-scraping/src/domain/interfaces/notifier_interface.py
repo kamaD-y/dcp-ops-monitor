@@ -2,16 +2,20 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from domain.models import DcpAssets, DcpOpsIndicators
+    from domain.models import NotificationMessage
 
 
 class INotifier(ABC):
-    """通知クラス(抽象クラス)"""
+    """通知インターフェース"""
 
     @abstractmethod
-    def create_message_by(self, assets_info: "DcpAssets", ops_indicators: "DcpOpsIndicators") -> str:
-        pass
+    def notify(self, messages: list["NotificationMessage"]) -> None:
+        """通知を送信
 
-    @abstractmethod
-    def send(self, message: str) -> bool:
+        Args:
+            messages: 通知メッセージリスト
+
+        Raises:
+            NotificationFailed: 通知送信失敗時
+        """
         pass
