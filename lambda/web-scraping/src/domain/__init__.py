@@ -1,14 +1,26 @@
 """Domain レイヤー: モデル、インターフェース、例外"""
 
-from .exceptions import AssetExtractionError, ScrapingError
+from .exceptions import (
+    AssetExtractionError,
+    NotificationFailed,
+    ScrapingError,
+    WebScrapingFailed,
+)
 from .interfaces import IDcpScraper, INotifier, IS3Repository
-from .models import DcpAssetInfo, DcpAssets, DcpOpsIndicators, ScrapingParams
+from .models import (
+    DcpAssetInfo,
+    DcpAssets,
+    DcpOpsIndicators,
+    NotificationMessage,
+    ScrapingParams,
+)
 
 __all__ = [
     # Models
     "DcpAssetInfo",
     "DcpAssets",
     "DcpOpsIndicators",
+    "NotificationMessage",
     "ScrapingParams",
     # Interfaces
     "IDcpScraper",
@@ -16,5 +28,7 @@ __all__ = [
     "IS3Repository",
     # Exceptions
     "AssetExtractionError",
+    "NotificationFailed",
     "ScrapingError",
+    "WebScrapingFailed",
 ]

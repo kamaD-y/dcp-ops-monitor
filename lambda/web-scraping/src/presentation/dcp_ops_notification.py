@@ -1,9 +1,11 @@
+"""DCP 運用状況通知の Presentation 層"""
+
 from typing import Optional
 
 from application import NotificationService, WebScrapingService, to_operational_indicators
 from config.settings import get_logger, get_settings
 from domain import IDcpScraper, INotifier, ScrapingParams
-from infrastructure import LineNotifier, S3Repository, SeleniumDcpScraper, get_ssm_json_parameter
+from infrastructure import LineNotifier, S3ObjectRepository, SeleniumDcpScraper, get_ssm_json_parameter
 
 settings = get_settings()
 logger = get_logger()
@@ -12,12 +14,17 @@ logger = get_logger()
 def main(
     scraper: Optional[IDcpScraper] = None,
     notifier: Optional[INotifier] = None,
-):
+) -> None:
     """メイン処理
 
     Args:
         scraper (Optional[IDcpScraper]): スクレイパー（テスト時にMockを注入可能）
         notifier (Optional[INotifier]): 通知サービス（テスト時にMockを注入可能）
+
+    Raises:
+        ScrapingError: スクレイピング処理失敗時
+        AssetExtractionError: 資産情報抽出処理失敗時
+        NotificationFailed: 通知送信失敗時
     """
     # scraperが指定されていない場合のみ実装を使用
     if scraper is None:
@@ -32,7 +39,7 @@ def main(
 
     try:
         web_scraping_service = WebScrapingService(
-            scraper=scraper, s3_repository=S3Repository(settings.error_bucket_name)
+            scraper=scraper, s3_repository=S3ObjectRepository(settings.error_bucket_name)
         )
         html_source = web_scraping_service.scrape()
         assets_info = web_scraping_service.extract_asset_valuation(html_source)
