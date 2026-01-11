@@ -1,6 +1,6 @@
 from typing import Optional
 
-from src.domain import IDcpScraper, ScrapingParams
+from domain import IDcpScraper, ScrapingFailed, ScrapingParams
 
 
 class MockSeleniumDcpScraper(IDcpScraper):
@@ -44,7 +44,7 @@ class MockSeleniumDcpScraper(IDcpScraper):
             str: 資産評価情報ページの HTML ソース
 
         Raises:
-            Exception: should_fail=True の場合
+            ScrapingFailed: should_fail=True の場合
         """
         self.fetch_called = True
 
@@ -53,7 +53,7 @@ class MockSeleniumDcpScraper(IDcpScraper):
             with open(self.error_image_path, "wb") as f:
                 f.write(b"Mock error image content")
             print("[Mock] Scraping failed (simulated)")
-            raise Exception("Mock scraping error")
+            raise ScrapingFailed.during_login()
 
         print(f"[Mock] Scraping succeeded (html_length={len(self.mock_html)})")
         return self.mock_html

@@ -1,7 +1,7 @@
 import os
+
 import pytest
 from testcontainers.localstack import LocalStackContainer
-
 
 bucket_name = "test-bucket"
 
@@ -40,5 +40,8 @@ def local_stack_container() -> LocalStackContainer: # type: ignore (invalid-retu
 @pytest.fixture(scope="package", autouse=True)
 def create_test_bucket(local_stack_container: LocalStackContainer) -> None:
     os.environ["error_bucket_name"] = bucket_name
-    client = local_stack_container.get_client("s3") # type: ignore (missing-argument)
-    client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={"LocationConstraint": local_stack_container.region_name})
+    client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
+    client.create_bucket(
+        Bucket=bucket_name,
+        CreateBucketConfiguration={"LocationConstraint": local_stack_container.region_name},
+    )
