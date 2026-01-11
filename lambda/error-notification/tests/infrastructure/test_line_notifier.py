@@ -129,9 +129,9 @@ class TestLineNotifierNotify:
         assert second_payload["messages"][1] == {"type": "text", "text": "メッセージ7"}
 
     def test_notify__http_error(self, mocker):
-        """HTTPエラーが NotificationError に変換されること"""
+        """HTTPエラーが NotificationFailed に変換されること"""
         # given
-        from src.domain import NotificationError, NotificationMessage
+        from src.domain import NotificationFailed, NotificationMessage
         from src.infrastructure.line_notifier import LineNotifier
 
         url = "https://api.line.me/v2/bot/message/push"
@@ -147,15 +147,15 @@ class TestLineNotifierNotify:
         messages = [NotificationMessage(text="テストメッセージ", image_url=None)]
 
         # when/then
-        with pytest.raises(NotificationError) as exc_info:
+        with pytest.raises(NotificationFailed) as exc_info:
             notifier.notify(messages)
 
-        assert "LINE Message API への送信失敗" in str(exc_info.value)
+        assert "通知送信中にエラーが発生しました" in str(exc_info.value)
 
     def test_notify__unexpected_error(self, mocker):
-        """予期しないエラーが NotificationError に変換されること"""
+        """予期しないエラーが NotificationFailed に変換されること"""
         # given
-        from src.domain import NotificationError, NotificationMessage
+        from src.domain import NotificationFailed, NotificationMessage
         from src.infrastructure.line_notifier import LineNotifier
 
         url = "https://api.line.me/v2/bot/message/push"
@@ -172,8 +172,7 @@ class TestLineNotifierNotify:
         )
 
         # when/then
-        with pytest.raises(NotificationError) as exc_info:
+        with pytest.raises(NotificationFailed) as exc_info:
             notifier.notify(messages)
 
-        assert "通知の送信に失敗しました" in str(exc_info.value)
-        assert "Unexpected error" in str(exc_info.value)
+        assert "通知送信前にエラーが発生しました" in str(exc_info.value)

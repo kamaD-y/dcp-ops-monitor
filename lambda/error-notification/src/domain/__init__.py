@@ -4,7 +4,7 @@ from .exceptions import (
     CouldNotGenerateTemporaryUrl,
     ErrorNotificationError,
     LogsParseError,
-    NotificationError,
+    NotificationFailed,
 )
 from .interfaces import INotifier, IObjectRepository
 from .models import ErrorLogRecord, LogsEventData, NotificationMessage, StorageLocation
@@ -21,6 +21,6 @@ __all__ = [
     # Exceptions
     "ErrorNotificationError",
     "LogsParseError",
-    "NotificationError",
+    "NotificationFailed",
     "CouldNotGenerateTemporaryUrl",
 ]

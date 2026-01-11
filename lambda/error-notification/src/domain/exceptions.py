@@ -23,10 +23,26 @@ class CouldNotGenerateTemporaryUrl(ErrorNotificationError):
         return cls(f"一時アクセス URL の生成に失敗しました (Location: {location})")
 
 
-class NotificationError(ErrorNotificationError):
+class NotificationFailed(ErrorNotificationError):
     """通知送信エラー"""
 
-    pass
+    @classmethod
+    def during_request(cls) -> "NotificationFailed":
+        """通知送信中にエラーが発生した場合の例外インスタンスを生成する名前付きコンストラクタ
+
+        Returns:
+            NotificationFailed: 生成された例外インスタンス
+        """
+        return cls("通知送信中にエラーが発生しました")
+
+    @classmethod
+    def before_request(cls) -> "NotificationFailed":
+        """通知送信前にエラーが発生した場合の例外インスタンスを生成する名前付きコンストラクタ
+
+        Returns:
+            NotificationFailed: 生成された例外インスタンス
+        """
+        return cls("通知送信前にエラーが発生しました")
 
 
 class LogsParseError(ErrorNotificationError):
