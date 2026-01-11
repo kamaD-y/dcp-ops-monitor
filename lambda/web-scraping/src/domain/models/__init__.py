@@ -2,11 +2,13 @@
 
 from .dcp_assets import DcpAssetInfo, DcpAssets
 from .dcp_ops_indicators import DcpOpsIndicators
+from .notification_message import NotificationMessage
 from .scraping_params import ScrapingParams
 
 __all__ = [
     "DcpAssetInfo",
     "DcpAssets",
     "DcpOpsIndicators",
+    "NotificationMessage",
     "ScrapingParams",
 ]
