@@ -146,25 +146,23 @@ class TestCloudWatchLogsAdapter:
             "subscriptionFilters": ["test-filter"],
             "logEvents": [
                 {"id": "0", "timestamp": 0, "message": json.dumps(log_events[0])},
-                {"id": "1", "timestamp": 1000, "message": "invalid json"},
+                {"id": "1", "timestamp": 1000, "message": log_events[1]},  # 不正なJSON
                 {"id": "2", "timestamp": 2000, "message": json.dumps(log_events[2])},
             ],
         }
 
         compressed = gzip.compress(json.dumps(event_dict).encode("utf-8"))
         encoded = b64encode(compressed).decode("utf-8")
-        event = CloudWatchLogsEvent({"awslogs": {"data": encoded}})
+        invalid_event = CloudWatchLogsEvent({"awslogs": {"data": encoded}})
 
         adapter = CloudWatchLogsAdapter()
 
         # Act
-        result = adapter.convert(event)
+        # Act & Assert
+        with pytest.raises(LogsParseFailed) as exc_info:
+            adapter.convert(invalid_event)
 
-        # Assert
-        assert isinstance(result, LogsEventData)
-        assert len(result.error_records) == 2
-        assert result.error_records[0].message == "エラー1"
-        assert result.error_records[1].message == "エラー2"
+        assert "ログイベントのパースに失敗しました" in str(exc_info.value)
 
     def test_convert__invalid_event_structure(self):
         """異常系: CloudWatch Logs イベントの構造が不正"""
