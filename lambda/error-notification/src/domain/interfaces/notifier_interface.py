@@ -16,6 +16,6 @@ class INotifier(ABC):
             messages: 通知メッセージリスト
 
         Raises:
-            NotificationError: 通知送信失敗時
+            NotificationFailed: 通知送信失敗時
         """
         pass

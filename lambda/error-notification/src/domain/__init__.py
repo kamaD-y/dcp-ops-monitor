@@ -1,10 +1,10 @@
 """Domain レイヤー: モデル、インターフェース、例外"""
 
 from .exceptions import (
-    ErrorNotificationError,
-    LogsParseError,
-    NotificationError,
-    TemporaryUrlGenerationError,
+    CouldNotGenerateTemporaryUrl,
+    ErrorNotificationFailed,
+    LogsParseFailed,
+    NotificationFailed,
 )
 from .interfaces import INotifier, IObjectRepository
 from .models import ErrorLogRecord, LogsEventData, NotificationMessage, StorageLocation
@@ -19,8 +19,8 @@ __all__ = [
     "IObjectRepository",
     "INotifier",
     # Exceptions
-    "ErrorNotificationError",
-    "LogsParseError",
-    "NotificationError",
-    "TemporaryUrlGenerationError",
+    "ErrorNotificationFailed",
+    "LogsParseFailed",
+    "NotificationFailed",
+    "CouldNotGenerateTemporaryUrl",
 ]

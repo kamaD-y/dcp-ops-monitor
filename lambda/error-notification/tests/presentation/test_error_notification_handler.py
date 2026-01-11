@@ -5,7 +5,7 @@ from unittest.mock import Mock
 import pytest
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
-from src.domain import ErrorLogRecord, INotifier, LogsEventData, LogsParseError, NotificationError
+from src.domain import ErrorLogRecord, INotifier, LogsEventData, LogsParseFailed, NotificationFailed
 from src.presentation import main
 from tests.fixtures.mocks import MockNotifier
 
@@ -176,8 +176,8 @@ class TestErrorNotificationHandlerMain:
         mock_notifier = MockNotifier()
 
         # when, then
-        # logs_event_data が None の場合、Adapter が呼ばれて LogsParseError が発生
-        with pytest.raises(LogsParseError):
+        # logs_event_data が None の場合、Adapter が呼ばれて LogsParseFailed が発生
+        with pytest.raises(LogsParseFailed):
             main(invalid_event, notifier=mock_notifier)
 
     def test_main__notification_error(self):
@@ -197,8 +197,8 @@ class TestErrorNotificationHandlerMain:
 
         # 通知送信時にエラーを発生させるMock
         mock_notifier = Mock(spec=INotifier)
-        mock_notifier.notify.side_effect = NotificationError("Mock notification error")
+        mock_notifier.notify.side_effect = NotificationFailed("Mock notification error")
 
         # when, then
-        with pytest.raises(NotificationError):
+        with pytest.raises(NotificationFailed):
             main(event, logs_event_data=logs_event_data, notifier=mock_notifier)

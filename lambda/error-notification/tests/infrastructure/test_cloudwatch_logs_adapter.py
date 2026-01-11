@@ -7,7 +7,7 @@ from base64 import b64encode
 import pytest
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
-from src.domain import ErrorLogRecord, LogsEventData, LogsParseError
+from src.domain import ErrorLogRecord, LogsEventData, LogsParseFailed
 from src.infrastructure.cloudwatch_logs_adapter import CloudWatchLogsAdapter
 
 
@@ -49,7 +49,7 @@ class TestCloudWatchLogsAdapter:
 
     def test_convert__success(self):
         """正常系: ERROR レベルのログのみ抽出される"""
-        # Arrange
+        # given
         log_events = [
             {
                 "level": "ERROR",
@@ -82,10 +82,10 @@ class TestCloudWatchLogsAdapter:
         )
         adapter = CloudWatchLogsAdapter()
 
-        # Act
+        # when
         result = adapter.convert(event)
 
-        # Assert
+        # then
         assert isinstance(result, LogsEventData)
         assert len(result.error_records) == 2
         assert result.error_records[0].message == "エラー1"
@@ -96,7 +96,7 @@ class TestCloudWatchLogsAdapter:
 
     def test_convert__no_error_logs(self):
         """正常系: ERROR レベルのログがない場合"""
-        # Arrange
+        # given
         log_events = [
             {"level": "INFO", "message": "情報ログ"},
             {"level": "DEBUG", "message": "デバッグログ"},
@@ -108,17 +108,17 @@ class TestCloudWatchLogsAdapter:
         )
         adapter = CloudWatchLogsAdapter()
 
-        # Act
+        # when
         result = adapter.convert(event)
 
-        # Assert
+        # then
         assert isinstance(result, LogsEventData)
         assert len(result.error_records) == 0
         assert result.logs_url is not None
 
     def test_convert__invalid_json_in_message(self):
         """正常系: JSON パース失敗時は該当ログをスキップ"""
-        # Arrange
+        # given
         log_events = [
             {
                 "level": "ERROR",
@@ -146,49 +146,46 @@ class TestCloudWatchLogsAdapter:
             "subscriptionFilters": ["test-filter"],
             "logEvents": [
                 {"id": "0", "timestamp": 0, "message": json.dumps(log_events[0])},
-                {"id": "1", "timestamp": 1000, "message": "invalid json"},
+                {"id": "1", "timestamp": 1000, "message": log_events[1]},  # 不正なJSON
                 {"id": "2", "timestamp": 2000, "message": json.dumps(log_events[2])},
             ],
         }
 
         compressed = gzip.compress(json.dumps(event_dict).encode("utf-8"))
         encoded = b64encode(compressed).decode("utf-8")
-        event = CloudWatchLogsEvent({"awslogs": {"data": encoded}})
+        invalid_event = CloudWatchLogsEvent({"awslogs": {"data": encoded}})
 
         adapter = CloudWatchLogsAdapter()
 
-        # Act
-        result = adapter.convert(event)
+        # when & then
+        with pytest.raises(LogsParseFailed) as exc_info:
+            adapter.convert(invalid_event)
 
-        # Assert
-        assert isinstance(result, LogsEventData)
-        assert len(result.error_records) == 2
-        assert result.error_records[0].message == "エラー1"
-        assert result.error_records[1].message == "エラー2"
+        assert "ログイベントのパースに失敗しました" in str(exc_info.value)
 
     def test_convert__invalid_event_structure(self):
         """異常系: CloudWatch Logs イベントの構造が不正"""
-        # Arrange
+        # given
         invalid_event = CloudWatchLogsEvent({"invalid": "structure"})
         adapter = CloudWatchLogsAdapter()
 
-        # Act & Assert
-        with pytest.raises(LogsParseError) as exc_info:
+        # when & then
+        with pytest.raises(LogsParseFailed) as exc_info:
             adapter.convert(invalid_event)
 
-        assert "CloudWatch Logs イベントの変換に失敗しました" in str(exc_info.value)
+        assert "ログイベントのパースに失敗しました" in str(exc_info.value)
 
     def test_generate_logs_url__success(self):
         """正常系: CloudWatch Logs URL を正しく生成"""
-        # Arrange
+        # given
         adapter = CloudWatchLogsAdapter()
         log_group = "/aws/lambda/test-function"
         log_stream = "2025/01/01/[$LATEST]test"
 
-        # Act
+        # when
         url = adapter.generate_logs_url(log_group, log_stream)
 
-        # Assert
+        # then
         assert "ap-northeast-1" in url
         assert "console.aws.amazon.com/cloudwatch/home" in url
         assert "%2Faws%2Flambda%2Ftest-function" in url  # URL エンコードされたlog_group

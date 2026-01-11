@@ -6,7 +6,7 @@ from urllib.parse import quote
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
 from src.config.settings import get_logger
-from src.domain import ErrorLogRecord, LogsEventData, LogsParseError
+from src.domain import ErrorLogRecord, LogsEventData, LogsParseFailed
 
 logger = get_logger()
 
@@ -30,42 +30,34 @@ class CloudWatchLogsAdapter:
             LogsEventData: ドメインモデル
 
         Raises:
-            LogsParseError: イベントのパースに失敗した場合
+            LogsParseFailed: イベントのパースに失敗した場合
         """
         try:
-            # 1. CloudWatch Logs イベントをデコード
             decoded_data = event.parse_logs_data()
 
-            # 2. ERROR レベルのログのみ抽出
             error_records = []
             for log_event in decoded_data.log_events:
-                try:
-                    log_data = json.loads(log_event.message)
-                    if log_data.get("level") == "ERROR":
-                        error_records.append(ErrorLogRecord(**log_data))
-                except (json.JSONDecodeError, TypeError, ValueError) as e:
-                    logger.warning(f"ログメッセージのパースに失敗しました: {e}")
-                    continue
-
-            # 3. CloudWatch Logs URL を生成
-            try:
-                logs_url = self.generate_logs_url(
-                    decoded_data.log_group,
-                    decoded_data.log_stream,
-                )
-            except Exception as e:
-                logger.warning("CloudWatch Logs URL の生成に失敗しました", error=str(e))
-                logs_url = None
-
-            # 4. LogsEventData を生成
-            return LogsEventData(
-                error_records=error_records,
-                logs_url=logs_url,
-            )
+                log_data = json.loads(log_event.message)
+                if log_data.get("level") == "ERROR":
+                    error_records.append(ErrorLogRecord(**log_data))
 
         except Exception as e:
-            msg = f"CloudWatch Logs イベントの変換に失敗しました: {e}"
-            raise LogsParseError(msg) from e
+            raise LogsParseFailed() from e
+
+        logs_url = None
+        try:
+            logs_url = self.generate_logs_url(
+                decoded_data.log_group,
+                decoded_data.log_stream,
+            )
+        except Exception as e:
+            # URL生成に失敗しても処理継続
+            logger.warning("CloudWatch Logs URL の生成に失敗しました", error=str(e))
+
+        return LogsEventData(
+            error_records=error_records,
+            logs_url=logs_url,
+        )
 
     def generate_logs_url(self, log_group: str, log_stream: str) -> str:
         """CloudWatch Logs コンソールURLを生成
