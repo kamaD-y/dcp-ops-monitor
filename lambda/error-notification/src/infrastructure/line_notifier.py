@@ -37,7 +37,7 @@ class LineNotifier(INotifier):
             messages: 通知メッセージリスト
 
         Raises:
-            NotificationError: 通知送信失敗時
+            NotificationFailed: 通知送信失敗時
         """
         try:
             # NotificationMessage を LINE メッセージ形式に変換
