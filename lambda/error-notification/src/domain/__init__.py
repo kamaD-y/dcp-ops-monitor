@@ -3,7 +3,7 @@
 from .exceptions import (
     CouldNotGenerateTemporaryUrl,
     ErrorNotificationError,
-    LogsParseError,
+    LogsParseFailed,
     NotificationFailed,
 )
 from .interfaces import INotifier, IObjectRepository
@@ -20,7 +20,7 @@ __all__ = [
     "INotifier",
     # Exceptions
     "ErrorNotificationError",
-    "LogsParseError",
+    "LogsParseFailed",
     "NotificationFailed",
     "CouldNotGenerateTemporaryUrl",
 ]

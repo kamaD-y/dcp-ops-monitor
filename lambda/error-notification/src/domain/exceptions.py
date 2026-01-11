@@ -45,7 +45,8 @@ class NotificationFailed(ErrorNotificationError):
         return cls("通知送信前にエラーが発生しました")
 
 
-class LogsParseError(ErrorNotificationError):
+class LogsParseFailed(ErrorNotificationError):
     """ログイベントのパースエラー"""
 
-    pass
+    def __init__(self, message="ログイベントのパースに失敗しました") -> None:
+        super().__init__(message)

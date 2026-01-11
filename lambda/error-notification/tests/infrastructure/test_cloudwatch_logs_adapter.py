@@ -7,7 +7,7 @@ from base64 import b64encode
 import pytest
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
-from src.domain import ErrorLogRecord, LogsEventData, LogsParseError
+from src.domain import ErrorLogRecord, LogsEventData, LogsParseFailed
 from src.infrastructure.cloudwatch_logs_adapter import CloudWatchLogsAdapter
 
 
@@ -173,10 +173,10 @@ class TestCloudWatchLogsAdapter:
         adapter = CloudWatchLogsAdapter()
 
         # Act & Assert
-        with pytest.raises(LogsParseError) as exc_info:
+        with pytest.raises(LogsParseFailed) as exc_info:
             adapter.convert(invalid_event)
 
-        assert "CloudWatch Logs イベントの変換に失敗しました" in str(exc_info.value)
+        assert "ログイベントのパースに失敗しました" in str(exc_info.value)
 
     def test_generate_logs_url__success(self):
         """正常系: CloudWatch Logs URL を正しく生成"""

@@ -6,7 +6,7 @@ from urllib.parse import quote
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
 from src.config.settings import get_logger
-from src.domain import ErrorLogRecord, LogsEventData, LogsParseError
+from src.domain import ErrorLogRecord, LogsEventData, LogsParseFailed
 
 logger = get_logger()
 
@@ -30,7 +30,7 @@ class CloudWatchLogsAdapter:
             LogsEventData: ドメインモデル
 
         Raises:
-            LogsParseError: イベントのパースに失敗した場合
+            LogsParseFailed: イベントのパースに失敗した場合
         """
         try:
             # 1. CloudWatch Logs イベントをデコード
@@ -64,8 +64,7 @@ class CloudWatchLogsAdapter:
             )
 
         except Exception as e:
-            msg = f"CloudWatch Logs イベントの変換に失敗しました: {e}"
-            raise LogsParseError(msg) from e
+            raise LogsParseFailed() from e
 
     def generate_logs_url(self, log_group: str, log_stream: str) -> str:
         """CloudWatch Logs コンソールURLを生成
