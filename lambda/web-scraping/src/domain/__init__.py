@@ -6,7 +6,7 @@ from .exceptions import (
     ScrapingFailed,
     WebScrapingFailed,
 )
-from .interfaces import IDcpScraper, INotifier, IObjectRepository
+from .interfaces import IDcpExtractor, IDcpScraper, INotifier, IObjectRepository
 from .models import (
     DcpAssetInfo,
     DcpAssets,
@@ -23,6 +23,7 @@ __all__ = [
     "NotificationMessage",
     "ScrapingParams",
     # Interfaces
+    "IDcpExtractor",
     "IDcpScraper",
     "INotifier",
     "IObjectRepository",
