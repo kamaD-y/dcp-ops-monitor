@@ -2,10 +2,10 @@
 
 from typing import Optional
 
-from application import NotificationService, WebScrapingService, to_operational_indicators
-from config.settings import get_logger, get_settings
-from domain import IDcpScraper, INotifier, ScrapingParams
-from infrastructure import LineNotifier, S3ObjectRepository, SeleniumDcpScraper, get_ssm_json_parameter
+from src.application import NotificationService, WebScrapingService, to_operational_indicators
+from src.config.settings import get_logger, get_settings
+from src.domain import IDcpScraper, INotifier, ScrapingParams
+from src.infrastructure import LineNotifier, S3ObjectRepository, SeleniumDcpScraper, get_ssm_json_parameter
 
 settings = get_settings()
 logger = get_logger()
@@ -22,8 +22,8 @@ def main(
         notifier (Optional[INotifier]): 通知サービス（テスト時にMockを注入可能）
 
     Raises:
-        ScrapingError: スクレイピング処理失敗時
-        AssetExtractionError: 資産情報抽出処理失敗時
+        ScrapingFailed: スクレイピング処理失敗時
+        AssetExtractionFailed: 資産情報抽出処理失敗時
         NotificationFailed: 通知送信失敗時
     """
     # scraperが指定されていない場合のみ実装を使用
@@ -39,7 +39,7 @@ def main(
 
     try:
         web_scraping_service = WebScrapingService(
-            scraper=scraper, s3_repository=S3ObjectRepository(settings.error_bucket_name)
+            scraper=scraper, object_repository=S3ObjectRepository(settings.error_bucket_name)
         )
         html_source = web_scraping_service.scrape()
         assets_info = web_scraping_service.extract_asset_valuation(html_source)

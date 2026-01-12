@@ -1,4 +1,5 @@
 import os
+
 import pytest
 
 
@@ -8,8 +9,8 @@ def test_main_e2e_with_mocks(valid_assets_page):
     エンドツーエンドで処理が正常に完了することを確認する
     """
     # given
+    from src.presentation.dcp_ops_notification import main
     from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
-    from presentation.dcp_ops_notification import main # type: ignore (import-error)
 
     scraper = MockSeleniumDcpScraper(mock_html=valid_assets_page)
     notifier = MockLineNotifier()
@@ -47,15 +48,15 @@ def test_main_e2e_with_scraping_error(valid_assets_page, local_stack_container):
     また、エラー画像がS3にアップロードされることを確認する
     """
     # given
-    from domain import ScrapingError # type: ignore (import-error)
-    from presentation.dcp_ops_notification import main # type: ignore (import-error)
+    from src.domain import ScrapingFailed
+    from src.presentation.dcp_ops_notification import main
     from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
 
     scraper = MockSeleniumDcpScraper(mock_html=valid_assets_page, should_fail=True)
     notifier = MockLineNotifier()
 
     # when, then
-    with pytest.raises(ScrapingError) as exc_info:
+    with pytest.raises(ScrapingFailed) as exc_info:
         main(scraper=scraper, notifier=notifier)
 
     # エラーオブジェクトにerror_file_keyが含まれることを確認
@@ -81,8 +82,8 @@ def test_main_e2e_with_invalid_html(invalid_assets_page, local_stack_container):
     また、エラー HTML ファイルがS3にアップロードされることを確認する
     """
     # given
-    from domain import AssetExtractionError # type: ignore (import-error)
-    from presentation.dcp_ops_notification import main # type: ignore (import-error)
+    from src.domain import AssetExtractionFailed
+    from src.presentation.dcp_ops_notification import main
     from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
 
     scraper = MockSeleniumDcpScraper(mock_html=invalid_assets_page)
@@ -90,7 +91,7 @@ def test_main_e2e_with_invalid_html(invalid_assets_page, local_stack_container):
 
     # when, then
     # HTMLパースエラーが発生することを確認
-    with pytest.raises(AssetExtractionError) as exc_info:
+    with pytest.raises(AssetExtractionFailed) as exc_info:
         main(scraper=scraper, notifier=notifier)
 
     # エラーオブジェクトにerror_file_keyが含まれることを確認

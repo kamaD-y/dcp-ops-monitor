@@ -118,8 +118,8 @@ class TestLineNotifierNotify:
     def test_notify__http_error_raises_notification_failed(self, mocker):
         """HTTPエラー時に NotificationFailed 例外が発生すること"""
         # given
-        from src.domain.exceptions import NotificationFailed
         from src.domain import NotificationMessage
+        from src.domain.exceptions import NotificationFailed
         from src.infrastructure.line_notifier import LineNotifier
 
         url = "https://api.line.me/v2/bot/message/push"
@@ -143,8 +143,8 @@ class TestLineNotifierNotify:
     def test_notify__unexpected_error_raises_notification_failed(self, mocker):
         """予期しないエラー時に NotificationFailed 例外が発生すること"""
         # given
-        from src.domain.exceptions import NotificationFailed
         from src.domain import NotificationMessage
+        from src.domain.exceptions import NotificationFailed
         from src.infrastructure.line_notifier import LineNotifier
 
         url = "https://api.line.me/v2/bot/message/push"

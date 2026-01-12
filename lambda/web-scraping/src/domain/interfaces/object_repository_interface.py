@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
 
-class IS3Repository(ABC):
-    """S3リポジトリ抽象クラス"""
+class IObjectRepository(ABC):
+    """オブジェクトリポジトリ抽象クラス"""
 
     def __init__(self, bucket: str) -> None:
         """コンストラクタ"""
@@ -10,9 +10,9 @@ class IS3Repository(ABC):
 
     @abstractmethod
     def upload_file(self, key: str, file_path: str) -> None:
-        """S3バケットにファイルをアップロードする
+        """オブジェクトストレージにファイルをアップロードする
         Args:
-            key (str): S3オブジェクトのキー
+            key (str): オブジェクトのキー
             file_path (str): アップロードするファイルのパス
         Returns:
             None
@@ -21,10 +21,10 @@ class IS3Repository(ABC):
 
     @abstractmethod
     def put_object(self, key: str, body: str) -> None:
-        """S3バケットにオブジェクトをアップロードする
+        """オブジェクトストレージにオブジェクトをアップロードする
 
         Args:
-            key (str): S3オブジェクトのキー
+            key (str): オブジェクトのキー
             body (str): アップロードするオブジェクトの内容
 
         Returns:
