@@ -5,7 +5,13 @@ from typing import Optional
 from src.application import NotificationService, WebScrapingService, to_operational_indicators
 from src.config.settings import get_logger, get_settings
 from src.domain import IDcpScraper, INotifier, ScrapingParams
-from src.infrastructure import LineNotifier, S3ObjectRepository, SeleniumDcpScraper, get_ssm_json_parameter
+from src.infrastructure import (
+    BeautifulSoupDcpExtractor,
+    LineNotifier,
+    S3ObjectRepository,
+    SeleniumDcpScraper,
+    get_ssm_json_parameter,
+)
 
 settings = get_settings()
 logger = get_logger()
@@ -38,8 +44,11 @@ def main(
         scraper = SeleniumDcpScraper(user_agent=settings.user_agent, scraping_params=scraping_params)
 
     try:
+        dcp_extractor = BeautifulSoupDcpExtractor()
         web_scraping_service = WebScrapingService(
-            scraper=scraper, object_repository=S3ObjectRepository(settings.error_bucket_name)
+            scraper=scraper,
+            object_repository=S3ObjectRepository(settings.error_bucket_name),
+            dcp_extractor=dcp_extractor,
         )
         html_source = web_scraping_service.scrape()
         assets_info = web_scraping_service.extract_asset_valuation(html_source)

@@ -121,7 +121,7 @@ class SeleniumDcpScraper(IDcpScraper):
             link_logout = self.driver.find_element(By.LINK_TEXT, "ログアウト")
             link_logout.click()
             logger.info("ログアウト処理完了")
-        except Exception as e:
+        except Exception:
             # ログアウト失敗はログのみ出力して無視
             logger.warning("ログアウト処理中に問題が発生しました。")
 

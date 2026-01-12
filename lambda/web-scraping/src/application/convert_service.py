@@ -67,8 +67,6 @@ def calculate_annual_operation_yield_rate(
     try:
         # 年間利回りの計算式: 利回り = 利益 / 拠出額 / 運用年数
         actual_yield_rate = round(gains_or_losses / cumulative_contributions / operation_years, 3)
-    except ValueError as e:
-        raise
     except ZeroDivisionError:
         raise
 

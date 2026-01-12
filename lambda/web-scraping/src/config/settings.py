@@ -1,7 +1,4 @@
-from typing import Any, Optional
-
 from aws_lambda_powertools import Logger
-from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
