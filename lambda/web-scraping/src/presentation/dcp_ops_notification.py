@@ -23,7 +23,7 @@ def main(
 
     Raises:
         ScrapingFailed: スクレイピング処理失敗時
-        AssetExtractionError: 資産情報抽出処理失敗時
+        AssetExtractionFailed: 資産情報抽出処理失敗時
         NotificationFailed: 通知送信失敗時
     """
     # scraperが指定されていない場合のみ実装を使用
