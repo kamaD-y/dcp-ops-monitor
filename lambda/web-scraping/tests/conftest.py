@@ -23,7 +23,7 @@ def invalid_assets_page() -> str:
 
 
 @pytest.fixture(scope="package", autouse=True)
-def local_stack_container() -> LocalStackContainer: # type: ignore (invalid-return-type)
+def local_stack_container() -> LocalStackContainer:  # type: ignore (invalid-return-type)
     """LocalStackのコンテナを起動する
 
     Returns:

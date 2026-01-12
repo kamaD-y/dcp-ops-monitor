@@ -25,6 +25,6 @@ def handler(event: dict, context: LambdaContext) -> str | None:
             extra={"error_file_key": e.error_file_key},
         )
         raise
-    except Exception as e:
+    except Exception:
         logger.exception("予期せぬエラーが発生しました。")
         raise
