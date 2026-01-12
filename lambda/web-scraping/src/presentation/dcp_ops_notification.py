@@ -2,10 +2,10 @@
 
 from typing import Optional
 
-from application import NotificationService, WebScrapingService, to_operational_indicators
-from config.settings import get_logger, get_settings
-from domain import IDcpScraper, INotifier, ScrapingParams
-from infrastructure import LineNotifier, S3ObjectRepository, SeleniumDcpScraper, get_ssm_json_parameter
+from src.application import NotificationService, WebScrapingService, to_operational_indicators
+from src.config.settings import get_logger, get_settings
+from src.domain import IDcpScraper, INotifier, ScrapingParams
+from src.infrastructure import LineNotifier, S3ObjectRepository, SeleniumDcpScraper, get_ssm_json_parameter
 
 settings = get_settings()
 logger = get_logger()

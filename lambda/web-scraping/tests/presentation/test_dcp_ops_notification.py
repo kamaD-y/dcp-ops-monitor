@@ -9,7 +9,7 @@ def test_main_e2e_with_mocks(valid_assets_page):
     エンドツーエンドで処理が正常に完了することを確認する
     """
     # given
-    from presentation.dcp_ops_notification import main  # type: ignore (import-error)
+    from src.presentation.dcp_ops_notification import main
     from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
 
     scraper = MockSeleniumDcpScraper(mock_html=valid_assets_page)
@@ -48,8 +48,8 @@ def test_main_e2e_with_scraping_error(valid_assets_page, local_stack_container):
     また、エラー画像がS3にアップロードされることを確認する
     """
     # given
-    from domain import ScrapingFailed  # type: ignore (import-error)
-    from presentation.dcp_ops_notification import main  # type: ignore (import-error)
+    from src.domain import ScrapingFailed
+    from src.presentation.dcp_ops_notification import main
     from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
 
     scraper = MockSeleniumDcpScraper(mock_html=valid_assets_page, should_fail=True)
@@ -82,8 +82,8 @@ def test_main_e2e_with_invalid_html(invalid_assets_page, local_stack_container):
     また、エラー HTML ファイルがS3にアップロードされることを確認する
     """
     # given
-    from domain import AssetExtractionError  # type: ignore (import-error)
-    from presentation.dcp_ops_notification import main  # type: ignore (import-error)
+    from src.domain import AssetExtractionError
+    from src.presentation.dcp_ops_notification import main
     from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
 
     scraper = MockSeleniumDcpScraper(mock_html=invalid_assets_page)

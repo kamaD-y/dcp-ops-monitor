@@ -5,8 +5,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 from config.settings import get_logger
-from domain import AssetExtractionError, DcpAssetInfo, DcpAssets, IDcpScraper, IS3Repository, ScrapingFailed
-from infrastructure import SeleniumDcpScraper
+from src.domain import AssetExtractionError, DcpAssetInfo, DcpAssets, IDcpScraper, IS3Repository, ScrapingFailed
 
 logger = get_logger()
 
@@ -21,25 +20,23 @@ class WebScrapingService:
             return self.scraper.fetch_asset_valuation_html()
         except ScrapingFailed as e:
             error_image_path = self.scraper.get_error_image_path()
-            key = None
-            if error_image_path:
-                logger.info("スクレイピングエラー画像の S3 アップロード開始")
-                key = f"files/{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
-                try:
-                    self.s3_repository.upload_file(
-                        key=key,
-                        file_path=error_image_path,
-                    )
-                except Exception as upload_error:
-                    logger.error(
-                        "スクレイピングエラー画像の S3 アップロードに失敗しました。",
-                        exc_info=upload_error,
-                    )
-                else:
-                    logger.info(
-                        "エラー画像を S3 にアップロードしました。",
-                        extra={"error_file_key": key},
-                    )
+            if not error_image_path:
+                raise
+
+            logger.info("スクレイピングエラー画像の S3 アップロード開始")
+            key = f"files/{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
+            try:
+                self.s3_repository.upload_file(
+                    key=key,
+                    file_path=error_image_path,
+                )
+            except Exception as upload_error:
+                raise Exception("スクレイピングエラー画像の S3 アップロードに失敗しました。") from upload_error
+
+            logger.info(
+                "エラー画像を S3 にアップロードしました。",
+                extra={"error_file_key": key},
+            )
             # error_file_keyを設定して再raise
             e.error_file_key = key
             raise

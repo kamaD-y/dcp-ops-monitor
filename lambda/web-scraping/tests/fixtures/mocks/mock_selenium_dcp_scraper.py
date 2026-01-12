@@ -1,6 +1,6 @@
 from typing import Optional
 
-from domain import IDcpScraper, ScrapingFailed, ScrapingParams
+from src.domain import IDcpScraper, ScrapingFailed, ScrapingParams
 
 
 class MockSeleniumDcpScraper(IDcpScraper):

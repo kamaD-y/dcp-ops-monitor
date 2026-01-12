@@ -1,15 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from domain.models import NotificationMessage
+from ..models import NotificationMessage
 
 
 class INotifier(ABC):
     """通知インターフェース"""
 
     @abstractmethod
-    def notify(self, messages: list["NotificationMessage"]) -> None:
+    def notify(self, messages: list[NotificationMessage]) -> None:
         """通知を送信
 
         Args:
