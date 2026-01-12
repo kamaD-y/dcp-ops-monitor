@@ -40,7 +40,7 @@ COPY --from=builder /opt/chrome-linux64 /opt/chrome
 COPY --from=builder /opt/chromedriver-linux64 /opt/
 
 # 実行用ファイルをコピー
-COPY ./src ./
+COPY ./src ./src
 
 # Command can be overwritten by providing a different command in the template directly.
-CMD ["handler.handler"]
+CMD ["src.handler.handler"]
