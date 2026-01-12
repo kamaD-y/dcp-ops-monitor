@@ -5,12 +5,12 @@ import os
 import boto3
 
 from config.settings import get_logger
-from domain import IS3Repository
+from domain import IObjectRepository
 
 logger = get_logger()
 
 
-class S3ObjectRepository(IS3Repository):
+class S3ObjectRepository(IObjectRepository):
     """S3 オブジェクトリポジトリ実装"""
 
     def __init__(self, bucket: str) -> None:

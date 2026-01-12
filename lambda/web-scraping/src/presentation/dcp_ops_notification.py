@@ -39,7 +39,7 @@ def main(
 
     try:
         web_scraping_service = WebScrapingService(
-            scraper=scraper, s3_repository=S3ObjectRepository(settings.error_bucket_name)
+            scraper=scraper, object_repository=S3ObjectRepository(settings.error_bucket_name)
         )
         html_source = web_scraping_service.scrape()
         assets_info = web_scraping_service.extract_asset_valuation(html_source)

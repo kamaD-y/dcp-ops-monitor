@@ -2,10 +2,10 @@
 
 from .dcp_scraper_interface import IDcpScraper
 from .notifier_interface import INotifier
-from .s3_repository_interface import IS3Repository
+from .object_repository_interface import IObjectRepository
 
 __all__ = [
     "IDcpScraper",
     "INotifier",
-    "IS3Repository",
+    "IObjectRepository",
 ]

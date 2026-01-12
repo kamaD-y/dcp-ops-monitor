@@ -6,7 +6,7 @@ from .exceptions import (
     ScrapingFailed,
     WebScrapingFailed,
 )
-from .interfaces import IDcpScraper, INotifier, IS3Repository
+from .interfaces import IDcpScraper, INotifier, IObjectRepository
 from .models import (
     DcpAssetInfo,
     DcpAssets,
@@ -25,7 +25,7 @@ __all__ = [
     # Interfaces
     "IDcpScraper",
     "INotifier",
-    "IS3Repository",
+    "IObjectRepository",
     # Exceptions
     "AssetExtractionError",
     "NotificationFailed",
