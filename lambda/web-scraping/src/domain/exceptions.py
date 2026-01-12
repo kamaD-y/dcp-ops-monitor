@@ -1,19 +1,6 @@
 from typing import Optional
 
 
-class AssetExtractionError(Exception):
-    """資産情報抽出処理のエラー
-
-    Attributes:
-        message (str): エラーメッセージ
-        error_file_key (Optional[str]): エラー時のHTMLソース
-    """
-
-    def __init__(self, message: str, error_file_key: Optional[str] = None):
-        super().__init__(message)
-        self.error_file_key = error_file_key
-
-
 class WebScrapingFailed(Exception):
     """Web スクレイピング機能のベース例外"""
 
@@ -40,6 +27,19 @@ class NotificationFailed(WebScrapingFailed):
             NotificationFailed: 生成された例外インスタンス
         """
         return cls("通知送信前にエラーが発生しました")
+
+
+class AssetExtractionFailed(WebScrapingFailed):
+    """資産情報抽出処理のエラー
+
+    Attributes:
+        message (str): エラーメッセージ
+        error_file_key (Optional[str]): エラー時のHTMLファイルのS3キー
+    """
+
+    def __init__(self, message: str, error_file_key: Optional[str] = None):
+        super().__init__(message)
+        self.error_file_key = error_file_key
 
 
 class ScrapingFailed(WebScrapingFailed):

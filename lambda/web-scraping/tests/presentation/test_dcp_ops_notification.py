@@ -82,7 +82,7 @@ def test_main_e2e_with_invalid_html(invalid_assets_page, local_stack_container):
     また、エラー HTML ファイルがS3にアップロードされることを確認する
     """
     # given
-    from src.domain import AssetExtractionError
+    from src.domain import AssetExtractionFailed
     from src.presentation.dcp_ops_notification import main
     from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
 
@@ -91,7 +91,7 @@ def test_main_e2e_with_invalid_html(invalid_assets_page, local_stack_container):
 
     # when, then
     # HTMLパースエラーが発生することを確認
-    with pytest.raises(AssetExtractionError) as exc_info:
+    with pytest.raises(AssetExtractionFailed) as exc_info:
         main(scraper=scraper, notifier=notifier)
 
     # エラーオブジェクトにerror_file_keyが含まれることを確認

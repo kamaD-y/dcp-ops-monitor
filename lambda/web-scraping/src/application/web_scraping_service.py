@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 from config.settings import get_logger
-from src.domain import AssetExtractionError, DcpAssetInfo, DcpAssets, IDcpScraper, IObjectRepository, ScrapingFailed
+from src.domain import AssetExtractionFailed, DcpAssetInfo, DcpAssets, IDcpScraper, IObjectRepository, ScrapingFailed
 
 logger = get_logger()
 
@@ -78,7 +78,7 @@ class WebScrapingService:
                     "資産情報 HTML ファイルを S3 にアップロードしました。",
                     extra={"error_file_key": key},
                 )
-            raise AssetExtractionError("資産情報の抽出に失敗しました。", error_file_key=key) from e
+            raise AssetExtractionFailed("資産情報の抽出に失敗しました。", error_file_key=key) from e
 
     def _extract_total_assets(self, soup: BeautifulSoup) -> DcpAssetInfo:
         """総評価額を抽出する

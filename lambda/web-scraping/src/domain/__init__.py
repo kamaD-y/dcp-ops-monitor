@@ -1,7 +1,7 @@
 """Domain レイヤー: モデル、インターフェース、例外"""
 
 from .exceptions import (
-    AssetExtractionError,
+    AssetExtractionFailed,
     NotificationFailed,
     ScrapingFailed,
     WebScrapingFailed,
@@ -27,7 +27,7 @@ __all__ = [
     "INotifier",
     "IObjectRepository",
     # Exceptions
-    "AssetExtractionError",
+    "AssetExtractionFailed",
     "NotificationFailed",
     "ScrapingFailed",
     "WebScrapingFailed",

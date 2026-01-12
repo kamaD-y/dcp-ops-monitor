@@ -1,7 +1,7 @@
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from config.settings import get_logger
-from domain import AssetExtractionError, ScrapingFailed
+from domain import AssetExtractionFailed, ScrapingFailed
 from presentation.dcp_ops_notification import main
 
 logger = get_logger()
@@ -19,7 +19,7 @@ def handler(event: dict, context: LambdaContext) -> str | None:
             extra={"error_file_key": e.error_file_key},
         )
         raise
-    except AssetExtractionError as e:
+    except AssetExtractionFailed as e:
         logger.exception(
             "資産情報の抽出でエラーが発生しました。",
             extra={"error_file_key": e.error_file_key},
