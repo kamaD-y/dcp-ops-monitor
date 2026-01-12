@@ -4,8 +4,8 @@ import os
 
 import boto3
 
-from config.settings import get_logger
-from domain import IObjectRepository
+from src.config.settings import get_logger
+from src.domain import IObjectRepository
 
 logger = get_logger()
 

@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional, TypeGuard
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
-from config.settings import get_logger
+from src.config.settings import get_logger
 from src.domain import AssetExtractionFailed, DcpAssetInfo, DcpAssets, IDcpScraper, IObjectRepository, ScrapingFailed
 
 logger = get_logger()

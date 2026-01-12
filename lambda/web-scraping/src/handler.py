@@ -1,8 +1,8 @@
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
-from config.settings import get_logger
-from domain import AssetExtractionFailed, ScrapingFailed
-from presentation.dcp_ops_notification import main
+from src.config.settings import get_logger
+from src.domain import AssetExtractionFailed, ScrapingFailed
+from src.presentation.dcp_ops_notification import main
 
 logger = get_logger()
 
