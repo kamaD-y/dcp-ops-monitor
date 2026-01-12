@@ -32,6 +32,7 @@ extend = "../../pyproject.toml"
 pythonpath = ["src/../", "src"]
 testpaths = ["tests",]
 env = [
+    "ENV=test",
     "SCRAPING_PARAMETER_NAME=/test/scraping-parameters",
     "LINE_MESSAGE_PARAMETER_NAME=/test/line-message-parameters",
     "ERROR_BUCKET_NAME=test-error-bucket"
