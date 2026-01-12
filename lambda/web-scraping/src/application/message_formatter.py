@@ -1,6 +1,6 @@
 """DCP運用状況メッセージのフォーマット"""
 
-from domain import DcpAssets, DcpOpsIndicators
+from src.domain import DcpAssets, DcpOpsIndicators
 
 
 def format_dcp_ops_message(assets_info: DcpAssets, ops_indicators: DcpOpsIndicators) -> str:

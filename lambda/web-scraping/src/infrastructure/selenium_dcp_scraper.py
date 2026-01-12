@@ -4,8 +4,8 @@ from typing import Optional
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-from config.settings import get_logger
-from domain import IDcpScraper, ScrapingFailed, ScrapingParams
+from src.config.settings import get_logger
+from src.domain import IDcpScraper, ScrapingFailed, ScrapingParams
 
 logger = get_logger()
 

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from domain import DcpAssetInfo, DcpOpsIndicators
+from src.domain import DcpAssetInfo, DcpOpsIndicators
 
 
 def to_operational_indicators(total_assets: DcpAssetInfo) -> DcpOpsIndicators:

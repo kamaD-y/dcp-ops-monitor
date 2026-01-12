@@ -1,7 +1,7 @@
 """通知送信サービス"""
 
-from application.message_formatter import format_dcp_ops_message
-from domain import DcpAssets, DcpOpsIndicators, INotifier, NotificationMessage
+from src.application.message_formatter import format_dcp_ops_message
+from src.domain import DcpAssets, DcpOpsIndicators, INotifier, NotificationMessage
 
 
 class NotificationService:
