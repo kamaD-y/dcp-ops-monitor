@@ -62,7 +62,7 @@ class WebScrapingService:
         try:
             return self.dcp_extractor.extract(html_source)
         except AssetExtractionFailed as e:
-            logger.info("エラーになった資産情報 HTML ファイルの S3 アップロード開始")
+            logger.info("エラーになった資産情報 HTML ファイルのアップロード開始")
             key = f"files/{datetime.now().strftime('%Y%m%d%H%M%S')}.html"
             try:
                 self.object_repository.put_object(
@@ -70,15 +70,9 @@ class WebScrapingService:
                     body=html_source,
                 )
             except Exception as upload_error:
-                logger.error(
-                    "資産情報 HTML ファイルの S3 アップロードに失敗しました。",
-                    exc_info=upload_error,
-                )
-            else:
-                logger.info(
-                    "資産情報 HTML ファイルを S3 にアップロードしました。",
-                    extra={"error_file_key": key},
-                )
+                raise Exception("資産情報 HTML ファイルのアップロードに失敗しました。") from upload_error
+
+            logger.info("資産情報 HTML ファイルをアップロードしました。", extra={"error_file_key": key})
             # error_file_key を設定して再 raise
             e.error_file_key = key
             raise
