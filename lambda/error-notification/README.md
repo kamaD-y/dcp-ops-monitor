@@ -1,16 +1,15 @@
-# error-notification Lambda
+# error-notification
 
 ## 概要
 
-error-notification Lambda は、スクレイピング Lambda で発生したエラーを検知し、LINE Messaging API を通じて通知するための関数です。
+error-notification 機能は、Web スクレイピング機能で発生したエラーを検知し、通知します。
 
 ## 主な機能
 
 - CloudWatch Logs Subscription Filter をトリガーとして起動
 - ERROR レベルのログを自動検知
 - ログメッセージをパース・バリデーション（Pydantic 使用）
-- LINE Messaging API へテキストメッセージ送信
-- エラーハンドリング（S3 画像取得失敗時は テキストのみ送信）
+- エラーログの通知送信
 
 ## 処理シーケンス
 
@@ -20,7 +19,7 @@ sequenceDiagram
     participant Filter as Subscription Filter
     participant ErrorLambda as エラー通知 Lambda
     participant S3 as S3
-    participant LINE as LINE Messaging API
+    participant Notify as 通知サービス
 
     Note over CWL: ERROR ログを受信
 
@@ -34,14 +33,12 @@ sequenceDiagram
     ErrorLambda->>ErrorLambda: ログパース (Pydantic)
     Note right of ErrorLambda: ERROR レベルのみ抽出
 
-    ErrorLambda->>LINE: テキストメッセージ送信
-    activate LINE
-    Note right of LINE: エラー詳細を通知
-    LINE-->>ErrorLambda: 送信完了
-    deactivate LINE
+    ErrorLambda->>Notify: テキスト/画像メッセージ送信
+    activate Notify
+    Note right of Notify: エラー詳細を通知
+    Notify-->>ErrorLambda: 送信完了
+    deactivate Notify
     deactivate ErrorLambda
-
-    Note over ErrorLambda,LINE: 現在は画像送信未実装（テキストのみ送信）
 ```
 
 ## 環境変数

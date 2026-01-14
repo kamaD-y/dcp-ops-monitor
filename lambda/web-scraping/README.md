@@ -1,15 +1,16 @@
-# web-scraping Lambda
+# web-scraping
 
 ## 概要
 
-web-scraping Lambda は、週次で確定拠出年金の Web ページにアクセスし、運用状況をスクレイピングして LINE Messaging API を通じて通知するための関数です。
+web-scraping 機能は、週次で確定拠出年金の Web ページにアクセスし、運用状況をスクレイピングしてサマリを通知します。
+Selenium を Lambda で使用する場合、モジュール間の依存関係の調整が煩雑な為、コンテナを使用しています。
 
 ## 主な機能
 
 - EventBridge によるスケジュール実行（週次）
 - Selenium を使用した Web スクレイピング
 - 運用指標のサマリ作成
-- LINE Messaging API へ運用レポート送信
+- サマリの通知送信
 - エラー時のスクリーンショット・ HTML 保存（デバッグ用）
 
 ## 処理シーケンス
@@ -20,7 +21,7 @@ sequenceDiagram
     participant Scraping as Web スクレイピング Lambda
     participant Web as 確定拠出年金 Web サイト
     participant S3 as S3
-    participant LINE as LINE Messaging API
+    participant Notify as 通知サービス
 
     EventBridge->>Scraping: 週次実行トリガー
     activate Scraping
@@ -29,6 +30,7 @@ sequenceDiagram
     activate Web
     Web-->>Scraping: HTML データ取得
     deactivate Web
+    Note over Scraping,S3: エラー時はスクリーンショット/HTML を S3 に保存
 
     Scraping->>Scraping: HTML データ加工処理
     Note right of Scraping: 運用指標を抽出
@@ -36,13 +38,11 @@ sequenceDiagram
     Scraping->>Scraping: 通知メッセージ整形
     Note right of Scraping: サマリレポート作成
 
-    Scraping->>LINE: 運用指標サマリ送信
-    activate LINE
-    LINE-->>Scraping: 送信完了
-    deactivate LINE
+    Scraping->>Notify: 運用指標サマリ送信
+    activate Notify
+    Notify-->>Scraping: 送信完了
+    deactivate Notify
     deactivate Scraping
-
-    Note over Scraping,S3: エラー時はスクリーンショット/HTML を S3 に保存
 ```
 
 ## 環境変数

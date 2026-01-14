@@ -18,23 +18,23 @@
 
 ## 搭載機能
 
-### 1. Web スクレイピング Lambda
+### 1. Web スクレイピング
 週次で確定拠出年金の Web ページにアクセスし、運用状況をスクレイピングして通知します。
 
-**主な機能:**
+**機能概要:**
 - EventBridge によるスケジュール実行
 - Selenium を使用した Web スクレイピング
 - 運用指標のサマリ作成
-- LINE への通知送信
+- サマリの通知送信
 
 詳細は [lambda/web-scraping/README.md](lambda/web-scraping/README.md) を参照してください。
 
-### 2. エラー通知 Lambda
-Web スクレイピング Lambda で発生したエラーを検知し、LINE へ通知します。
+### 2. エラー通知
+Web スクレイピングで発生したエラーを検知し、通知します。
 
-**主な機能:**
+**機能概要:**
 - CloudWatch Logs Subscription Filter による自動起動
 - ERROR レベルのログ抽出・パース
-- LINE への通知送信
+- エラーログの通知送信
 
 詳細は [lambda/error-notification/README.md](lambda/error-notification/README.md) を参照してください。
