@@ -1,0 +1,7 @@
+language: ja
+reviews:
+  auto_assign_reviewers: true
+  tools:
+    github-checks:
+      enabled: true
+      timeout_ms: 900000
