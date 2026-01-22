@@ -1,7 +1,15 @@
 language: ja
+knowledge_base:
+  opt_out: false # https://docs.coderabbit.ai/integrations/knowledge-base
 reviews:
   auto_assign_reviewers: true
   tools:
     github-checks:
       enabled: true
       timeout_ms: 300000
+  path_instructions:
+    - path: "**/tests/**.*"
+      instructions: |
+        次の観点でコードレビューを行ってください:
+        - テストコードの網羅性を確認してください
+        - テストケースが適切に命名されているか確認してください
