@@ -1,5 +1,9 @@
 {
+  "language": "japanese",
   "permissions": {
     "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./cdk.out/**)", "Read(./build)"]
+  },
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true
   }
 }

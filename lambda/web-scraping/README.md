@@ -112,19 +112,22 @@ $ python
 > Lambda コンテナでスクレイピングが正常に動作するか確認する為使用します。
 > AWS リソースについては LocalStack を使用しますが、スクレイピングの接続先は本物を使用します。
 
-1. docker-compose で起動する
+1. .env.local を編集する
+- `SCRAPING_PARAMETER_VALUE`, `LINE_MESSAGE_PARAMETER_VALUE` に実際の認証情報を入力し保存する
+
+2. docker-compose で起動する
 
 ```bash
 $ docker compose up -d --build
 ```
 
-2. 起動した Lambda を呼び出す
+3. 起動した Lambda を呼び出す
 
 ```bash
 $ curl -d "{}" http://localhost:8080/2015-03-31/functions/function/invocations
 ```
 
-3. docker-compose を終了する
+4. docker-compose を終了する
 
 ```bash
 $ docker compose down

@@ -14,7 +14,7 @@
 ## 構成
 ### 構成図
 
-![Architecture](docs/images/dcp-ops-monitor.drawio.png)
+![Architecture](docs/dcp-ops-monitor.drawio.png)
 
 ## 搭載機能
 
