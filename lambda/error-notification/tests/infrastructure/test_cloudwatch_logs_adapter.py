@@ -7,7 +7,7 @@ from base64 import b64encode
 import pytest
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
-from src.domain import ErrorLogRecord, LogsEventData, LogsParseFailed
+from src.domain import ErrorLogEvents, LogsParseFailed
 from src.infrastructure.cloudwatch_logs_adapter import CloudWatchLogsAdapter
 
 
@@ -86,7 +86,7 @@ class TestCloudWatchLogsAdapter:
         result = adapter.convert(event)
 
         # then
-        assert isinstance(result, LogsEventData)
+        assert isinstance(result, ErrorLogEvents)
         assert len(result.error_records) == 2
         assert result.error_records[0].message == "エラー1"
         assert result.error_records[1].message == "エラー2"
@@ -112,7 +112,7 @@ class TestCloudWatchLogsAdapter:
         result = adapter.convert(event)
 
         # then
-        assert isinstance(result, LogsEventData)
+        assert isinstance(result, ErrorLogEvents)
         assert len(result.error_records) == 0
         assert result.logs_url is not None
 
