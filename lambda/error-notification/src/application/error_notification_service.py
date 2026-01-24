@@ -3,10 +3,10 @@
 from src.config.settings import get_logger
 from src.domain import (
     CouldNotGenerateTemporaryUrl,
-    ErrorLogRecord,
+    ErrorLogEvents,
+    ErrorRecord,
     INotifier,
     IObjectRepository,
-    LogsEventData,
     NotificationMessage,
     StorageLocation,
 )
@@ -35,29 +35,29 @@ class ErrorNotificationService:
 
     def send_error_notification(
         self,
-        logs_event_data: LogsEventData,
+        error_log_events: ErrorLogEvents,
         bucket_name: str,
     ) -> None:
         """エラー通知を送信
 
         Args:
-            logs_event_data: ログイベントデータ
+            error_log_events: エラーログイベントデータ
             bucket_name: S3 バケット名
         """
-        error_records = logs_event_data.error_records
+        error_records = error_log_events.error_records
 
         if not error_records:
             logger.info("エラーレコードが0件のため、通知をスキップします")
             return
 
         # テキストメッセージ生成
-        message_text = format_error_message(logs_event_data)
+        message_text = format_error_message(error_log_events)
 
         # NOTE: エラーが複数件同時に発生する想定をしておらず、最初のレコードのスクリーンショットのみを確認している
         # 画像URL取得 (最初のレコードにスクリーンショットがあれば)
         image_url = None
         first_record = error_records[0]
-        if first_record.has_screenshot():
+        if first_record.has_screenshot:
             image_url = self._get_image_url(first_record, bucket_name)
 
         # 通知メッセージ作成 (テキスト + 画像URL)
@@ -67,11 +67,11 @@ class ErrorNotificationService:
         self.notifier.notify([notification_message])
         logger.info("通知送信完了")
 
-    def _get_image_url(self, record: ErrorLogRecord, bucket_name: str) -> str | None:
+    def _get_image_url(self, record: ErrorRecord, bucket_name: str) -> str | None:
         """画像URLを取得
 
         Args:
-            record: エラーログレコード
+            record: エラーレコード
             bucket_name: S3 バケット名
 
         Returns:

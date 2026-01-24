@@ -1,18 +1,18 @@
 """エラーメッセージのフォーマット"""
 
-from src.domain import LogsEventData
+from src.domain import ErrorLogEvents
 
 
-def format_error_message(logs_event_data: LogsEventData) -> str:
+def format_error_message(error_log_events: ErrorLogEvents) -> str:
     """エラーメッセージをフォーマット
 
     Args:
-        logs_event_data: ログイベントデータ
+        error_log_events: エラーログイベントデータ
 
     Returns:
         str: フォーマットされたメッセージ
     """
-    error_records = logs_event_data.error_records
+    error_records = error_log_events.error_records
 
     if not error_records:
         return "エラーログがありませんでした。"
@@ -23,8 +23,7 @@ def format_error_message(logs_event_data: LogsEventData) -> str:
 
     # 各エラーレコード
     for i, record in enumerate(error_records, 1):
-        jst_time = record.get_jst_timestamp()
-        timestamp_str = jst_time.strftime("%Y-%m-%d %H:%M:%S")
+        timestamp_str = record.jst_timestamp.strftime("%Y-%m-%d %H:%M:%S")
 
         lines.append(f"【エラー {i}】")
         lines.append(f"時刻: {timestamp_str} (JST)")
@@ -41,7 +40,7 @@ def format_error_message(logs_event_data: LogsEventData) -> str:
         lines.append("")
 
     # CloudWatch Logs リンク（URLが存在する場合のみ）
-    if logs_event_data.logs_url:
-        lines.append(f"📊 CloudWatch Logs: {logs_event_data.logs_url}")
+    if error_log_events.logs_url:
+        lines.append(f"📊 CloudWatch Logs: {error_log_events.logs_url}")
 
     return "\n".join(lines)

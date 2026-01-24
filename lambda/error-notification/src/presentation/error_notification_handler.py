@@ -4,7 +4,7 @@ from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent
 
 from src.application import ErrorNotificationService
 from src.config.settings import get_logger, get_settings
-from src.domain import INotifier, IObjectRepository, LogsEventData
+from src.domain import ErrorLogEvents, INotifier, IObjectRepository
 from src.infrastructure import (
     CloudWatchLogsAdapter,
     LineNotifier,
@@ -16,24 +16,25 @@ settings = get_settings()
 logger = get_logger()
 
 
+# TODO: プレゼンテーション層の Input で依存注入を削除する方向で検討
 def main(
     event: CloudWatchLogsEvent,
-    logs_event_data: LogsEventData | None = None,
+    error_log_events: ErrorLogEvents | None = None,
     object_repository: IObjectRepository | None = None,
     notifier: INotifier | None = None,
 ) -> None:
     """メイン処理
 
     Args:
-        event: CloudWatch Logs イベント (handler.py境界でのAWS型)
-        logs_event_data: ログイベントデータ (テスト時に直接注入可能)
+        event: CloudWatch Logs イベント (生の Lambda イベント)
+        error_log_events: エラーログイベントデータ (テスト時に直接注入可能)
         object_repository: オブジェクトリポジトリ (テスト時に Mock 注入可能)
         notifier: 通知クライアント (テスト時に Mock 注入可能)
     """
-    # logs_event_data が指定されていない場合、Adapter で変換（URL生成も含む）
-    if logs_event_data is None:
+    # error_log_events が指定されていない場合、Adapter で変換（URL生成も含む）
+    if error_log_events is None:
         adapter = CloudWatchLogsAdapter()
-        logs_event_data = adapter.convert(event)
+        error_log_events = adapter.convert(event)
 
     # オブジェクトリポジトリが指定されていない場合のみ実装を使用
     if object_repository is None:
@@ -50,8 +51,8 @@ def main(
     # エラー通知サービス実行
     notification_service = ErrorNotificationService(object_repository, notifier)
     notification_service.send_error_notification(
-        logs_event_data,
+        error_log_events,
         settings.error_bucket_name,
     )
 
-    logger.info("エラー通知処理が完了しました", error_count=len(logs_event_data.error_records))
+    logger.info("エラー通知処理が完了しました", error_count=len(error_log_events.error_records))

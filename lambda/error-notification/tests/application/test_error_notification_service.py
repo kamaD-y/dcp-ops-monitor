@@ -3,7 +3,7 @@
 import os
 
 from src.application import ErrorNotificationService
-from src.domain import ErrorLogRecord, LogsEventData
+from src.domain import ErrorLogEvents, ErrorRecord
 from src.infrastructure import S3ObjectRepository
 from tests.fixtures.mocks import MockNotifier
 
@@ -11,17 +11,17 @@ from tests.fixtures.mocks import MockNotifier
 class TestErrorNotificationService:
     """ErrorNotificationService のテスト"""
 
-    def test_send_error_notification__with_logs_event_data(self):
-        """LogsEventDataを渡して通知送信"""
+    def test_send_error_notification__with_error_log_events(self):
+        """ErrorLogEventsを渡して通知送信"""
         # given
-        error_record = ErrorLogRecord(
+        error_record = ErrorRecord(
             level="ERROR",
             location="handler:17",
             message="テストエラー",
-            timestamp="2025-01-01 00:00:00,000+0000",
+            timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
             service="test-service",
         )
-        logs_event_data = LogsEventData(
+        error_log_events = ErrorLogEvents(
             error_records=[error_record],
             logs_url="https://console.aws.amazon.com/cloudwatch/home",
         )
@@ -31,7 +31,7 @@ class TestErrorNotificationService:
         service = ErrorNotificationService(mock_repo, mock_notifier)
 
         # when
-        service.send_error_notification(logs_event_data, "test-bucket")
+        service.send_error_notification(error_log_events, "test-bucket")
 
         # then
         assert mock_notifier.notify_called is True
@@ -43,7 +43,7 @@ class TestErrorNotificationService:
     def test_send_error_notification__empty_records(self):
         """エラーレコードが空の場合は通知しない"""
         # given
-        logs_event_data = LogsEventData(
+        error_log_events = ErrorLogEvents(
             error_records=[],
         )
 
@@ -52,7 +52,7 @@ class TestErrorNotificationService:
         service = ErrorNotificationService(mock_repo, mock_notifier)
 
         # when
-        service.send_error_notification(logs_event_data, "test-bucket")
+        service.send_error_notification(error_log_events, "test-bucket")
 
         # then
         assert mock_notifier.notify_called is False
@@ -67,15 +67,15 @@ class TestErrorNotificationService:
         s3 = local_stack_container.get_client("s3")
         s3.put_object(Bucket=bucket_name, Key=object_key, Body=b"fake image")
 
-        error_record = ErrorLogRecord(
+        error_record = ErrorRecord(
             level="ERROR",
             location="handler:17",
             message="テストエラー",
-            timestamp="2025-01-01 00:00:00,000+0000",
+            timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
             service="test-service",
             error_file_key=object_key,
         )
-        logs_event_data = LogsEventData(
+        error_log_events = ErrorLogEvents(
             error_records=[error_record],
         )
 
@@ -84,7 +84,7 @@ class TestErrorNotificationService:
         service = ErrorNotificationService(repo, mock_notifier)
 
         # when
-        service.send_error_notification(logs_event_data, bucket_name)
+        service.send_error_notification(error_log_events, bucket_name)
 
         # then
         assert mock_notifier.notify_called is True

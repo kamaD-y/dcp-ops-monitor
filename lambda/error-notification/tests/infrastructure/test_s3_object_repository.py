@@ -1,4 +1,5 @@
 """S3ObjectRepository のテスト"""
+
 from urllib.parse import parse_qs, unquote, urlparse
 
 import pytest

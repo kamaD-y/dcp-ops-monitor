@@ -1,5 +1,7 @@
 """Domain レイヤー: モデル、インターフェース、例外"""
 
+from .error_log_interface import IErrorLogEventsAdapter
+from .error_log_object import ErrorLogEvents, ErrorRecord
 from .exceptions import (
     CouldNotGenerateTemporaryUrl,
     ErrorNotificationFailed,
@@ -7,15 +9,16 @@ from .exceptions import (
     NotificationFailed,
 )
 from .interfaces import INotifier, IObjectRepository
-from .models import ErrorLogRecord, LogsEventData, NotificationMessage, StorageLocation
+from .models import NotificationMessage, StorageLocation
 
 __all__ = [
     # Models
-    "ErrorLogRecord",
-    "LogsEventData",
+    "ErrorRecord",
+    "ErrorLogEvents",
     "StorageLocation",
     "NotificationMessage",
     # Interfaces
+    "IErrorLogEventsAdapter",
     "IObjectRepository",
     "INotifier",
     # Exceptions
