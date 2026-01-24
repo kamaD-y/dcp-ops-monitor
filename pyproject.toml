@@ -1,7 +1,7 @@
 [tool.ruff]
 line-length = 120
 include = ["**/*.py"]
-exclude = [".venv", "tests"]
+exclude = [".venv"]
 target-version = "py313"
 
 [tool.ruff.lint]

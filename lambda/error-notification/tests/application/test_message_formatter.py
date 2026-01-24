@@ -1,6 +1,5 @@
 """message_formatter のテスト"""
 
-
 from src.application.message_formatter import format_error_message
 from src.domain import ErrorLogEvents, ErrorRecord
 
@@ -15,7 +14,7 @@ class TestFormatErrorMessage:
             level="ERROR",
             location="handler:17",
             message="テストエラー",
-            timestamp="2025-01-01 00:00:00,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+            timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
             service="test-service",
         )
         error_log_events = ErrorLogEvents(
@@ -41,7 +40,7 @@ class TestFormatErrorMessage:
             level="ERROR",
             location="handler:17",
             message="テストエラー",
-            timestamp="2025-01-01 00:00:00,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+            timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
             service="test-service",
         )
         error_log_events = ErrorLogEvents(
@@ -78,14 +77,14 @@ class TestFormatErrorMessage:
                 level="ERROR",
                 location="handler:17",
                 message="エラー1",
-                timestamp="2025-01-01 00:00:00,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+                timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
                 service="test-service",
             ),
             ErrorRecord(
                 level="ERROR",
                 location="handler:25",
                 message="エラー2",
-                timestamp="2025-01-01 00:00:01,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+                timestamp="2025-01-01 00:00:01,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
                 service="test-service",
                 exception_name="ValueError",
             ),

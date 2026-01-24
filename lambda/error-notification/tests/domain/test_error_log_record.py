@@ -1,6 +1,6 @@
 """ErrorRecord のテスト"""
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 from src.domain import ErrorRecord
 
@@ -15,7 +15,7 @@ class TestErrorRecordJstTimestamp:
             level="ERROR",
             location="handler.handler:17",
             message="エラー",
-            timestamp="2024-12-31 20:00:00,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+            timestamp="2024-12-31 20:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
             service="web-scraping",
         )
 

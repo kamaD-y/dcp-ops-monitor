@@ -102,10 +102,7 @@ class TestLineNotifierNotify:
 
         notifier = LineNotifier(url=url, token=token)
         # 7件のメッセージ（テキストのみなのでLINEメッセージも7件）
-        messages = [
-            NotificationMessage(text=f"メッセージ{i}", image_url=None)
-            for i in range(1, 8)
-        ]
+        messages = [NotificationMessage(text=f"メッセージ{i}", image_url=None) for i in range(1, 8)]
 
         # when
         notifier.notify(messages)

@@ -1,9 +1,6 @@
 """error_notification_service のテスト"""
 
 import os
-import os
-
-from src.application import ErrorNotificationService
 
 from src.application import ErrorNotificationService
 from src.domain import ErrorLogEvents, ErrorRecord
@@ -21,7 +18,7 @@ class TestErrorNotificationService:
             level="ERROR",
             location="handler:17",
             message="テストエラー",
-            timestamp="2025-01-01 00:00:00,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+            timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
             service="test-service",
         )
         error_log_events = ErrorLogEvents(
@@ -74,7 +71,7 @@ class TestErrorNotificationService:
             level="ERROR",
             location="handler:17",
             message="テストエラー",
-            timestamp="2025-01-01 00:00:00,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+            timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
             service="test-service",
             error_file_key=object_key,
         )

@@ -20,7 +20,7 @@ class TestErrorNotificationHandlerMain:
             level="ERROR",
             location="handler:17",
             message="スクレイピングタイムアウト",
-            timestamp="2025-01-01 00:00:00,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+            timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
             service="test-service",
             error_file_key=None,
         )
@@ -48,21 +48,21 @@ class TestErrorNotificationHandlerMain:
                 level="ERROR",
                 location="handler:17",
                 message="エラー1",
-                timestamp="2025-01-01 00:00:00,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+                timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
                 service="test-service",
             ),
             ErrorRecord(
                 level="ERROR",
                 location="handler:20",
                 message="エラー2",
-                timestamp="2025-01-01 00:00:01,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+                timestamp="2025-01-01 00:00:01,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
                 service="test-service",
             ),
             ErrorRecord(
                 level="ERROR",
                 location="handler:25",
                 message="エラー3",
-                timestamp="2025-01-01 00:00:02,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+                timestamp="2025-01-01 00:00:02,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
                 service="test-service",
             ),
         ]
@@ -107,7 +107,7 @@ class TestErrorNotificationHandlerMain:
             level="ERROR",
             location="handler:17",
             message="エラー",
-            timestamp="2025-01-01 00:00:00,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+            timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
             service="test-service",
             error_file_key="errors/2025/01/01/screenshot.png",
         )
@@ -146,7 +146,7 @@ class TestErrorNotificationHandlerMain:
             level="ERROR",
             location="handler:17",
             message="エラー",
-            timestamp="2025-01-01 00:00:00,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+            timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
             service="test-service",
             error_file_key=object_key,
         )
@@ -187,7 +187,7 @@ class TestErrorNotificationHandlerMain:
             level="ERROR",
             location="handler:17",
             message="エラー",
-            timestamp="2025-01-01 00:00:00,000+0000", # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
+            timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
             service="test-service",
         )
         error_log_events = ErrorLogEvents(
