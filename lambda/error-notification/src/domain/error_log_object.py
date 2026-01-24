@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any, Literal, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 
 class ErrorRecord(BaseModel):
@@ -17,6 +17,16 @@ class ErrorRecord(BaseModel):
     error_file_key: Optional[str] = None  # エラーオブジェクトのキー
     exception_name: Optional[str] = None  # 例外クラス名
     exception: Optional[str] = None  # スタックトレース
+
+    @field_validator("timestamp", mode="before")
+    @classmethod
+    def _parse_timestamp(cls, v: Any) -> datetime:
+        if isinstance(v, datetime):
+            return v if v.tzinfo is not None else v.replace(tzinfo=timezone.utc)
+        if isinstance(v, str):
+            ts = v.replace(",", ".")
+            return datetime.strptime(ts, "%Y-%m-%d %H:%M:%S.%f%z")
+        raise TypeError("timestamp must be datetime or str")
 
     def model_post_init(self, context: Any) -> None:
         """初期化後の追加フィールド設定"""
