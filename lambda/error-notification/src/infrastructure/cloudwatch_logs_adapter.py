@@ -1,7 +1,6 @@
 """CloudWatch Logs アダプター"""
 
 import json
-from datetime import datetime
 from urllib.parse import quote
 
 from aws_lambda_powertools.utilities.data_classes import CloudWatchLogsEvent

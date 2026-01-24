@@ -1,6 +1,5 @@
 """message_formatter のテスト"""
 
-from datetime import datetime, timezone
 
 from src.application.message_formatter import format_error_message
 from src.domain import ErrorLogEvents, ErrorRecord
@@ -32,7 +31,8 @@ class TestFormatErrorMessage:
         assert "テストエラー" in result
         assert "test-service" in result
         assert "📊 CloudWatch Logs:" in result
-        assert error_log_events.logs_url in result  # type: ignore (unsupported operator)
+        assert error_log_events.logs_url is not None
+        assert error_log_events.logs_url in result
 
     def test_format_error_message__no_url(self):
         """URLなしの場合はリンクを表示しない"""

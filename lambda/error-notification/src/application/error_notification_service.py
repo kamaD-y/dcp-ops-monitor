@@ -71,7 +71,7 @@ class ErrorNotificationService:
         """画像URLを取得
 
         Args:
-            record: エラーログレコード
+            record: エラーレコード
             bucket_name: S3 バケット名
 
         Returns:

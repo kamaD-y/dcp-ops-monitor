@@ -1,7 +1,9 @@
 """error_notification_service のテスト"""
 
 import os
-from datetime import datetime, timezone
+import os
+
+from src.application import ErrorNotificationService
 
 from src.application import ErrorNotificationService
 from src.domain import ErrorLogEvents, ErrorRecord
