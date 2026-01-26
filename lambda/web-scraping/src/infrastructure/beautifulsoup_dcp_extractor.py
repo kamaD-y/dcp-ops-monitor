@@ -2,7 +2,7 @@ from typing import Dict
 
 from bs4 import BeautifulSoup
 
-from config.settings import get_logger
+from src.config.settings import get_logger
 from src.domain import AssetExtractionFailed, DcpAssetInfo, DcpAssets, IDcpExtractor
 
 logger = get_logger()
