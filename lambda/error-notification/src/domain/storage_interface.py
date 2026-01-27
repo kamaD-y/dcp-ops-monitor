@@ -1,8 +1,6 @@
-"""オブジェクトリポジトリインターフェース"""
-
 from abc import ABC, abstractmethod
 
-from ..models import StorageLocation
+from .storage_object import StorageLocation
 
 
 class IObjectRepository(ABC):
