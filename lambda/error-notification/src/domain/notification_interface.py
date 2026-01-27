@@ -1,8 +1,6 @@
-"""通知インターフェース"""
-
 from abc import ABC, abstractmethod
 
-from ..models import NotificationMessage
+from .notification_object import NotificationMessage
 
 
 class INotifier(ABC):
