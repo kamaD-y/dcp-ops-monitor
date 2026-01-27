@@ -8,10 +8,10 @@ from .exceptions import (
     LogsParseFailed,
     NotificationFailed,
 )
-from .interfaces import IObjectRepository
-from .models import StorageLocation
 from .notification_interface import INotifier
 from .notification_object import NotificationMessage
+from .storage_interface import IObjectRepository
+from .storage_object import StorageLocation
 
 __all__ = [
     # Models
