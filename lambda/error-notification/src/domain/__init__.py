@@ -8,8 +8,8 @@ from .exceptions import (
     LogsParseFailed,
     NotificationFailed,
 )
-from .interfaces import INotifier
-from .models import NotificationMessage
+from .notification_interface import INotifier
+from .notification_object import NotificationMessage
 from .storage_interface import IObjectRepository
 from .storage_object import StorageLocation
 

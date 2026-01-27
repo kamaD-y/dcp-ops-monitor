@@ -1,5 +1,3 @@
-"""通知メッセージモデル"""
-
 from pydantic import BaseModel
 
 
