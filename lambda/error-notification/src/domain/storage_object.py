@@ -1,5 +1,3 @@
-"""ストレージ上のオブジェクト位置モデル"""
-
 from pydantic import BaseModel, field_validator
 
 
