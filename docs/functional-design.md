@@ -146,9 +146,9 @@ lambda/{feature}/src/
 ├── application/
 │   └── *.py                # ビジネスロジック
 ├── domain/
-│   ├── models/             # ドメインモデル
-│   ├── interfaces/         # インターフェース定義
-│   └── exceptions.py       # ドメイン例外
+│   ├── {domain}_object.py    # ドメインモデル（ドメイン知識単位）
+│   ├── {domain}_interface.py # インターフェース定義（ドメイン知識単位）
+│   └── exceptions.py         # ドメイン例外
 └── infrastructure/
     └── *.py                # AWS サービス実装、外部 API 連携
 ```

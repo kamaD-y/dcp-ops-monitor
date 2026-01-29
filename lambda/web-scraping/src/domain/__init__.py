@@ -6,14 +6,13 @@ from .exceptions import (
     ScrapingFailed,
     WebScrapingFailed,
 )
-from .interfaces import IDcpExtractor, IDcpScraper, INotifier, IObjectRepository
-from .models import (
-    DcpAssetInfo,
-    DcpAssets,
-    DcpOpsIndicators,
-    NotificationMessage,
-    ScrapingParams,
-)
+from .extraction_interface import IDcpExtractor
+from .extraction_object import DcpAssetInfo, DcpAssets, DcpOpsIndicators
+from .notification_interface import INotifier
+from .notification_object import NotificationMessage
+from .scraping_interface import IDcpScraper
+from .scraping_object import ScrapingParams
+from .storage_interface import IObjectRepository
 
 __all__ = [
     # Models
