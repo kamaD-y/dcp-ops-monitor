@@ -54,7 +54,7 @@ class DcpAssetInfo(BaseModel):
         cleaned = cleaned.translate(str.maketrans("０１２３４５６７８９", "0123456789"))
 
         # マイナス記号の処理（全角・半角対応）
-        cleaned = cleaned.replace("−", "-").replace("ー", "-")
+        cleaned = cleaned.replace("−", "-").replace("ー", "-").replace("－", "-")
 
         return int(cleaned)
 
