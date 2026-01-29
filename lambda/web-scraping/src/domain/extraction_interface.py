@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.domain.models.dcp_assets import DcpAssets
+from .extraction_object import DcpAssets
 
 
 class IDcpExtractor(ABC):
