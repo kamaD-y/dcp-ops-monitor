@@ -29,19 +29,6 @@ class NotificationFailed(WebScrapingFailed):
         return cls("通知送信前にエラーが発生しました")
 
 
-class AssetExtractionFailed(WebScrapingFailed):
-    """資産情報抽出処理のエラー
-
-    Attributes:
-        message (str): エラーメッセージ
-        error_file_key (Optional[str]): エラー時のHTMLファイルのS3キー
-    """
-
-    def __init__(self, message: str, error_file_key: Optional[str] = None):
-        super().__init__(message)
-        self.error_file_key = error_file_key
-
-
 class ScrapingFailed(WebScrapingFailed):
     """スクレイピング処理のエラー
 
@@ -115,15 +102,3 @@ class ScrapingFailed(WebScrapingFailed):
             ScrapingFailed: 生成された例外インスタンス
         """
         return cls("資産情報の抽出に失敗しました", html_source=html_source)
-
-    @classmethod
-    def during_logout(cls, error_file_key: Optional[str] = None) -> "ScrapingFailed":
-        """ログアウト処理中にエラーが発生した場合の例外を生成
-
-        Args:
-            error_file_key: エラーファイルの S3 キー
-
-        Returns:
-            ScrapingFailed: 生成された例外インスタンス
-        """
-        return cls("ログアウト処理に失敗しました", error_file_key)

@@ -1,12 +1,10 @@
 """Domain レイヤー: モデル、インターフェース、例外"""
 
 from .exceptions import (
-    AssetExtractionFailed,
     NotificationFailed,
     ScrapingFailed,
     WebScrapingFailed,
 )
-from .extraction_interface import IDcpExtractor
 from .extraction_object import DcpAssetInfo, DcpAssets, DcpOpsIndicators
 from .notification_interface import INotifier
 from .notification_object import NotificationMessage
@@ -22,12 +20,10 @@ __all__ = [
     "NotificationMessage",
     "ScrapingParams",
     # Interfaces
-    "IDcpExtractor",
     "IDcpScraper",
     "INotifier",
     "IObjectRepository",
     # Exceptions
-    "AssetExtractionFailed",
     "NotificationFailed",
     "ScrapingFailed",
     "WebScrapingFailed",
