@@ -2,8 +2,39 @@ import os
 
 import pytest
 
+from src.domain import DcpAssetInfo, DcpAssets
 
-def test_main_e2e_with_mocks(valid_assets_page):
+
+@pytest.fixture
+def valid_assets() -> DcpAssets:
+    """テスト用の正常な資産情報を生成する"""
+    return DcpAssets(
+        total=DcpAssetInfo(
+            cumulative_contributions=900_000,
+            gains_or_losses=300_000,
+            asset_valuation=1_200_000,
+        ),
+        products={
+            "プロダクト_1": DcpAssetInfo(
+                cumulative_contributions=100_000,
+                gains_or_losses=11_111,
+                asset_valuation=111_111,
+            ),
+            "プロダクト_2": DcpAssetInfo(
+                cumulative_contributions=200_000,
+                gains_or_losses=22_222,
+                asset_valuation=222_222,
+            ),
+            "プロダクト_3": DcpAssetInfo(
+                cumulative_contributions=300_000,
+                gains_or_losses=33_333,
+                asset_valuation=333_333,
+            ),
+        },
+    )
+
+
+def test_main_e2e_with_mocks(valid_assets):
     """main関数のE2Eテスト（Mockを使用）
 
     エンドツーエンドで処理が正常に完了することを確認する
@@ -12,7 +43,7 @@ def test_main_e2e_with_mocks(valid_assets_page):
     from src.presentation.dcp_ops_notification import main
     from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
 
-    scraper = MockSeleniumDcpScraper(mock_html=valid_assets_page)
+    scraper = MockSeleniumDcpScraper(mock_assets=valid_assets)
     notifier = MockLineNotifier()
 
     # when
@@ -41,7 +72,7 @@ def test_main_e2e_with_mocks(valid_assets_page):
     assert "プロダクト_2" in sent_message.text
 
 
-def test_main_e2e_with_scraping_error(valid_assets_page, local_stack_container):
+def test_main_e2e_with_scraping_error(local_stack_container):
     """スクレイピングエラー時のE2Eテスト
 
     スクレイピングが失敗した場合、例外が発生することを確認する
@@ -52,7 +83,7 @@ def test_main_e2e_with_scraping_error(valid_assets_page, local_stack_container):
     from src.presentation.dcp_ops_notification import main
     from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
 
-    scraper = MockSeleniumDcpScraper(mock_html=valid_assets_page, should_fail=True)
+    scraper = MockSeleniumDcpScraper(should_fail=True)
     notifier = MockLineNotifier()
 
     # when, then
@@ -75,23 +106,22 @@ def test_main_e2e_with_scraping_error(valid_assets_page, local_stack_container):
     assert any(key.endswith(".png") for key in object_keys)
 
 
-def test_main_e2e_with_invalid_html(invalid_assets_page, local_stack_container):
-    """不正なHTMLでのE2Eテスト
+def test_main_e2e_with_extraction_error(local_stack_container):
+    """抽出エラー時のE2Eテスト
 
-    必要な要素が欠けているHTMLの場合、パースエラーが発生することを確認する
+    資産情報の抽出に失敗した場合、例外が発生することを確認する
     また、エラー HTML ファイルがS3にアップロードされることを確認する
     """
     # given
-    from src.domain import AssetExtractionFailed
+    from src.domain import ScrapingFailed
     from src.presentation.dcp_ops_notification import main
     from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
 
-    scraper = MockSeleniumDcpScraper(mock_html=invalid_assets_page)
+    scraper = MockSeleniumDcpScraper(should_fail_extraction=True)
     notifier = MockLineNotifier()
 
     # when, then
-    # HTMLパースエラーが発生することを確認
-    with pytest.raises(AssetExtractionFailed) as exc_info:
+    with pytest.raises(ScrapingFailed) as exc_info:
         main(scraper=scraper, notifier=notifier)
 
     # エラーオブジェクトにerror_file_keyが含まれることを確認
@@ -100,7 +130,7 @@ def test_main_e2e_with_invalid_html(invalid_assets_page, local_stack_container):
     # スクレイピングは実行されたことを確認
     assert scraper.fetch_called is True
 
-    # 通知は送信されていないことを確認（パースエラーで処理が中断）
+    # 通知は送信されていないことを確認（抽出エラーで処理が中断）
     assert notifier.call_count == 0
 
     # S3 バケットにエラー HTML ファイルが存在することを確認
