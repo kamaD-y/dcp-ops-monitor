@@ -128,6 +128,8 @@ class SeleniumDcpScraper(IDcpScraper):
             return DcpAssets(total=total_assets, products=products_assets)
         except Exception as e:
             html_source = self.driver.page_source
+            self._logout()
+            self.driver.quit()
             raise ScrapingFailed.during_extraction(html_source=html_source) from e
 
     def _extract_total_assets(self) -> DcpAssetInfo:
