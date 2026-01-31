@@ -26,8 +26,8 @@ sequenceDiagram
     EventBridge->>Lambda: スケジュール実行
     Lambda->>SSM: 認証情報取得
     Lambda->>Web: スクレイピング実行
-    Web-->>Lambda: HTML データ
-    Lambda->>Lambda: 資産情報抽出
+    Lambda->>Web: ページ遷移・資産情報抽出
+    Web-->>Lambda: 資産情報
     alt 抽出失敗
         Lambda->>S3: HTML 保存
     end
@@ -179,20 +179,11 @@ Presentation → Application → Domain ← Infrastructure
 
 #### IDcpScraper（スクレイピングインターフェース）
 
-Web ページへのアクセスと HTML 取得を抽象化。
+ページ遷移と資産情報抽出を抽象化。
 
 ```python
-def fetch_asset_page(self, params: ScrapingParams) -> str:
-    """資産評価ページの HTML を取得"""
-```
-
-#### IDcpExtractor（抽出インターフェース）
-
-HTML からの資産情報抽出を抽象化。
-
-```python
-def extract(self, html: str) -> DcpAssets:
-    """HTML から資産情報を抽出"""
+def fetch_asset_valuation(self) -> DcpAssets:
+    """資産評価情報を取得（ページ遷移・要素抽出を一括で行う）"""
 ```
 
 #### INotifier（通知インターフェース）
@@ -244,8 +235,7 @@ def parse(self, event: dict) -> ErrorLogEvents:
 
 | 例外 | 発生条件 | 対応 |
 |------|---------|------|
-| ScrapingFailed | Web ページへのアクセス失敗 | スクリーンショット保存、ERROR ログ出力 |
-| AssetExtractionFailed | 資産情報の抽出失敗 | HTML 保存、ERROR ログ出力 |
+| ScrapingFailed | スクレイピング失敗（ページ遷移・抽出） | スクリーンショット/HTML 保存、ERROR ログ出力 |
 | NotificationFailed | 通知送信失敗 | ERROR ログ出力、Lambda リトライ |
 
 ### エラー通知機能
