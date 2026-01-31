@@ -57,7 +57,7 @@ class TestCloudWatchLogsAdapter:
                 "message": "エラー1",
                 "timestamp": "2025-01-01 00:00:00,000+0000",
                 "service": "test-service",
-                "error_file_key": "error1.png",
+                "error_screenshot_key": "error1.png",
             },
             {
                 "level": "INFO",
@@ -72,7 +72,7 @@ class TestCloudWatchLogsAdapter:
                 "message": "エラー2",
                 "timestamp": "2025-01-01 00:00:02,000+0000",
                 "service": "test-service",
-                "error_file_key": "error2.png",
+                "error_screenshot_key": "error2.png",
             },
         ]
         event = create_cloudwatch_logs_event(
@@ -126,7 +126,7 @@ class TestCloudWatchLogsAdapter:
                 "message": "エラー1",
                 "timestamp": "2025-01-01 00:00:00,000+0000",
                 "service": "test-service",
-                "error_file_key": "error1.png",
+                "error_screenshot_key": "error1.png",
             },
             "not a valid json",  # 不正なJSON
             {
@@ -135,7 +135,7 @@ class TestCloudWatchLogsAdapter:
                 "message": "エラー2",
                 "timestamp": "2025-01-01 00:00:02,000+0000",
                 "service": "test-service",
-                "error_file_key": "error2.png",
+                "error_screenshot_key": "error2.png",
             },
         ]
         event_dict = {

@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 from pydantic import BaseModel, computed_field, field_validator
 
@@ -11,11 +11,10 @@ class ErrorRecord(BaseModel):
     service: str  # サービス名 (web-scraping)
     timestamp: datetime  # タイムスタンプ (UTC、例: "2025-12-31 16:30:00,123+0000")
 
-    has_screenshot: bool = False  # スクリーンショットの有無
-    has_html: bool = False  # HTML ファイルの有無
-    error_file_key: Optional[str] = None  # エラーオブジェクトのキー
-    exception_name: Optional[str] = None  # 例外クラス名
-    exception: Optional[str] = None  # スタックトレース
+    error_screenshot_key: str | None = None  # スクリーンショットの S3 キー
+    error_html_key: str | None = None  # HTML ファイルの S3 キー
+    exception_name: str | None = None  # 例外クラス名
+    exception: str | None = None  # スタックトレース
 
     @field_validator("timestamp", mode="before")
     @classmethod
@@ -26,11 +25,6 @@ class ErrorRecord(BaseModel):
             ts = v.replace(",", ".")
             return datetime.strptime(ts, "%Y-%m-%d %H:%M:%S.%f%z")
         raise TypeError("timestamp must be datetime or str")
-
-    def model_post_init(self, context: Any) -> None:
-        """初期化後の追加フィールド設定"""
-        self.has_screenshot = self.error_file_key is not None and self.error_file_key.endswith(".png")
-        self.has_html = self.error_file_key is not None and self.error_file_key.endswith(".html")
 
     @computed_field
     @property

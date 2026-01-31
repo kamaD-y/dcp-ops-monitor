@@ -34,8 +34,11 @@ def format_error_message(error_log_events: ErrorLogEvents) -> str:
         if record.exception_name:
             lines.append(f"例外: {record.exception_name}")
 
-        if record.error_file_key:
-            lines.append(f"ファイル: {record.error_file_key}")
+        if record.error_screenshot_key:
+            lines.append(f"スクリーンショット: {record.error_screenshot_key}")
+
+        if record.error_html_key:
+            lines.append(f"HTML: {record.error_html_key}")
 
         lines.append("")
 

@@ -73,7 +73,7 @@ class TestErrorNotificationService:
             message="テストエラー",
             timestamp="2025-01-01 00:00:00,000+0000",  # type: ignore[invalid-argument-type] BaseModel により自動変換できる為
             service="test-service",
-            error_file_key=object_key,
+            error_screenshot_key=object_key,
         )
         error_log_events = ErrorLogEvents(
             error_records=[error_record],
