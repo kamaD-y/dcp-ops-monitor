@@ -6,7 +6,6 @@ from src.application import NotificationService, WebScrapingService, to_operatio
 from src.config.settings import get_logger, get_settings
 from src.domain import IDcpScraper, INotifier, ScrapingParams
 from src.infrastructure import (
-    BeautifulSoupDcpExtractor,
     LineNotifier,
     S3ObjectRepository,
     SeleniumDcpScraper,
@@ -28,8 +27,7 @@ def main(
         notifier (Optional[INotifier]): 通知サービス（テスト時にMockを注入可能）
 
     Raises:
-        ScrapingFailed: スクレイピング処理失敗時
-        AssetExtractionFailed: 資産情報抽出処理失敗時
+        ScrapingFailed: スクレイピングまたは資産情報抽出処理失敗時
         NotificationFailed: 通知送信失敗時
     """
     # scraperが指定されていない場合のみ実装を使用
@@ -44,14 +42,11 @@ def main(
         scraper = SeleniumDcpScraper(user_agent=settings.user_agent, scraping_params=scraping_params)
 
     try:
-        dcp_extractor = BeautifulSoupDcpExtractor()
         web_scraping_service = WebScrapingService(
             scraper=scraper,
             object_repository=S3ObjectRepository(settings.error_bucket_name),
-            dcp_extractor=dcp_extractor,
         )
-        html_source = web_scraping_service.scrape()
-        assets_info = web_scraping_service.extract_asset_valuation(html_source)
+        assets_info = web_scraping_service.scrape()
 
         operational_indicators = to_operational_indicators(total_assets=assets_info.total)
 

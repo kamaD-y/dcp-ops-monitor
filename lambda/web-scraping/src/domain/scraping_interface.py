@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+
+from .extraction_object import DcpAssets
 
 
 class IDcpScraper(ABC):
@@ -10,19 +11,16 @@ class IDcpScraper(ABC):
         pass
 
     @abstractmethod
-    def fetch_asset_valuation_html(self) -> str:
-        """資産評価情報ページの HTML ソースを取得するメソッド
+    def fetch_asset_valuation(self) -> DcpAssets:
+        """資産評価情報を取得するメソッド
+
+        ページ遷移（ログイン → 資産評価ページ → ログアウト）と
+        要素抽出を一括で行う。
 
         Returns:
-            str: 資産評価情報ページの HTML ソース
-        """
-        pass
+            DcpAssets: 資産評価情報
 
-    @abstractmethod
-    def get_error_image_path(self) -> Optional[str]:
-        """エラー時のスクリーンショット画像のパスを取得するメソッド
-
-        Returns:
-            Optional[str]: エラー時のスクリーンショット画像のパス
+        Raises:
+            ScrapingFailed: スクレイピングまたは資産情報抽出に失敗した場合
         """
         pass

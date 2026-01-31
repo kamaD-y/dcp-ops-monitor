@@ -1,67 +1,69 @@
 from typing import Optional
 
-from src.domain import IDcpScraper, ScrapingFailed, ScrapingParams
+from src.domain import DcpAssets, IDcpScraper, ScrapingFailed, ScrapingParams
 
 
 class MockSeleniumDcpScraper(IDcpScraper):
     """Selenium WebDriver のMock実装（E2Eテスト用）
 
-    実際にブラウザを起動せず、事前に用意したHTMLを返すMockオブジェクト
+    実際にブラウザを起動せず、事前に用意した DcpAssets を返すMockオブジェクト
     """
 
     def __init__(
         self,
-        mock_html: str,
+        mock_assets: Optional[DcpAssets] = None,
         user_agent: str = "",
         scraping_params: Optional[ScrapingParams] = None,
         chrome_binary_location: str = "",
         chrome_driver_path: str = "",
         should_fail: bool = False,
+        should_fail_extraction: bool = False,
     ) -> None:
         """コンストラクタ
 
         Args:
-            user_agent (str): ユーザーエージェント（使用しない）
-            scraping_params (Optional[ScrapingParams]): スクレイピングパラメータ（使用しない）
-            chrome_binary_location (str): Chromeバイナリの場所（使用しない）
-            chrome_driver_path (str): ChromeDriverのパス（使用しない）
-            mock_html (Optional[str]): 返却するHTMLソース（指定しない場合はデフォルトHTML）
-            should_fail (bool): Trueの場合、fetch_asset_valuation_htmlで例外を発生させる
+            mock_assets: 返却する資産情報（指定しない場合はデフォルト値）
+            user_agent: ユーザーエージェント（使用しない）
+            scraping_params: スクレイピングパラメータ（使用しない）
+            chrome_binary_location: Chromeバイナリの場所（使用しない）
+            chrome_driver_path: ChromeDriverのパス（使用しない）
+            should_fail: Trueの場合、スクレイピング失敗を模擬する
+            should_fail_extraction: Trueの場合、抽出失敗を模擬する
         """
         self.user_agent = user_agent
         self.scraping_params = scraping_params
         self.chrome_binary_location = chrome_binary_location
         self.chrome_driver_path = chrome_driver_path
-        self.mock_html = mock_html
+        self.mock_assets = mock_assets
         self.should_fail = should_fail
-        self.error_image_path: Optional[str] = None
+        self.should_fail_extraction = should_fail_extraction
         self.fetch_called = False
 
-    def fetch_asset_valuation_html(self) -> str:
-        """資産評価情報ページの HTML ソースを返す（Mock実装）
+    def fetch_asset_valuation(self) -> DcpAssets:
+        """資産評価情報を返す（Mock実装）
 
         Returns:
-            str: 資産評価情報ページの HTML ソース
+            DcpAssets: 資産評価情報
 
         Raises:
-            ScrapingFailed: should_fail=True の場合
+            ScrapingFailed: should_fail=True または should_fail_extraction=True の場合
         """
         self.fetch_called = True
 
         if self.should_fail:
-            self.error_image_path = "/tmp/mock_error.png"
-            with open(self.error_image_path, "wb") as f:
+            screenshot_path = "/tmp/mock_error.png"
+            with open(screenshot_path, "wb") as f:
                 f.write(b"Mock error image content")
             print("[Mock] Scraping failed (simulated)")
-            raise ScrapingFailed.during_login()
+            raise ScrapingFailed.during_login(screenshot_path=screenshot_path)
 
-        print(f"[Mock] Scraping succeeded (html_length={len(self.mock_html)})")
-        return self.mock_html
+        if self.should_fail_extraction:
+            print("[Mock] Extraction failed (simulated)")
+            raise ScrapingFailed.during_extraction(html_source="<html>invalid</html>")
 
-    def get_error_image_path(self) -> Optional[str]:
-        """エラー時のスクリーンショット画像のパスを返す
+        if self.mock_assets is None:
+            msg = "mock_assets must be provided when should_fail=False and should_fail_extraction=False"
+            raise ValueError(msg)
 
-        Returns:
-            Optional[str]: エラー時のスクリーンショット画像のパス
-        """
-        return self.error_image_path
+        print(f"[Mock] Scraping succeeded (products={len(self.mock_assets.products)})")
+        return self.mock_assets
