@@ -1,6 +1,3 @@
-from typing import Optional
-
-
 class WebScrapingFailed(Exception):
     """Web スクレイピング機能のベース例外"""
 
@@ -33,72 +30,71 @@ class ScrapingFailed(WebScrapingFailed):
     """スクレイピング処理のエラー
 
     ページ遷移失敗と資産情報抽出失敗の両方を表す。
-    エラー発生時のスクリーンショットパスと HTML ソースを保持する。
+    エラー発生時のスクリーンショットパスと HTML ファイルパスを保持する。
 
     Attributes:
         message (str): エラーメッセージ
-        error_file_key (Optional[str]): エラーファイルの S3 キー
-        screenshot_path (Optional[str]): エラー時のスクリーンショット画像のローカルパス
-        html_source (Optional[str]): エラー時のページ HTML ソース
+        error_screenshot_key (str | None): スクリーンショットの S3 キー
+        error_html_key (str | None): HTML ファイルの S3 キー
+        tmp_screenshot_path (str | None): エラー時のスクリーンショット画像のローカルパス
+        tmp_html_path (str | None): エラー時の HTML ファイルのローカルパス
     """
 
     def __init__(
         self,
         message: str,
-        error_file_key: Optional[str] = None,
-        screenshot_path: Optional[str] = None,
-        html_source: Optional[str] = None,
+        error_screenshot_key: str | None = None,
+        error_html_key: str | None = None,
+        tmp_screenshot_path: str | None = None,
+        tmp_html_path: str | None = None,
     ):
         super().__init__(message)
-        self.error_file_key = error_file_key
-        self.screenshot_path = screenshot_path
-        self.html_source = html_source
+        self.error_screenshot_key = error_screenshot_key
+        self.error_html_key = error_html_key
+        self.tmp_screenshot_path = tmp_screenshot_path
+        self.tmp_html_path = tmp_html_path
 
     @classmethod
     def during_login(
         cls,
-        error_file_key: Optional[str] = None,
-        screenshot_path: Optional[str] = None,
+        tmp_screenshot_path: str | None = None,
     ) -> "ScrapingFailed":
         """ログイン処理中にエラーが発生した場合の例外を生成
 
         Args:
-            error_file_key: エラーファイルの S3 キー
-            screenshot_path: エラー時のスクリーンショット画像のローカルパス
+            tmp_screenshot_path: エラー時のスクリーンショット画像のローカルパス
 
         Returns:
             ScrapingFailed: 生成された例外インスタンス
         """
-        return cls("ログイン処理に失敗しました", error_file_key, screenshot_path=screenshot_path)
+        return cls("ログイン処理に失敗しました", tmp_screenshot_path=tmp_screenshot_path)
 
     @classmethod
     def during_page_fetch(
         cls,
-        error_file_key: Optional[str] = None,
-        screenshot_path: Optional[str] = None,
+        tmp_screenshot_path: str | None = None,
     ) -> "ScrapingFailed":
         """ページ取得処理中にエラーが発生した場合の例外を生成
 
         Args:
-            error_file_key: エラーファイルの S3 キー
-            screenshot_path: エラー時のスクリーンショット画像のローカルパス
+            tmp_screenshot_path: エラー時のスクリーンショット画像のローカルパス
 
         Returns:
             ScrapingFailed: 生成された例外インスタンス
         """
-        return cls("資産評価額照会ページの取得に失敗しました", error_file_key, screenshot_path=screenshot_path)
+        return cls("資産評価額照会ページの取得に失敗しました", tmp_screenshot_path=tmp_screenshot_path)
 
     @classmethod
     def during_extraction(
         cls,
-        html_source: Optional[str] = None,
+        tmp_html_path: str | None = None,
     ) -> "ScrapingFailed":
         """資産情報抽出中にエラーが発生した場合の例外を生成
 
         Args:
-            html_source: エラー時のページ HTML ソース
+            tmp_html_path: エラー時の HTML ファイルのローカルパス
 
         Returns:
             ScrapingFailed: 生成された例外インスタンス
         """
-        return cls("資産情報の抽出に失敗しました", html_source=html_source)
+        return cls("資産情報の抽出に失敗しました", tmp_html_path=tmp_html_path)

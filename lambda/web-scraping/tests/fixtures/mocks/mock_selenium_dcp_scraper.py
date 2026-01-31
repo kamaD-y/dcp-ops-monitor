@@ -1,5 +1,3 @@
-from typing import Optional
-
 from src.domain import DcpAssets, IDcpScraper, ScrapingFailed, ScrapingParams
 
 
@@ -11,9 +9,9 @@ class MockSeleniumDcpScraper(IDcpScraper):
 
     def __init__(
         self,
-        mock_assets: Optional[DcpAssets] = None,
+        mock_assets: DcpAssets | None = None,
         user_agent: str = "",
-        scraping_params: Optional[ScrapingParams] = None,
+        scraping_params: ScrapingParams | None = None,
         chrome_binary_location: str = "",
         chrome_driver_path: str = "",
         should_fail: bool = False,
@@ -55,11 +53,14 @@ class MockSeleniumDcpScraper(IDcpScraper):
             with open(screenshot_path, "wb") as f:
                 f.write(b"Mock error image content")
             print("[Mock] Scraping failed (simulated)")
-            raise ScrapingFailed.during_login(screenshot_path=screenshot_path)
+            raise ScrapingFailed.during_login(tmp_screenshot_path=screenshot_path)
 
         if self.should_fail_extraction:
+            html_path = "/tmp/mock_error_extraction.html"
+            with open(html_path, "w", encoding="utf-8") as f:
+                f.write("<html>invalid</html>")
             print("[Mock] Extraction failed (simulated)")
-            raise ScrapingFailed.during_extraction(html_source="<html>invalid</html>")
+            raise ScrapingFailed.during_extraction(tmp_html_path=html_path)
 
         if self.mock_assets is None:
             msg = "mock_assets must be provided when should_fail=False and should_fail_extraction=False"

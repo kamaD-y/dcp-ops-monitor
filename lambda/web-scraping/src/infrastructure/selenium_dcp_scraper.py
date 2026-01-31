@@ -95,7 +95,7 @@ class SeleniumDcpScraper(IDcpScraper):
             screenshot_path = "/tmp/error_login.png"
             self.driver.save_screenshot(screenshot_path)
             self.driver.quit()
-            raise ScrapingFailed.during_login(screenshot_path=screenshot_path) from e
+            raise ScrapingFailed.during_login(tmp_screenshot_path=screenshot_path) from e
 
     def _navigate_to_asset_page(self) -> None:
         """資産評価額照会ページへ遷移する"""
@@ -112,7 +112,7 @@ class SeleniumDcpScraper(IDcpScraper):
             self.driver.save_screenshot(screenshot_path)
             self._logout()
             self.driver.quit()
-            raise ScrapingFailed.during_page_fetch(screenshot_path=screenshot_path) from e
+            raise ScrapingFailed.during_page_fetch(tmp_screenshot_path=screenshot_path) from e
 
     def _extract_asset_valuation(self) -> DcpAssets:
         """資産評価額照会ページから資産情報を抽出する
@@ -127,10 +127,12 @@ class SeleniumDcpScraper(IDcpScraper):
             logger.info("資産情報の抽出完了")
             return DcpAssets(total=total_assets, products=products_assets)
         except Exception as e:
-            html_source = self.driver.page_source
+            html_path = "/tmp/error_extraction.html"
+            with open(html_path, "w", encoding="utf-8") as f:
+                f.write(self.driver.page_source)
             self._logout()
             self.driver.quit()
-            raise ScrapingFailed.during_extraction(html_source=html_source) from e
+            raise ScrapingFailed.during_extraction(tmp_html_path=html_path) from e
 
     def _extract_total_assets(self) -> DcpAssetInfo:
         """総評価額を抽出する
