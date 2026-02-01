@@ -16,7 +16,10 @@ def handler(event: dict, context: LambdaContext) -> str | None:
     except ScrapingFailed as e:
         logger.exception(
             "スクレイピング処理でエラーが発生しました。",
-            extra={"error_file_key": e.error_file_key},
+            extra={
+                "error_screenshot_key": e.error_screenshot_key,
+                "error_html_key": e.error_html_key,
+            },
         )
         raise
     except Exception:

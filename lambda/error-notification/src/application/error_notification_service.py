@@ -57,7 +57,7 @@ class ErrorNotificationService:
         # 画像URL取得 (最初のレコードにスクリーンショットがあれば)
         image_url = None
         first_record = error_records[0]
-        if first_record.has_screenshot:
+        if first_record.error_screenshot_key:
             image_url = self._get_image_url(first_record, bucket_name)
 
         # 通知メッセージ作成 (テキスト + 画像URL)
@@ -77,12 +77,12 @@ class ErrorNotificationService:
         Returns:
             str | None: 画像URL (取得失敗時は None)
         """
-        if not record.error_file_key:
+        if not record.error_screenshot_key:
             return None
 
         try:
             # オブジェクトストレージの一時 URL 生成 (有効期限: 1時間)
-            location = StorageLocation(container=bucket_name, path=record.error_file_key)
+            location = StorageLocation(container=bucket_name, path=record.error_screenshot_key)
             image_url = self.object_repository.generate_temporary_url(location, expires_in=3600)
             return image_url
 

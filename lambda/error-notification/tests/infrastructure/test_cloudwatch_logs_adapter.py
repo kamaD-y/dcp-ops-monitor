@@ -57,7 +57,7 @@ class TestCloudWatchLogsAdapter:
                 "message": "エラー1",
                 "timestamp": "2025-01-01 00:00:00,000+0000",
                 "service": "test-service",
-                "error_file_key": "error1.png",
+                "error_screenshot_key": "error1.png",
             },
             {
                 "level": "INFO",
@@ -72,7 +72,7 @@ class TestCloudWatchLogsAdapter:
                 "message": "エラー2",
                 "timestamp": "2025-01-01 00:00:02,000+0000",
                 "service": "test-service",
-                "error_file_key": "error2.png",
+                "error_screenshot_key": "error2.png",
             },
         ]
         event = create_cloudwatch_logs_event(
@@ -90,6 +90,8 @@ class TestCloudWatchLogsAdapter:
         assert len(result.error_records) == 2
         assert result.error_records[0].message == "エラー1"
         assert result.error_records[1].message == "エラー2"
+        assert result.error_records[0].error_screenshot_key == "error1.png"
+        assert result.error_records[1].error_screenshot_key == "error2.png"
         assert result.logs_url is not None
         assert "ap-northeast-1" in result.logs_url
         assert "console.aws.amazon.com/cloudwatch/home" in result.logs_url
@@ -126,7 +128,7 @@ class TestCloudWatchLogsAdapter:
                 "message": "エラー1",
                 "timestamp": "2025-01-01 00:00:00,000+0000",
                 "service": "test-service",
-                "error_file_key": "error1.png",
+                "error_screenshot_key": "error1.png",
             },
             "not a valid json",  # 不正なJSON
             {
@@ -135,7 +137,7 @@ class TestCloudWatchLogsAdapter:
                 "message": "エラー2",
                 "timestamp": "2025-01-01 00:00:02,000+0000",
                 "service": "test-service",
-                "error_file_key": "error2.png",
+                "error_screenshot_key": "error2.png",
             },
         ]
         event_dict = {

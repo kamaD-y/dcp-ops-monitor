@@ -14,20 +14,7 @@ class IObjectRepository(ABC):
         Args:
             key (str): オブジェクトのキー
             file_path (str): アップロードするファイルのパス
-        Returns:
-            None
-        """
-        pass
-
-    @abstractmethod
-    def put_object(self, key: str, body: str) -> None:
-        """オブジェクトストレージにオブジェクトをアップロードする
-
-        Args:
-            key (str): オブジェクトのキー
-            body (str): アップロードするオブジェクトの内容
-
-        Returns:
-            None
+        Raises:
+            ArtifactUploadError: アップロード失敗時
         """
         pass

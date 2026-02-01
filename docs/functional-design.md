@@ -118,10 +118,9 @@ sequenceDiagram
 | service | str | サービス名 |
 | timestamp | datetime | タイムスタンプ（UTC） |
 | jst_timestamp | datetime | タイムスタンプ（JST、算出プロパティ） |
-| error_file_key | str \| None | エラーファイルのS3キー |
+| error_screenshot_key | str \| None | スクリーンショットの S3 キー |
+| error_html_key | str \| None | HTML ファイルの S3 キー |
 | exception_name | str \| None | 例外クラス名 |
-| has_screenshot | bool | スクリーンショットの有無 |
-| has_html | bool | HTML ファイルの有無 |
 
 #### ErrorLogEvents（エラーログイベント）
 
@@ -236,6 +235,7 @@ def parse(self, event: dict) -> ErrorLogEvents:
 | 例外 | 発生条件 | 対応 |
 |------|---------|------|
 | ScrapingFailed | スクレイピング失敗（ページ遷移・抽出） | スクリーンショット/HTML 保存、ERROR ログ出力 |
+| ArtifactUploadError | エラーアーティファクトの S3 アップロード失敗 | ERROR ログ出力 |
 | NotificationFailed | 通知送信失敗 | ERROR ログ出力、Lambda リトライ |
 
 ### エラー通知機能

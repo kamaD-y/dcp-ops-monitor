@@ -5,7 +5,7 @@ import os
 import boto3
 
 from src.config.settings import get_logger
-from src.domain import IObjectRepository
+from src.domain import ArtifactUploadError, IObjectRepository
 
 logger = get_logger()
 
@@ -35,29 +35,12 @@ class S3ObjectRepository(IObjectRepository):
             file_path: アップロードするファイルのパス
 
         Raises:
-            Exception: S3 へのファイルアップロード失敗時
+            ArtifactUploadError: S3 へのファイルアップロード失敗時
         """
         try:
             self.client.upload_file(file_path, self.bucket, key)
             logger.info("S3 へのファイルアップロード成功", bucket=self.bucket, key=key)
         except Exception as e:
-            logger.error("S3 へのファイルアップロードに失敗しました", bucket=self.bucket, key=key, error=str(e))
-            raise Exception("S3 へのファイルアップロードに失敗しました。") from e
-
-    def put_object(self, key: str, body: str) -> None:
-        """S3バケットにオブジェクトをアップロードする
-
-        Args:
-            key: S3オブジェクトのキー
-            body: アップロードするオブジェクトの内容
-
-        Raises:
-            Exception: S3 へのオブジェクトアップロード失敗時
-        """
-        try:
-            body_bytes = body.encode("utf-8")
-            self.client.put_object(Bucket=self.bucket, Key=key, Body=body_bytes)
-            logger.info("S3 へのオブジェクトアップロード成功", bucket=self.bucket, key=key)
-        except Exception as e:
-            logger.error("S3 へのオブジェクトアップロードに失敗しました", bucket=self.bucket, key=key, error=str(e))
-            raise Exception("S3 へのオブジェクトアップロードに失敗しました。") from e
+            raise ArtifactUploadError(
+                f"S3 へのファイルアップロードに失敗しました。bucket={self.bucket}, key={key}"
+            ) from e

@@ -90,8 +90,8 @@ def test_main_e2e_with_scraping_error(local_stack_container):
     with pytest.raises(ScrapingFailed) as exc_info:
         main(scraper=scraper, notifier=notifier)
 
-    # エラーオブジェクトにerror_file_keyが含まれることを確認
-    assert exc_info.value.error_file_key is not None
+    # エラーオブジェクトに error_screenshot_key が含まれることを確認
+    assert exc_info.value.error_screenshot_key is not None
 
     # スクレイピングは試みられたが失敗したことを確認
     assert scraper.fetch_called is True
@@ -124,8 +124,8 @@ def test_main_e2e_with_extraction_error(local_stack_container):
     with pytest.raises(ScrapingFailed) as exc_info:
         main(scraper=scraper, notifier=notifier)
 
-    # エラーオブジェクトにerror_file_keyが含まれることを確認
-    assert exc_info.value.error_file_key is not None
+    # エラーオブジェクトに error_html_key が含まれることを確認
+    assert exc_info.value.error_html_key is not None
 
     # スクレイピングは実行されたことを確認
     assert scraper.fetch_called is True
