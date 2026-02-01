@@ -128,8 +128,12 @@ class SeleniumDcpScraper(IDcpScraper):
             return DcpAssets(total=total_assets, products=products_assets)
         except Exception as e:
             html_path = "/tmp/error_extraction.html"
-            with open(html_path, "w", encoding="utf-8") as f:
-                f.write(self.driver.page_source)
+            try:
+                with open(html_path, "w", encoding="utf-8") as f:
+                    f.write(self.driver.page_source)
+            except Exception:
+                logger.warning("HTML ファイルの保存に失敗しました。")
+                html_path = None
             self._logout()
             self.driver.quit()
             raise ScrapingFailed.during_extraction(tmp_html_path=html_path) from e
