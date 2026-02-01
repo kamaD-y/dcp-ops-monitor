@@ -176,7 +176,7 @@ Presentation → Application → Domain ← Infrastructure
 
 ### 運用状況通知機能
 
-#### IDcpScraper（スクレイピングインターフェース）
+#### IScraper（スクレイピングインターフェース）
 
 ページ遷移と資産情報抽出を抽象化。
 

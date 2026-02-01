@@ -4,11 +4,11 @@ from typing import Optional
 
 from src.application import NotificationService, WebScrapingService, to_operational_indicators
 from src.config.settings import get_logger, get_settings
-from src.domain import IDcpScraper, INotifier, ScrapingParams
+from src.domain import INotifier, IScraper, ScrapingParams
 from src.infrastructure import (
     LineNotifier,
     S3ObjectRepository,
-    SeleniumDcpScraper,
+    SeleniumScraper,
     get_ssm_json_parameter,
 )
 
@@ -17,13 +17,13 @@ logger = get_logger()
 
 
 def main(
-    scraper: Optional[IDcpScraper] = None,
+    scraper: Optional[IScraper] = None,
     notifier: Optional[INotifier] = None,
 ) -> None:
     """メイン処理
 
     Args:
-        scraper (Optional[IDcpScraper]): スクレイパー（テスト時にMockを注入可能）
+        scraper (Optional[IScraper]): スクレイパー（テスト時にMockを注入可能）
         notifier (Optional[INotifier]): 通知サービス（テスト時にMockを注入可能）
 
     Raises:
@@ -39,7 +39,7 @@ def main(
             login_birthdate=scraping_parameter["login_birthdate"],
             start_url=scraping_parameter["start_url"],
         )
-        scraper = SeleniumDcpScraper(user_agent=settings.user_agent, scraping_params=scraping_params)
+        scraper = SeleniumScraper(user_agent=settings.user_agent, scraping_params=scraping_params)
 
     try:
         web_scraping_service = WebScrapingService(

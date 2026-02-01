@@ -3,8 +3,8 @@ from datetime import datetime
 from src.config.settings import get_logger
 from src.domain import (
     DcpAssets,
-    IDcpScraper,
     IObjectRepository,
+    IScraper,
     ScrapingFailed,
 )
 
@@ -14,10 +14,10 @@ logger = get_logger()
 class WebScrapingService:
     def __init__(
         self,
-        scraper: IDcpScraper,
+        scraper: IScraper,
         object_repository: IObjectRepository,
     ) -> None:
-        self.scraper: IDcpScraper = scraper
+        self.scraper: IScraper = scraper
         self.object_repository: IObjectRepository = object_repository
 
     def scrape(self) -> DcpAssets:

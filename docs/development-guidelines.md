@@ -47,7 +47,7 @@
 | 変数 | snake_case | `error_message`, `asset_valuation` |
 | 定数 | UPPER_SNAKE_CASE | `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT` |
 | プライベート | 先頭に `_` | `_parse_html`, `_validate_input` |
-| インターフェース | 先頭に `I` | `IDcpScraper`, `INotifier` |
+| インターフェース | 先頭に `I` | `IScraper`, `INotifier` |
 
 ### TypeScript
 
