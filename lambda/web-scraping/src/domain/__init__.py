@@ -9,7 +9,7 @@ from .exceptions import (
 from .extraction_object import DcpAssetInfo, DcpAssets, DcpOpsIndicators
 from .notification_interface import INotifier
 from .notification_object import NotificationMessage
-from .scraping_interface import IDcpScraper
+from .scraping_interface import IScraper
 from .scraping_object import ScrapingParams
 from .storage_interface import IObjectRepository
 
@@ -21,7 +21,7 @@ __all__ = [
     "NotificationMessage",
     "ScrapingParams",
     # Interfaces
-    "IDcpScraper",
+    "IScraper",
     "INotifier",
     "IObjectRepository",
     # Exceptions

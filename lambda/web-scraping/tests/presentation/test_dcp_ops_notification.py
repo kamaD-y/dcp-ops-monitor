@@ -41,9 +41,9 @@ def test_main_e2e_with_mocks(valid_assets):
     """
     # given
     from src.presentation.dcp_ops_notification import main
-    from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
+    from tests.fixtures.mocks import MockLineNotifier, MockSeleniumScraper
 
-    scraper = MockSeleniumDcpScraper(mock_assets=valid_assets)
+    scraper = MockSeleniumScraper(mock_assets=valid_assets)
     notifier = MockLineNotifier()
 
     # when
@@ -81,9 +81,9 @@ def test_main_e2e_with_scraping_error(local_stack_container):
     # given
     from src.domain import ScrapingFailed
     from src.presentation.dcp_ops_notification import main
-    from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
+    from tests.fixtures.mocks import MockLineNotifier, MockSeleniumScraper
 
-    scraper = MockSeleniumDcpScraper(should_fail=True)
+    scraper = MockSeleniumScraper(should_fail=True)
     notifier = MockLineNotifier()
 
     # when, then
@@ -115,9 +115,9 @@ def test_main_e2e_with_extraction_error(local_stack_container):
     # given
     from src.domain import ScrapingFailed
     from src.presentation.dcp_ops_notification import main
-    from tests.fixtures.mocks import MockLineNotifier, MockSeleniumDcpScraper
+    from tests.fixtures.mocks import MockLineNotifier, MockSeleniumScraper
 
-    scraper = MockSeleniumDcpScraper(should_fail_extraction=True)
+    scraper = MockSeleniumScraper(should_fail_extraction=True)
     notifier = MockLineNotifier()
 
     # when, then

@@ -1,7 +1,7 @@
-from src.domain import DcpAssets, IDcpScraper, ScrapingFailed, ScrapingParams
+from src.domain import DcpAssets, IScraper, ScrapingFailed, ScrapingParams
 
 
-class MockSeleniumDcpScraper(IDcpScraper):
+class MockSeleniumScraper(IScraper):
     """Selenium WebDriver のMock実装（E2Eテスト用）
 
     実際にブラウザを起動せず、事前に用意した DcpAssets を返すMockオブジェクト

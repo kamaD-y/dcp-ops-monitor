@@ -4,12 +4,12 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 from src.config.settings import get_logger
-from src.domain import DcpAssetInfo, DcpAssets, IDcpScraper, ScrapingFailed, ScrapingParams
+from src.domain import DcpAssetInfo, DcpAssets, IScraper, ScrapingFailed, ScrapingParams
 
 logger = get_logger()
 
 
-class SeleniumDcpScraper(IDcpScraper):
+class SeleniumScraper(IScraper):
     """Selenium WebDriverを提供するクラス"""
 
     def __init__(

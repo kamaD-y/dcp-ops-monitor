@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from .extraction_object import DcpAssets
 
 
-class IDcpScraper(ABC):
+class IScraper(ABC):
     """スクレイピングドライバー抽象クラス"""
 
     def __init__(self) -> None:
