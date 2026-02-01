@@ -131,8 +131,8 @@ class SeleniumDcpScraper(IDcpScraper):
             try:
                 with open(html_path, "w", encoding="utf-8") as f:
                     f.write(self.driver.page_source)
-            except Exception:
-                logger.warning("HTML ファイルの保存に失敗しました。")
+            except Exception as write_error:
+                logger.warning("HTML ファイルの保存に失敗しました。", error=str(write_error))
                 html_path = None
             self._logout()
             self.driver.quit()

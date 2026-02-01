@@ -41,4 +41,6 @@ class S3ObjectRepository(IObjectRepository):
             self.client.upload_file(file_path, self.bucket, key)
             logger.info("S3 へのファイルアップロード成功", bucket=self.bucket, key=key)
         except Exception as e:
-            raise ArtifactUploadError("S3 へのファイルアップロードに失敗しました。") from e
+            raise ArtifactUploadError(
+                f"S3 へのファイルアップロードに失敗しました。bucket={self.bucket}, key={key}"
+            ) from e
