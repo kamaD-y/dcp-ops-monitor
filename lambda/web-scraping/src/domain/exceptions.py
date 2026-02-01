@@ -1,3 +1,7 @@
+from re import S
+from typing import Self
+
+
 class WebScrapingFailed(Exception):
     """Web スクレイピング機能のベース例外"""
 
@@ -8,7 +12,7 @@ class NotificationFailed(WebScrapingFailed):
     """通知送信エラー"""
 
     @classmethod
-    def during_request(cls) -> "NotificationFailed":
+    def during_request(cls) -> Self:
         """通知送信中にエラーが発生した場合の例外インスタンスを生成する名前付きコンストラクタ
 
         Returns:
@@ -17,7 +21,7 @@ class NotificationFailed(WebScrapingFailed):
         return cls("通知送信中にエラーが発生しました")
 
     @classmethod
-    def before_request(cls) -> "NotificationFailed":
+    def before_request(cls) -> Self:
         """通知送信前にエラーが発生した場合の例外インスタンスを生成する名前付きコンストラクタ
 
         Returns:
@@ -64,7 +68,7 @@ class ScrapingFailed(WebScrapingFailed):
     def during_login(
         cls,
         tmp_screenshot_path: str | None = None,
-    ) -> "ScrapingFailed":
+    ) -> Self:
         """ログイン処理中にエラーが発生した場合の例外を生成
 
         Args:
@@ -79,7 +83,7 @@ class ScrapingFailed(WebScrapingFailed):
     def during_page_fetch(
         cls,
         tmp_screenshot_path: str | None = None,
-    ) -> "ScrapingFailed":
+    ) -> Self:
         """ページ取得処理中にエラーが発生した場合の例外を生成
 
         Args:
@@ -94,7 +98,7 @@ class ScrapingFailed(WebScrapingFailed):
     def during_extraction(
         cls,
         tmp_html_path: str | None = None,
-    ) -> "ScrapingFailed":
+    ) -> Self:
         """資産情報抽出中にエラーが発生した場合の例外を生成
 
         Args:

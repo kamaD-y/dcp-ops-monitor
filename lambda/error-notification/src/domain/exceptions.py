@@ -1,5 +1,7 @@
 """エラー通知機能のカスタム例外定義"""
 
+from typing import Self
+
 
 class ErrorNotificationFailed(Exception):
     """エラー通知機能のベース例外"""
@@ -11,7 +13,7 @@ class CouldNotGenerateTemporaryUrl(ErrorNotificationFailed):
     """一時アクセス URL 生成エラー"""
 
     @classmethod
-    def from_location(cls, location: str) -> "CouldNotGenerateTemporaryUrl":
+    def from_location(cls, location: str) -> Self:
         """ロケーション情報から例外インスタンスを生成する名前付きコンストラクタ
 
         Args:
@@ -27,7 +29,7 @@ class NotificationFailed(ErrorNotificationFailed):
     """通知送信エラー"""
 
     @classmethod
-    def during_request(cls) -> "NotificationFailed":
+    def during_request(cls) -> Self:
         """通知送信中にエラーが発生した場合の例外インスタンスを生成する名前付きコンストラクタ
 
         Returns:
@@ -36,7 +38,7 @@ class NotificationFailed(ErrorNotificationFailed):
         return cls("通知送信中にエラーが発生しました")
 
     @classmethod
-    def before_request(cls) -> "NotificationFailed":
+    def before_request(cls) -> Self:
         """通知送信前にエラーが発生した場合の例外インスタンスを生成する名前付きコンストラクタ
 
         Returns:
