@@ -90,6 +90,8 @@ class TestCloudWatchLogsAdapter:
         assert len(result.error_records) == 2
         assert result.error_records[0].message == "エラー1"
         assert result.error_records[1].message == "エラー2"
+        assert result.error_records[0].error_screenshot_key == "error1.png"
+        assert result.error_records[1].error_screenshot_key == "error2.png"
         assert result.logs_url is not None
         assert "ap-northeast-1" in result.logs_url
         assert "console.aws.amazon.com/cloudwatch/home" in result.logs_url
