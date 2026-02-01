@@ -14,7 +14,7 @@ class IObjectRepository(ABC):
         Args:
             key (str): オブジェクトのキー
             file_path (str): アップロードするファイルのパス
-        Returns:
-            None
+        Raises:
+            ArtifactUploadError: アップロード失敗時
         """
         pass

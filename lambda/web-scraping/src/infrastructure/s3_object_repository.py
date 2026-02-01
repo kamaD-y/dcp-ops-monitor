@@ -5,7 +5,7 @@ import os
 import boto3
 
 from src.config.settings import get_logger
-from src.domain import IObjectRepository
+from src.domain import ArtifactUploadError, IObjectRepository
 
 logger = get_logger()
 
@@ -35,11 +35,10 @@ class S3ObjectRepository(IObjectRepository):
             file_path: アップロードするファイルのパス
 
         Raises:
-            Exception: S3 へのファイルアップロード失敗時
+            ArtifactUploadError: S3 へのファイルアップロード失敗時
         """
         try:
             self.client.upload_file(file_path, self.bucket, key)
             logger.info("S3 へのファイルアップロード成功", bucket=self.bucket, key=key)
         except Exception as e:
-            logger.error("S3 へのファイルアップロードに失敗しました", bucket=self.bucket, key=key, error=str(e))
-            raise Exception("S3 へのファイルアップロードに失敗しました。") from e
+            raise ArtifactUploadError("S3 へのファイルアップロードに失敗しました。") from e
