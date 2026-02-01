@@ -26,6 +26,12 @@ class NotificationFailed(WebScrapingFailed):
         return cls("通知送信前にエラーが発生しました")
 
 
+class ArtifactUploadError(WebScrapingFailed):
+    """エラーアーティファクトのアップロード失敗"""
+
+    pass
+
+
 class ScrapingFailed(WebScrapingFailed):
     """スクレイピング処理のエラー
 

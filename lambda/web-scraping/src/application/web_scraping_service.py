@@ -2,6 +2,7 @@ from datetime import datetime
 
 from src.config.settings import get_logger
 from src.domain import (
+    ArtifactUploadError,
     DcpAssets,
     IDcpScraper,
     IObjectRepository,
@@ -40,7 +41,7 @@ class WebScrapingService:
                     file_path=e.tmp_screenshot_path,
                 )
             except Exception as upload_error:
-                raise Exception("エラー画像のアップロードに失敗しました。") from upload_error
+                raise ArtifactUploadError("エラー画像のアップロードに失敗しました。") from upload_error
 
             logger.info("エラー画像をアップロードしました。", extra={"error_screenshot_key": key})
             e.error_screenshot_key = key
@@ -54,7 +55,7 @@ class WebScrapingService:
                     file_path=e.tmp_html_path,
                 )
             except Exception as upload_error:
-                raise Exception("資産情報 HTML ファイルのアップロードに失敗しました。") from upload_error
+                raise ArtifactUploadError("資産情報 HTML ファイルのアップロードに失敗しました。") from upload_error
 
             logger.info("資産情報 HTML ファイルをアップロードしました。", extra={"error_html_key": key})
             e.error_html_key = key
