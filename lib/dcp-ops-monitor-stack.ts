@@ -31,7 +31,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     });
 
     // S3 Bucket
-    const errorBucket = new s3.Bucket(this, 'ErrorBucket', {
+    const dataBucket = new s3.Bucket(this, 'DataBucket', {
       versioned: false,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
@@ -57,20 +57,19 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         POWERTOOLS_LOG_LEVEL: props.logLevel,
         USER_AGENT: props.userAgent,
         SCRAPING_PARAMETER_NAME: scrapingParameter.parameterName,
-        LINE_MESSAGE_PARAMETER_NAME: lineMessageParameter.parameterName,
-        ERROR_BUCKET_NAME: errorBucket.bucketName,
+        DATA_BUCKET_NAME: dataBucket.bucketName,
       },
     });
     webScrapingFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['ssm:GetParameter'],
-        resources: [scrapingParameter.parameterArn, lineMessageParameter.parameterArn],
+        resources: [scrapingParameter.parameterArn],
       }),
     );
     webScrapingFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['s3:PutObject'],
-        resources: [`${errorBucket.bucketArn}/*`],
+        resources: [`${dataBucket.bucketArn}/*`],
       }),
     );
 
@@ -88,13 +87,13 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         POWERTOOLS_SERVICE_NAME: 'error-notification',
         POWERTOOLS_LOG_LEVEL: props.logLevel,
         LINE_MESSAGE_PARAMETER_NAME: lineMessageParameter.parameterName,
-        ERROR_BUCKET_NAME: errorBucket.bucketName,
+        ERROR_BUCKET_NAME: dataBucket.bucketName,
       },
     });
     errorNotificationFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['s3:GetObject'],
-        resources: [`${errorBucket.bucketArn}/*`],
+        resources: [`${dataBucket.bucketArn}/*`],
       }),
     );
     errorNotificationFunction.addToRolePolicy(
@@ -111,12 +110,12 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       filterPattern: logs.FilterPattern.stringValue('$.level', '=', 'ERROR'),
     });
 
-    // 毎週月曜日 09:00 に実行する Rule を作成
+    // 平日（月〜金）09:00 JST に実行する Rule を作成
     new events.Rule(this, 'EventRule', {
       schedule: events.Schedule.cron({
         minute: '0',
         hour: '0',
-        weekDay: 'MON',
+        weekDay: 'MON-FRI',
       }),
       targets: [new targets.LambdaFunction(webScrapingFunction)],
     });
