@@ -7,28 +7,6 @@ class WebScrapingFailed(Exception):
     pass
 
 
-class NotificationFailed(WebScrapingFailed):
-    """通知送信エラー"""
-
-    @classmethod
-    def during_request(cls) -> Self:
-        """通知送信中にエラーが発生した場合の例外インスタンスを生成する名前付きコンストラクタ
-
-        Returns:
-            NotificationFailed: 生成された例外インスタンス
-        """
-        return cls("通知送信中にエラーが発生しました")
-
-    @classmethod
-    def before_request(cls) -> Self:
-        """通知送信前にエラーが発生した場合の例外インスタンスを生成する名前付きコンストラクタ
-
-        Returns:
-            NotificationFailed: 生成された例外インスタンス
-        """
-        return cls("通知送信前にエラーが発生しました")
-
-
 class ArtifactUploadError(WebScrapingFailed):
     """エラーアーティファクトのアップロード失敗"""
 

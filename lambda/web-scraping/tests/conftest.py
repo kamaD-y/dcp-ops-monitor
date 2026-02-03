@@ -6,22 +6,6 @@ from testcontainers.localstack import LocalStackContainer
 bucket_name = "test-bucket"
 
 
-@pytest.fixture
-def valid_assets_page() -> str:
-    """テスト用の正常なHTMLファイルを読み込む"""
-    with open("tests/fixtures/html/valid_assets_page.html") as f:
-        assets_page = f.read()
-    return assets_page
-
-
-@pytest.fixture
-def invalid_assets_page() -> str:
-    """テスト用の不正なHTMLファイルを読み込む"""
-    with open("tests/fixtures/html/invalid_assets_page.html") as f:
-        assets_page = f.read()
-    return assets_page
-
-
 @pytest.fixture(scope="package", autouse=True)
 def local_stack_container() -> LocalStackContainer:  # type: ignore (invalid-return-type)
     """LocalStackのコンテナを起動する
@@ -39,7 +23,8 @@ def local_stack_container() -> LocalStackContainer:  # type: ignore (invalid-ret
 
 @pytest.fixture(scope="package", autouse=True)
 def create_test_bucket(local_stack_container: LocalStackContainer) -> None:
-    os.environ["error_bucket_name"] = bucket_name
+    """S3テストバケットを作成"""
+    os.environ["DATA_BUCKET_NAME"] = bucket_name
     client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
     client.create_bucket(
         Bucket=bucket_name,

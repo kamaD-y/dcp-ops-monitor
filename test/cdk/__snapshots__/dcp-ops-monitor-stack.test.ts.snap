@@ -10,7 +10,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
     },
   },
   "Resources": {
-    "ErrorBucket8D38AF42": {
+    "DataBucketE3889A50": {
       "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
@@ -67,7 +67,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
         "Environment": {
           "Variables": {
             "ERROR_BUCKET_NAME": {
-              "Ref": "ErrorBucket8D38AF42",
+              "Ref": "DataBucketE3889A50",
             },
             "LINE_MESSAGE_PARAMETER_NAME": "/dcp-ops-monitor/dummy-line-message-parameters",
             "POWERTOOLS_LOG_LEVEL": "INFO",
@@ -130,7 +130,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
                   [
                     {
                       "Fn::GetAtt": [
-                        "ErrorBucket8D38AF42",
+                        "DataBucketE3889A50",
                         "Arn",
                       ],
                     },
@@ -177,7 +177,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
     },
     "EventRule5A491D2C": {
       "Properties": {
-        "ScheduleExpression": "cron(0 0 ? * MON *)",
+        "ScheduleExpression": "cron(0 0 ? * MON-FRI *)",
         "State": "ENABLED",
         "Targets": [
           {
@@ -233,10 +233,9 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
         },
         "Environment": {
           "Variables": {
-            "ERROR_BUCKET_NAME": {
-              "Ref": "ErrorBucket8D38AF42",
+            "DATA_BUCKET_NAME": {
+              "Ref": "DataBucketE3889A50",
             },
-            "LINE_MESSAGE_PARAMETER_NAME": "/dcp-ops-monitor/dummy-line-message-parameters",
             "POWERTOOLS_LOG_LEVEL": "INFO",
             "POWERTOOLS_SERVICE_NAME": "web-scraping",
             "SCRAPING_PARAMETER_NAME": "/dcp-ops-monitor/dummy-scraping-parameters",
@@ -300,48 +299,26 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
             {
               "Action": "ssm:GetParameter",
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":ssm:",
-                      {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":parameter/dcp-ops-monitor/dummy-scraping-parameters",
-                    ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/dcp-ops-monitor/dummy-scraping-parameters",
                   ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":ssm:",
-                      {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":parameter/dcp-ops-monitor/dummy-line-message-parameters",
-                    ],
-                  ],
-                },
-              ],
+                ],
+              },
             },
             {
               "Action": "s3:PutObject",
@@ -352,7 +329,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
                   [
                     {
                       "Fn::GetAtt": [
-                        "ErrorBucket8D38AF42",
+                        "DataBucketE3889A50",
                         "Arn",
                       ],
                     },

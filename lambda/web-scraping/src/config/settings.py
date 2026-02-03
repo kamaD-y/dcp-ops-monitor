@@ -28,10 +28,9 @@ class EnvSettings(BaseSettings):
 
     # Systems Manager Parameter Store のパラメータ名
     scraping_parameter_name: str
-    line_message_parameter_name: str
 
-    # エラー保存用 S3 バケット名
-    error_bucket_name: str
+    # データ保存用 S3 バケット名
+    data_bucket_name: str
 
     model_config = SettingsConfigDict(
         env_file_encoding="utf-8",
