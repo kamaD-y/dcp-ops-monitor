@@ -2,15 +2,14 @@
 
 ## 概要
 
-web-scraping 機能は、週次で確定拠出年金の Web ページにアクセスし、運用状況をスクレイピングしてサマリを通知します。
+web-scraping 機能は、平日に確定拠出年金の Web ページにアクセスし、資産情報をスクレイピングして S3 に保存します。
 Selenium を Lambda で使用する場合、モジュール間の依存関係の調整が煩雑な為、コンテナを使用しています。
 
 ## 主な機能
 
-- EventBridge によるスケジュール実行（週次）
+- EventBridge によるスケジュール実行（平日 09:00 JST）
 - Selenium を使用した Web スクレイピング
-- 運用指標のサマリ作成
-- サマリの通知送信
+- 資産情報の JSON 形式での S3 保存
 - エラー時のスクリーンショット・ HTML 保存（デバッグ用）
 
 ## 処理シーケンス
@@ -21,27 +20,20 @@ sequenceDiagram
     participant Scraping as Web スクレイピング Lambda
     participant Web as 確定拠出年金 Web サイト
     participant S3 as S3
-    participant Notify as 通知サービス
 
-    EventBridge->>Scraping: 週次実行トリガー
+    EventBridge->>Scraping: 平日 09:00 実行トリガー
     activate Scraping
 
     Scraping->>Web: Web スクレイピング開始
     activate Web
     Web-->>Scraping: HTML データ取得
     deactivate Web
-    Note over Scraping,S3: エラー時はスクリーンショット/HTML を S3 に保存
+    Note over Scraping,S3: エラー時はスクリーンショット/HTML を S3 に保存（errors/）
 
     Scraping->>Scraping: HTML データ加工処理
-    Note right of Scraping: 運用指標を抽出
+    Note right of Scraping: 資産情報を抽出
 
-    Scraping->>Scraping: 通知メッセージ整形
-    Note right of Scraping: サマリレポート作成
-
-    Scraping->>Notify: 運用指標サマリ送信
-    activate Notify
-    Notify-->>Scraping: 送信完了
-    deactivate Notify
+    Scraping->>S3: JSON 保存（assets/{YYYY}/{MM}/{DD}.json）
     deactivate Scraping
 ```
 
@@ -52,12 +44,11 @@ sequenceDiagram
 | 環境変数 | 説明 | デフォルト値 |
 |---------|------|-------------|
 | `SCRAPING_PARAMETER_NAME` | スクレイピングに必要な各種パラメータ（URL、認証情報等）を格納した SSM パラメータ名 | - |
-| `LINE_MESSAGE_PARAMETER_NAME` | LINE Message API 接続に必要な URL と Token を格納した SSM パラメータ名 | - |
-| `DATA_BUCKET_NAME` | S3 バケット名 | - |
+| `DATA_BUCKET_NAME` | データ保存用 S3 バケット名 | - |
 | `USER_AGENT` | スクレイピングで使用するユーザーエージェント | - |
 | `POWERTOOLS_LOG_LEVEL` | ログレベル (ERROR, WARNING, INFO, DEBUG) | INFO |
 
-**注**: すべての環境変数が必須です。
+**注**: `SCRAPING_PARAMETER_NAME` と `DATA_BUCKET_NAME` は必須です。
 
 ## 開発ガイド
 
@@ -113,7 +104,7 @@ $ python
 > AWS リソースについては LocalStack を使用しますが、スクレイピングの接続先は本物を使用します。
 
 1. .env.local を編集する
-- `SCRAPING_PARAMETER_VALUE`, `LINE_MESSAGE_PARAMETER_VALUE` に実際の認証情報を入力し保存する
+- `SCRAPING_PARAMETER_VALUE` に実際の認証情報を入力し保存する
 
 2. docker-compose で起動する
 
