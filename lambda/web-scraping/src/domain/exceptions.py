@@ -13,12 +13,6 @@ class ArtifactUploadError(WebScrapingFailed):
     pass
 
 
-class AssetStorageError(WebScrapingFailed):
-    """資産情報 JSON の S3 保存失敗"""
-
-    pass
-
-
 class ScrapingFailed(WebScrapingFailed):
     """スクレイピング処理のエラー
 

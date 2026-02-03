@@ -26,6 +26,6 @@ class IObjectRepository(ABC):
             key (str): オブジェクトのキー
             json_str (str): JSON 文字列
         Raises:
-            AssetStorageError: 保存失敗時
+            ArtifactUploadError: 保存失敗時
         """
         pass

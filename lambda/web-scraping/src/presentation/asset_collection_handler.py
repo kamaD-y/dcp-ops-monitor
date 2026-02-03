@@ -27,7 +27,7 @@ def main(
 
     Raises:
         ScrapingFailed: スクレイピングまたは資産情報抽出処理失敗時
-        AssetStorageError: 資産情報の S3 保存失敗時
+        ArtifactUploadError: 資産情報の S3 保存失敗時
     """
     # scraperが指定されていない場合のみ実装を使用
     if scraper is None:

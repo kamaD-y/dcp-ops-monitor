@@ -1,7 +1,7 @@
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from src.config.settings import get_logger
-from src.domain import AssetStorageError, ScrapingFailed
+from src.domain import ArtifactUploadError, ScrapingFailed
 from src.presentation.asset_collection_handler import main
 
 logger = get_logger()
@@ -22,7 +22,7 @@ def handler(event: dict, context: LambdaContext) -> str | None:
             },
         )
         raise
-    except AssetStorageError:
+    except ArtifactUploadError:
         logger.exception("資産情報の保存に失敗しました。")
         raise
     except Exception:

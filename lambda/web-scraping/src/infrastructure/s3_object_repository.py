@@ -5,7 +5,7 @@ import os
 import boto3
 
 from src.config.settings import get_logger
-from src.domain import ArtifactUploadError, AssetStorageError, IObjectRepository
+from src.domain import ArtifactUploadError, IObjectRepository
 
 logger = get_logger()
 
@@ -53,7 +53,7 @@ class S3ObjectRepository(IObjectRepository):
             json_str: JSON 文字列
 
         Raises:
-            AssetStorageError: S3 への JSON 保存失敗時
+            ArtifactUploadError: S3 への JSON 保存失敗時
         """
         try:
             self.client.put_object(
@@ -64,4 +64,4 @@ class S3ObjectRepository(IObjectRepository):
             )
             logger.info("JSON の S3 保存成功", bucket=self.bucket, key=key)
         except Exception as e:
-            raise AssetStorageError(f"JSON の S3 保存に失敗しました。bucket={self.bucket}, key={key}") from e
+            raise ArtifactUploadError(f"JSON の S3 保存に失敗しました。bucket={self.bucket}, key={key}") from e

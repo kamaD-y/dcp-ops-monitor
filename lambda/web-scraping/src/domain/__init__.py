@@ -2,7 +2,6 @@
 
 from .exceptions import (
     ArtifactUploadError,
-    AssetStorageError,
     ScrapingFailed,
     WebScrapingFailed,
 )
@@ -21,7 +20,6 @@ __all__ = [
     "IObjectRepository",
     # Exceptions
     "ArtifactUploadError",
-    "AssetStorageError",
     "ScrapingFailed",
     "WebScrapingFailed",
 ]
