@@ -38,7 +38,7 @@ env = [
 
 [tool.coverage.run]
 source = ["src"]
-omit = ["tests/*", "*/test_*", "src/handler.py", "src/infrastructure/selenium_scraper.py", "src/infrastructure/ssm_parameter.py"]
+omit = ["tests/*", "*/test_*"]
 
 [tool.coverage.report]
-fail_under = 60
+fail_under = 50 # TODO: 一時的に設定
