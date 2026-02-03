@@ -218,7 +218,7 @@ def parse(self, event: dict) -> ErrorLogEvents:
 | 例外 | 発生条件 | 対応 |
 |------|---------|------|
 | ScrapingFailed | スクレイピング失敗（ページ遷移・抽出） | スクリーンショット/HTML 保存（errors/）、ERROR ログ出力 |
-| AssetStorageError | 資産情報の S3 保存失敗 | ERROR ログ出力 |
+| ArtifactUploadError | S3 への保存失敗（エラーアーティファクト、資産情報） | ERROR ログ出力 |
 
 ### エラー通知機能
 
