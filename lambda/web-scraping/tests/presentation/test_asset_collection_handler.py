@@ -6,6 +6,16 @@ import pytest
 from src.domain import DcpAssetInfo, DcpAssets
 
 
+def list_s3_objects(local_stack_container, prefix: str) -> list[str]:
+    """指定されたプレフィックスのS3オブジェクトキーを取得する"""
+    client = local_stack_container.get_client("s3")
+    response = client.list_objects_v2(
+        Bucket=os.environ["DATA_BUCKET_NAME"],
+        Prefix=prefix,
+    )
+    return [obj["Key"] for obj in response.get("Contents", [])]
+
+
 @pytest.fixture
 def valid_assets() -> DcpAssets:
     """テスト用の正常な資産情報を生成する"""
@@ -54,13 +64,12 @@ def test_main_e2e_with_mocks(valid_assets, local_stack_container):
     assert scraper.fetch_called is True
 
     # S3 バケットに JSON ファイルが保存されたことを確認
-    client = local_stack_container.get_client("s3")
-    response = client.list_objects_v2(Bucket=os.environ["DATA_BUCKET_NAME"], Prefix="assets/")
-    object_keys = [obj["Key"] for obj in response.get("Contents", [])]
+    object_keys = list_s3_objects(local_stack_container, "assets/")
     assert any(key.endswith(".json") for key in object_keys)
 
     # JSON の内容を確認
     json_key = next(key for key in object_keys if key.endswith(".json"))
+    client = local_stack_container.get_client("s3")
     response = client.get_object(Bucket=os.environ["DATA_BUCKET_NAME"], Key=json_key)
     json_content = json.loads(response["Body"].read().decode("utf-8"))
 
@@ -97,9 +106,7 @@ def test_main_e2e_with_scraping_error(local_stack_container):
     assert scraper.fetch_called is True
 
     # S3 バケットにエラー画像ファイルが存在することを確認
-    client = local_stack_container.get_client("s3")
-    response = client.list_objects_v2(Bucket=os.environ["DATA_BUCKET_NAME"], Prefix="errors/")
-    object_keys = [obj["Key"] for obj in response.get("Contents", [])]
+    object_keys = list_s3_objects(local_stack_container, "errors/")
     assert any(key.endswith(".png") for key in object_keys)
 
 
@@ -128,7 +135,5 @@ def test_main_e2e_with_extraction_error(local_stack_container):
     assert scraper.fetch_called is True
 
     # S3 バケットにエラー HTML ファイルが存在することを確認
-    client = local_stack_container.get_client("s3")
-    response = client.list_objects_v2(Bucket=os.environ["DATA_BUCKET_NAME"], Prefix="errors/")
-    object_keys = [obj["Key"] for obj in response.get("Contents", [])]
+    object_keys = list_s3_objects(local_stack_container, "errors/")
     assert any(key.endswith(".html") for key in object_keys)
