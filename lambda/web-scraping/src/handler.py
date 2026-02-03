@@ -1,8 +1,8 @@
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from src.config.settings import get_logger
-from src.domain import ScrapingFailed
-from src.presentation.dcp_ops_notification import main
+from src.domain import AssetStorageError, ScrapingFailed
+from src.presentation.asset_collection_handler import main
 
 logger = get_logger()
 
@@ -21,6 +21,9 @@ def handler(event: dict, context: LambdaContext) -> str | None:
                 "error_html_key": e.error_html_key,
             },
         )
+        raise
+    except AssetStorageError:
+        logger.exception("資産情報の保存に失敗しました。")
         raise
     except Exception:
         logger.exception("予期せぬエラーが発生しました。")

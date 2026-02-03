@@ -33,14 +33,14 @@ class WebScrapingService:
 
         if e.tmp_screenshot_path:
             logger.info("エラー画像のアップロード開始")
-            key = f"files/{timestamp}.png"
+            key = f"errors/{timestamp}.png"
             self.object_repository.upload_file(key=key, file_path=e.tmp_screenshot_path)
             logger.info("エラー画像をアップロードしました。", extra={"error_screenshot_key": key})
             e.error_screenshot_key = key
 
         if e.tmp_html_path:
             logger.info("エラーになった資産情報 HTML ファイルのアップロード開始")
-            key = f"files/{timestamp}.html"
+            key = f"errors/{timestamp}.html"
             self.object_repository.upload_file(key=key, file_path=e.tmp_html_path)
             logger.info("資産情報 HTML ファイルをアップロードしました。", extra={"error_html_key": key})
             e.error_html_key = key

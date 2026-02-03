@@ -2,13 +2,11 @@
 
 from .exceptions import (
     ArtifactUploadError,
-    NotificationFailed,
+    AssetStorageError,
     ScrapingFailed,
     WebScrapingFailed,
 )
-from .extraction_object import DcpAssetInfo, DcpAssets, DcpOpsIndicators
-from .notification_interface import INotifier
-from .notification_object import NotificationMessage
+from .extraction_object import DcpAssetInfo, DcpAssets
 from .scraping_interface import IScraper
 from .scraping_object import ScrapingParams
 from .storage_interface import IObjectRepository
@@ -17,16 +15,13 @@ __all__ = [
     # Models
     "DcpAssetInfo",
     "DcpAssets",
-    "DcpOpsIndicators",
-    "NotificationMessage",
     "ScrapingParams",
     # Interfaces
     "IScraper",
-    "INotifier",
     "IObjectRepository",
     # Exceptions
     "ArtifactUploadError",
-    "NotificationFailed",
+    "AssetStorageError",
     "ScrapingFailed",
     "WebScrapingFailed",
 ]

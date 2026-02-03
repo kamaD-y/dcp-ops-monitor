@@ -18,3 +18,14 @@ class IObjectRepository(ABC):
             ArtifactUploadError: アップロード失敗時
         """
         pass
+
+    @abstractmethod
+    def put_json(self, key: str, json_str: str) -> None:
+        """JSON 文字列をオブジェクトとして保存する
+        Args:
+            key (str): オブジェクトのキー
+            json_str (str): JSON 文字列
+        Raises:
+            AssetStorageError: 保存失敗時
+        """
+        pass

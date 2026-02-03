@@ -39,7 +39,7 @@ def local_stack_container() -> LocalStackContainer:  # type: ignore (invalid-ret
 
 @pytest.fixture(scope="package", autouse=True)
 def create_test_bucket(local_stack_container: LocalStackContainer) -> None:
-    os.environ["error_bucket_name"] = bucket_name
+    os.environ["data_bucket_name"] = bucket_name
     client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
     client.create_bucket(
         Bucket=bucket_name,
