@@ -53,7 +53,7 @@ sequenceDiagram
 |---------|------|-------------|
 | `SCRAPING_PARAMETER_NAME` | スクレイピングに必要な各種パラメータ（URL、認証情報等）を格納した SSM パラメータ名 | - |
 | `LINE_MESSAGE_PARAMETER_NAME` | LINE Message API 接続に必要な URL と Token を格納した SSM パラメータ名 | - |
-| `ERROR_BUCKET_NAME` | エラー保存用 S3 バケット名 | - |
+| `DATA_BUCKET_NAME` | S3 バケット名 | - |
 | `USER_AGENT` | スクレイピングで使用するユーザーエージェント | - |
 | `POWERTOOLS_LOG_LEVEL` | ログレベル (ERROR, WARNING, INFO, DEBUG) | INFO |
 
