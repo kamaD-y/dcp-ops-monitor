@@ -1,25 +1,8 @@
 import pytest
 
 from src.application import SummaryNotificationService
-from src.domain import AssetNotFound, DcpAssetInfo, DcpAssets, IAssetRepository
-from tests.fixtures.mocks import MockNotifier
-
-
-class MockAssetRepository(IAssetRepository):
-    """テスト用 Mock 資産リポジトリ"""
-
-    def __init__(self, assets: DcpAssets | None = None, should_fail: bool = False) -> None:  # noqa: FBT001, FBT002
-        self.assets = assets
-        self.should_fail = should_fail
-        self.get_called = False
-
-    def get_latest_assets(self) -> DcpAssets:
-        self.get_called = True
-        if self.should_fail:
-            raise AssetNotFound.no_assets_in_bucket()
-        if self.assets is None:
-            raise AssetNotFound.no_assets_in_bucket()
-        return self.assets
+from src.domain import AssetNotFound, DcpAssetInfo, DcpAssets
+from tests.fixtures.mocks import MockAssetRepository, MockNotifier
 
 
 @pytest.fixture
