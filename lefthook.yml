@@ -31,3 +31,7 @@ pre-commit:
     test:error-notification:
       glob: "lambda/error-notification/**/*.py"
       run: cd lambda/error-notification && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1
+
+    test:summary-notification:
+      glob: "lambda/summary-notification/**/*.py"
+      run: cd lambda/summary-notification && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1
