@@ -37,3 +37,13 @@ Web スクレイピングで発生したエラーを検知し、通知します�
 - エラーログの通知送信
 
 詳細は [lambda/error-notification/README.md](lambda/error-notification/README.md) を参照してください。
+
+### 3. サマリ通知
+S3 に蓄積された資産情報を取得し、運用指標を計算してサマリを通知します。
+
+**機能概要:**
+- EventBridge によるスケジュール実行（毎週日曜 09:00 JST）
+- S3 から最新の資産情報を取得し、運用指標を計算
+- LINE 経由でサマリ通知を送信
+
+詳細は [lambda/summary-notification/README.md](lambda/summary-notification/README.md) を参照してください。

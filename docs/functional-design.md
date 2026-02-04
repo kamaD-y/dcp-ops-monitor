@@ -70,6 +70,33 @@ sequenceDiagram
 - SSM Parameter Store: 通知設定の保存
 - S3: スクリーンショットの取得
 
+### サマリ通知機能 (summary-notification)
+
+EventBridge による週次スケジュール実行で起動し、S3 から最新の資産情報を取得して運用指標を計算し、サマリを通知します。
+
+```mermaid
+sequenceDiagram
+    participant EventBridge
+    participant Lambda as summary-notification Lambda
+    participant S3
+    participant SSM as SSM Parameter Store
+    participant LINE as LINE Messaging API
+
+    EventBridge->>Lambda: 週次実行（日曜 09:00 JST）
+    Lambda->>S3: 最新の資産情報 JSON 取得
+    S3-->>Lambda: assets/{YYYY}/{MM}/{DD}.json
+    Lambda->>Lambda: 運用指標計算
+    Lambda->>Lambda: メッセージフォーマット
+    Lambda->>SSM: LINE 設定取得
+    Lambda->>LINE: 通知送信
+```
+
+**使用する AWS サービス**:
+- EventBridge: 週次スケジュール実行（日曜のみ）
+- Lambda: サマリ通知処理（Python ランタイム）
+- S3: 資産情報の取得
+- SSM Parameter Store: LINE 設定の保存
+
 ---
 
 ## データモデル定義
@@ -94,6 +121,17 @@ sequenceDiagram
 |-----------|-----|------|
 | total | DcpAssetInfo | 総評価額 |
 | products | dict[str, DcpAssetInfo] | 商品別資産（商品名をキーとする） |
+
+### サマリ通知機能
+
+#### DcpOpsIndicators（運用指標）
+
+| フィールド | 型 | 説明 |
+|-----------|-----|------|
+| operation_years | float | 運用年数 |
+| actual_yield_rate | float | 運用利回り |
+| expected_yield_rate | float | 目標利回り（固定 0.06） |
+| total_amount_at_60age | int | 想定受取額（60歳） |
 
 ### エラー通知機能
 
@@ -197,6 +235,26 @@ def parse(self, event: dict) -> ErrorLogEvents:
     """CloudWatch Logs イベントをパース"""
 ```
 
+### サマリ通知機能
+
+#### IAssetRepository（資産リポジトリインターフェース）
+
+S3 からの資産情報取得を抽象化。
+
+```python
+def get_latest_assets(self) -> DcpAssets:
+    """最新の資産情報を取得"""
+```
+
+#### INotifier（通知インターフェース）
+
+error-notification と同一。
+
+```python
+def notify(self, messages: list[NotificationMessage]) -> None:
+    """通知を送信"""
+```
+
 ---
 
 ## 外部 API
@@ -226,3 +284,10 @@ def parse(self, event: dict) -> ErrorLogEvents:
 |------|---------|------|
 | CloudWatchLogsParseError | ログパース失敗 | ERROR ログ出力、Lambda 失敗 |
 | LineNotificationError | 通知送信失敗 | ERROR ログ出力、Lambda リトライ |
+
+### サマリ通知機能
+
+| 例外 | 発生条件 | 対応 |
+|------|---------|------|
+| AssetNotFound | S3 に資産情報がない | ERROR ログ出力 |
+| NotificationFailed | 通知送信失敗 | ERROR ログ出力、Lambda リトライ |
