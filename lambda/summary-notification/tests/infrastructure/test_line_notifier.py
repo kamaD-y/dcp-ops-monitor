@@ -1,5 +1,4 @@
 import pytest
-import requests_mock as rm
 
 from src.domain import NotificationFailed, NotificationMessage
 from src.infrastructure import LineNotifier

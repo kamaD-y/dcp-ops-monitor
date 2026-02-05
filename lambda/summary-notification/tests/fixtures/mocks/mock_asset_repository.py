@@ -9,7 +9,7 @@ class MockAssetRepository(IAssetRepository):
     get_latest_assets() の呼び出しを記録し、テストで検証可能にする
     """
 
-    def __init__(self, assets: DcpAssets | None = None, should_fail: bool = False) -> None:  # noqa: FBT001, FBT002
+    def __init__(self, assets: DcpAssets | None = None, should_fail: bool = False) -> None:
         self.assets = assets
         self.should_fail = should_fail
         self.get_called = False

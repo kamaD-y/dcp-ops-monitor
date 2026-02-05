@@ -68,7 +68,7 @@ def test_main__e2e_with_s3(local_stack_container, create_test_bucket, sample_ass
     # given
     from src.presentation.summary_notification_handler import main
 
-    client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
+    client = local_stack_container.get_client("s3")
     client.put_object(
         Bucket=data_bucket_name,
         Key="assets/2026/02/05.json",
@@ -96,7 +96,7 @@ def test_main__asset_not_found_raises(local_stack_container, create_test_bucket)
     from src.presentation.summary_notification_handler import main
 
     # assets/ を全削除
-    client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
+    client = local_stack_container.get_client("s3")
     response = client.list_objects_v2(Bucket=data_bucket_name, Prefix="assets/")
     for obj in response.get("Contents", []):
         client.delete_object(Bucket=data_bucket_name, Key=obj["Key"])

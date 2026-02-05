@@ -10,7 +10,7 @@ logger = get_logger()
 
 
 @logger.inject_lambda_context
-def handler(event: dict, context: LambdaContext) -> str | None:
+def handler(event: dict, context: LambdaContext) -> str:
     """Lambda handler エントリーポイント
 
     Args:
@@ -18,7 +18,7 @@ def handler(event: dict, context: LambdaContext) -> str | None:
         context: Lambda コンテキスト
 
     Returns:
-        str | None: 成功時は "Success"
+        str: 成功時は "Success"
     """
     try:
         main()

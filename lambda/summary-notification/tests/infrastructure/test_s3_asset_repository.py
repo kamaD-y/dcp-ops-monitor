@@ -28,7 +28,7 @@ def sample_assets() -> DcpAssets:
 
 def _put_asset_json(local_stack_container, key: str, assets: DcpAssets) -> None:
     """S3 にテスト用 JSON を配置"""
-    client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
+    client = local_stack_container.get_client("s3")
     client.put_object(
         Bucket=data_bucket_name,
         Key=key,
@@ -39,7 +39,7 @@ def _put_asset_json(local_stack_container, key: str, assets: DcpAssets) -> None:
 
 def _cleanup_assets(local_stack_container) -> None:
     """S3 の assets/ プレフィックスを全削除"""
-    client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
+    client = local_stack_container.get_client("s3")
     response = client.list_objects_v2(Bucket=data_bucket_name, Prefix="assets/")
     for obj in response.get("Contents", []):
         client.delete_object(Bucket=data_bucket_name, Key=obj["Key"])

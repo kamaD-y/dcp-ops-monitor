@@ -27,7 +27,7 @@ dev = [
 extend = "../../pyproject.toml"
 
 [tool.pytest.ini_options]
-pythonpath = ["src/../", "src"]
+pythonpath = [".", "src"]
 testpaths = ["tests"]
 env = [
     "LINE_MESSAGE_PARAMETER_NAME=/test/line-message-parameters",
