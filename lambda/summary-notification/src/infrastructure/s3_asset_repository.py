@@ -38,12 +38,9 @@ class S3AssetRepository(IAssetRepository):
             AssetNotFound: 資産情報が見つからない場合
         """
         try:
-            response = self.client.list_objects_v2(
-                Bucket=self.bucket,
-                Prefix="assets/",
-            )
-
-            contents = response.get("Contents", [])
+            paginator = self.client.get_paginator("list_objects_v2")
+            pages = paginator.paginate(Bucket=self.bucket, Prefix="assets/")
+            contents = [obj for page in pages for obj in page.get("Contents", [])]
             if not contents:
                 raise AssetNotFound.no_assets_in_bucket()
 
