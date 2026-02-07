@@ -119,5 +119,46 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       }),
       targets: [new targets.LambdaFunction(webScrapingFunction)],
     });
+
+    // サマリ通知用Lambda Function
+    const summaryNotificationFunction = new PythonFunction(this, 'SummaryNotificationFunction', {
+      runtime: lambda.Runtime.PYTHON_3_13,
+      entry: path.join(__dirname, '../lambda/summary-notification'),
+      index: 'src/handler.py',
+      handler: 'handler',
+      memorySize: 128,
+      timeout: cdk.Duration.seconds(30),
+      bundling: {
+        assetExcludes: ['.venv'],
+      },
+      environment: {
+        POWERTOOLS_SERVICE_NAME: 'summary-notification',
+        POWERTOOLS_LOG_LEVEL: props.logLevel,
+        LINE_MESSAGE_PARAMETER_NAME: lineMessageParameter.parameterName,
+        DATA_BUCKET_NAME: dataBucket.bucketName,
+      },
+    });
+    summaryNotificationFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['s3:GetObject', 's3:ListBucket'],
+        resources: [dataBucket.bucketArn, `${dataBucket.bucketArn}/*`],
+      }),
+    );
+    summaryNotificationFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['ssm:GetParameter'],
+        resources: [lineMessageParameter.parameterArn],
+      }),
+    );
+
+    // 毎週日曜 09:00 JST に実行する Rule を作成
+    new events.Rule(this, 'SummaryNotificationEventRule', {
+      schedule: events.Schedule.cron({
+        minute: '0',
+        hour: '0',
+        weekDay: 'SUN',
+      }),
+      targets: [new targets.LambdaFunction(summaryNotificationFunction)],
+    });
   }
 }
