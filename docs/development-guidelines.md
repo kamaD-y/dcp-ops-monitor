@@ -158,14 +158,14 @@ main
 
 #### 例
 
-```
+```shell
 feat(summary-notification): 運用指標の計算ロジックを追加
 
 サマリ通知に運用利回りと想定受取額の
 計算ロジックを追加
 ```
 
-```
+```shell
 improve(web-scraping): エラーメッセージの詳細化
 
 スクレイピング失敗時のエラーメッセージに
