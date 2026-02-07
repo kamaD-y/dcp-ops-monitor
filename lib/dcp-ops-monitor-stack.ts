@@ -1,13 +1,15 @@
 import * as path from 'node:path';
 import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as cw_actions from 'aws-cdk-lib/aws-cloudwatch-actions';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as sns from 'aws-cdk-lib/aws-sns';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import type { Construct } from 'constructs';
 
@@ -73,43 +75,6 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       }),
     );
 
-    // LINE通知用Lambda Function
-    const errorNotificationFunction = new PythonFunction(this, 'ErrorNotificationFunction', {
-      runtime: lambda.Runtime.PYTHON_3_13,
-      entry: path.join(__dirname, '../lambda/error-notification'),
-      index: 'src/handler.py',
-      handler: 'handler',
-      timeout: cdk.Duration.seconds(60),
-      bundling: {
-        assetExcludes: ['.venv'],
-      },
-      environment: {
-        POWERTOOLS_SERVICE_NAME: 'error-notification',
-        POWERTOOLS_LOG_LEVEL: props.logLevel,
-        LINE_MESSAGE_PARAMETER_NAME: lineMessageParameter.parameterName,
-        ERROR_BUCKET_NAME: dataBucket.bucketName,
-      },
-    });
-    errorNotificationFunction.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: ['s3:GetObject'],
-        resources: [`${dataBucket.bucketArn}/*`],
-      }),
-    );
-    errorNotificationFunction.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: ['ssm:GetParameter'],
-        resources: [lineMessageParameter.parameterArn],
-      }),
-    );
-
-    // CloudWatch Logs Subscription Filter
-    new logs.SubscriptionFilter(this, 'ErrorLogSubscriptionFilter', {
-      logGroup: logGroup,
-      destination: new destinations.LambdaDestination(errorNotificationFunction),
-      filterPattern: logs.FilterPattern.stringValue('$.level', '=', 'ERROR'),
-    });
-
     // 平日（月〜金）09:00 JST に実行する Rule を作成
     new events.Rule(this, 'EventRule', {
       schedule: events.Schedule.cron({
@@ -160,5 +125,35 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       }),
       targets: [new targets.LambdaFunction(summaryNotificationFunction)],
     });
+
+    // エラー通知用 SNS Topic
+    const errorAlarmTopic = new sns.Topic(this, 'ErrorAlarmTopic', {
+      displayName: 'DCP Ops Monitor Error Alarm',
+    });
+
+    // Lambda エラーメトリクス Alarm
+    const webScrapingErrorAlarm = new cloudwatch.Alarm(this, 'WebScrapingErrorAlarm', {
+      metric: webScrapingFunction.metricErrors({
+        period: cdk.Duration.minutes(5),
+      }),
+      threshold: 1,
+      evaluationPeriods: 1,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+      alarmDescription: 'web-scraping Lambda でエラーが発生しました',
+    });
+    webScrapingErrorAlarm.addAlarmAction(new cw_actions.SnsAction(errorAlarmTopic));
+
+    const summaryNotificationErrorAlarm = new cloudwatch.Alarm(this, 'SummaryNotificationErrorAlarm', {
+      metric: summaryNotificationFunction.metricErrors({
+        period: cdk.Duration.minutes(5),
+      }),
+      threshold: 1,
+      evaluationPeriods: 1,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+      alarmDescription: 'summary-notification Lambda でエラーが発生しました',
+    });
+    summaryNotificationErrorAlarm.addAlarmAction(new cw_actions.SnsAction(errorAlarmTopic));
   }
 }
