@@ -39,37 +39,6 @@ sequenceDiagram
 - SSM Parameter Store: 認証情報の保存
 - S3: 資産情報の JSON 保存、エラー時の HTML/スクリーンショット保存
 
-### エラー通知機能 (error-notification)
-
-CloudWatch Logs Subscription Filter により、ERROR ログを検知して自動起動します。
-
-```mermaid
-sequenceDiagram
-    participant CWL as CloudWatch Logs
-    participant Filter as Subscription Filter
-    participant Lambda as error-notification Lambda
-    participant SSM as SSM Parameter Store
-    participant S3
-    participant Notifier as 通知サービス
-
-    CWL->>Filter: ERROR ログ検出
-    Filter->>Lambda: トリガー
-    Lambda->>Lambda: ログパース
-    Lambda->>SSM: 通知設定取得
-    alt スクリーンショットあり
-        Lambda->>S3: 画像取得
-    end
-    Lambda->>Lambda: メッセージ整形
-    Lambda->>Notifier: 通知送信
-```
-
-**使用する AWS サービス**:
-- CloudWatch Logs: ログ保存・監視
-- Subscription Filter: ERROR ログの検知
-- Lambda: 通知処理
-- SSM Parameter Store: 通知設定の保存
-- S3: スクリーンショットの取得
-
 ### サマリ通知機能 (summary-notification)
 
 EventBridge による週次スケジュール実行で起動し、S3 から最新の資産情報を取得して運用指標を計算し、サマリを通知します。
@@ -132,29 +101,6 @@ sequenceDiagram
 | actual_yield_rate | float | 運用利回り |
 | expected_yield_rate | float | 目標利回り（固定 0.06） |
 | total_amount_at_60age | int | 想定受取額（60歳） |
-
-### エラー通知機能
-
-#### ErrorRecord（エラーログレコード）
-
-| フィールド | 型 | 説明 |
-|-----------|-----|------|
-| level | str | ログレベル（"ERROR"） |
-| location | str | エラー発生箇所 |
-| message | str | エラーメッセージ本文 |
-| service | str | サービス名 |
-| timestamp | datetime | タイムスタンプ（UTC） |
-| jst_timestamp | datetime | タイムスタンプ（JST、算出プロパティ） |
-| error_screenshot_key | str \| None | スクリーンショットの S3 キー |
-| error_html_key | str \| None | HTML ファイルの S3 キー |
-| exception_name | str \| None | 例外クラス名 |
-
-#### ErrorLogEvents（エラーログイベント）
-
-| フィールド | 型 | 説明 |
-|-----------|-----|------|
-| error_records | list[ErrorRecord] | エラーレコードのリスト |
-| logs_url | str \| None | CloudWatch Logs の URL |
 
 ---
 
@@ -224,17 +170,6 @@ def put_json(self, key: str, json_str: str) -> None:
     """JSON 文字列をオブジェクトとして保存する"""
 ```
 
-### エラー通知機能
-
-#### IErrorLogParser（ログパースインターフェース）
-
-CloudWatch Logs イベントのパースを抽象化。
-
-```python
-def parse(self, event: dict) -> ErrorLogEvents:
-    """CloudWatch Logs イベントをパース"""
-```
-
 ### サマリ通知機能
 
 #### IAssetRepository（資産リポジトリインターフェース）
@@ -248,7 +183,7 @@ def get_latest_assets(self) -> DcpAssets:
 
 #### INotifier（通知インターフェース）
 
-error-notification と同一。
+通知送信を抽象化。
 
 ```python
 def notify(self, messages: list[NotificationMessage]) -> None:
@@ -278,16 +213,22 @@ def notify(self, messages: list[NotificationMessage]) -> None:
 | ScrapingFailed | スクレイピング失敗（ページ遷移・抽出） | スクリーンショット/HTML 保存（errors/）、ERROR ログ出力 |
 | ArtifactUploadError | S3 への保存失敗（エラーアーティファクト、資産情報） | ERROR ログ出力 |
 
-### エラー通知機能
-
-| 例外 | 発生条件 | 対応 |
-|------|---------|------|
-| CloudWatchLogsParseError | ログパース失敗 | ERROR ログ出力、Lambda 失敗 |
-| LineNotificationError | 通知送信失敗 | ERROR ログ出力、Lambda リトライ |
-
 ### サマリ通知機能
 
 | 例外 | 発生条件 | 対応 |
 |------|---------|------|
 | AssetNotFound | S3 に資産情報がない | ERROR ログ出力 |
 | NotificationFailed | 通知送信失敗 | ERROR ログ出力、Lambda リトライ |
+
+---
+
+## 監視設計
+
+各 Lambda 関数のエラーメトリクスを CloudWatch Alarm で監視し、SNS Topic 経由で通知します。
+
+| 監視対象 | メトリクス | 評価期間 | しきい値 | 通知先 |
+|---------|----------|---------|---------|-------|
+| web-scraping Lambda | Errors | 5 分 | >= 1 | SNS Topic |
+| summary-notification Lambda | Errors | 5 分 | >= 1 | SNS Topic |
+
+- データポイントなし（Lambda 未実行）の場合はアラームを発火しない（TreatMissingData: NOT_BREACHING）

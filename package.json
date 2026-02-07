@@ -9,7 +9,6 @@
     "watch": "tsc -w",
     "test:cdk": "jest --testPathPatterns ./test/cdk/*.test.ts",
     "test:web-scraping": "cd lambda/web-scraping && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1",
-    "test:error-notification": "cd lambda/error-notification && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1",
     "test:summary-notification": "cd lambda/summary-notification && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1",
     "cdk": "cdk",
     "lint": "biome lint --write . && uvx ruff check",
