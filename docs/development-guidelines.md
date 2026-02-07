@@ -63,7 +63,7 @@
 |------|------|-----|
 | Python ファイル | snake_case | `web_scraping_service.py` |
 | TypeScript ファイル | kebab-case | `dcp-ops-monitor-stack.ts` |
-| ディレクトリ | kebab-case | `error-notification`, `web-scraping` |
+| ディレクトリ | kebab-case | `summary-notification`, `web-scraping` |
 
 ---
 
@@ -154,15 +154,15 @@ main
 
 #### Scope（任意）
 
-変更対象のモジュール名（例: `web-scraping`, `error-notification`, `cdk`）
+変更対象のモジュール名（例: `web-scraping`, `summary-notification`, `cdk`）
 
 #### 例
 
 ```
-feat(error-notification): CloudWatch Logs リンクを通知に追加
+feat(summary-notification): 運用指標の計算ロジックを追加
 
-エラー通知メッセージに CloudWatch Logs コンソールへの
-直接リンクを追加し、デバッグを効率化
+サマリ通知に運用利回りと想定受取額の
+計算ロジックを追加
 ```
 
 ```

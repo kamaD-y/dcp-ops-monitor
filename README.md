@@ -28,17 +28,7 @@
 
 詳細は [lambda/web-scraping/README.md](lambda/web-scraping/README.md) を参照してください。
 
-### 2. エラー通知
-Web スクレイピングで発生したエラーを検知し、通知します。
-
-**機能概要:**
-- CloudWatch Logs Subscription Filter による自動起動
-- ERROR レベルのログ抽出・パース
-- エラーログの通知送信
-
-詳細は [lambda/error-notification/README.md](lambda/error-notification/README.md) を参照してください。
-
-### 3. サマリ通知
+### 2. サマリ通知
 S3 に蓄積された資産情報を取得し、運用指標を計算してサマリを通知します。
 
 **機能概要:**
