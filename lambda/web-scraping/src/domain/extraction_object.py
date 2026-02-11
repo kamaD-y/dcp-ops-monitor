@@ -1,18 +1,9 @@
-from pydantic import BaseModel
+from shared.domain.asset_object import DcpAssetInfo as BaseDcpAssetInfo
+from shared.domain.asset_object import DcpAssets
 
 
-class DcpAssetInfo(BaseModel):
-    """確定拠出年金の資産評価を扱う値クラス
-
-    Attributes:
-        cumulative_contributions (int): 拠出金額累計
-        gains_or_losses (int): 評価損益
-        asset_valuation (int): 資産評価額
-    """
-
-    cumulative_contributions: int
-    gains_or_losses: int
-    asset_valuation: int
+class DcpAssetInfo(BaseDcpAssetInfo):
+    """HTML パース機能付き DcpAssetInfo"""
 
     @classmethod
     def from_html_strings(
@@ -59,6 +50,4 @@ class DcpAssetInfo(BaseModel):
         return int(cleaned)
 
 
-class DcpAssets(BaseModel):
-    total: DcpAssetInfo
-    products: dict[str, DcpAssetInfo]
+__all__ = ["DcpAssetInfo", "DcpAssets"]

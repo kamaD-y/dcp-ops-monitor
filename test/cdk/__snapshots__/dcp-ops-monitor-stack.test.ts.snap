@@ -153,6 +153,13 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
           },
         },
         "Handler": "src.handler.handler",
+        "LoggingConfig": {
+          "ApplicationLogLevel": "INFO",
+          "LogFormat": "JSON",
+          "LogGroup": {
+            "Ref": "LogGroupF5B46931",
+          },
+        },
         "MemorySize": 128,
         "Role": {
           "Fn::GetAtt": [

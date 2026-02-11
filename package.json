@@ -33,7 +33,6 @@
     "typescript-eslint": "^8.51.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-lambda-python-alpha": "^2.233.0-alpha.0",
     "aws-cdk-lib": "^2.233.0",
     "constructs": "^10.4.4"
   }

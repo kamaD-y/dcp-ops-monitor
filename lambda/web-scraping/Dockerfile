@@ -12,8 +12,12 @@ RUN dnf install -y unzip && \
 WORKDIR /app
 RUN python3.13 -m pip install uv
 
-COPY . ./
-RUN uv export -o requirements.txt --no-hashes
+# workspace root と shared をコピー
+COPY pyproject.toml ./
+COPY uv.lock ./
+COPY shared/pyproject.toml ./shared/
+COPY web-scraping/pyproject.toml ./web-scraping/
+RUN cd web-scraping && uv export -o /tmp/requirements.txt --no-hashes --no-dev --no-emit-workspace
 
 FROM public.ecr.aws/lambda/python:3.13
 
@@ -29,7 +33,7 @@ RUN dnf install -y atk cups-libs gtk3 libXcomposite alsa-lib \
 RUN dnf install -y google-noto-sans-cjk-jp-fonts
 
 # 依存関係のインストール
-COPY --from=builder /app/requirements.txt ./
+COPY --from=builder /tmp/requirements.txt ./
 RUN python3.13 -m pip install -r requirements.txt -t .
 
 # selenium-managerを使ってChromeとChromeDriverをダウンロード
@@ -39,8 +43,9 @@ RUN python3.13 -m pip install -r requirements.txt -t .
 COPY --from=builder /opt/chrome-linux64 /opt/chrome
 COPY --from=builder /opt/chromedriver-linux64 /opt/
 
-# 実行用ファイルをコピー
-COPY ./src ./src
+# shared と src をコピー
+COPY shared/src/shared ./shared
+COPY web-scraping/src ./src
 
 # Command can be overwritten by providing a different command in the template directly.
 CMD ["src.handler.handler"]

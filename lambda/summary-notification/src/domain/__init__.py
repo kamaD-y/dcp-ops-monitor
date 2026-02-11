@@ -1,7 +1,8 @@
 """Domain レイヤー: モデル、インターフェース、例外"""
 
+from shared.domain.asset_object import DcpAssetInfo, DcpAssets
+
 from .asset_interface import IAssetRepository
-from .asset_object import DcpAssetInfo, DcpAssets
 from .exceptions import (
     AssetNotFound,
     NotificationFailed,
