@@ -164,16 +164,16 @@ def fetch_asset_valuation(self) -> DcpAssets:
     """資産評価情報を取得（ページ遷移・要素抽出を一括で行う）"""
 ```
 
-#### IObjectRepository（オブジェクト保存インターフェース）
+#### IArtifactRepository（アーティファクト保存インターフェース）
 
-S3 へのオブジェクト保存を抽象化。
+S3 へのアーティファクト保存を抽象化。
 
 ```python
-def upload_file(self, key: str, file_path: str) -> None:
-    """ローカルファイルをオブジェクトとしてアップロードする"""
+def save_error_artifact(self, key: str, file_path: str) -> None:
+    """エラーアーティファクトを保存する"""
 
-def put_json(self, key: str, json_str: str) -> None:
-    """JSON 文字列をオブジェクトとして保存する"""
+def save_assets(self, key: str, json_str: str) -> None:
+    """資産情報を JSON として保存する"""
 ```
 
 ### サマリ通知機能

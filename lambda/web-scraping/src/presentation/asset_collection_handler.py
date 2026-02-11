@@ -8,7 +8,7 @@ from src.application import WebScrapingService
 from src.config.settings import get_logger, get_settings
 from src.domain import IScraper, ScrapingParams
 from src.infrastructure import (
-    S3ObjectRepository,
+    S3ArtifactRepository,
     SeleniumScraper,
     get_ssm_json_parameter,
 )
@@ -40,16 +40,16 @@ def main(
         )
         scraper = SeleniumScraper(user_agent=settings.user_agent, scraping_params=scraping_params)
 
-    object_repository = S3ObjectRepository(settings.data_bucket_name)
+    artifact_repository = S3ArtifactRepository(settings.data_bucket_name)
 
     web_scraping_service = WebScrapingService(
         scraper=scraper,
-        object_repository=object_repository,
+        artifact_repository=artifact_repository,
     )
     assets_info = web_scraping_service.scrape()
 
     # JSON として S3 に保存
     today = datetime.now(ZoneInfo("Asia/Tokyo"))
     key = f"assets/{today.strftime('%Y/%m/%d')}.json"
-    object_repository.put_json(key=key, json_str=assets_info.model_dump_json())
+    artifact_repository.save_assets(key=key, json_str=assets_info.model_dump_json())
     logger.info("資産情報を S3 に保存しました", key=key)

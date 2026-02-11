@@ -25,7 +25,7 @@ def local_stack_container() -> LocalStackContainer:  # type: ignore (invalid-ret
 def create_test_bucket(local_stack_container: LocalStackContainer) -> None:
     """S3テストバケットを作成"""
     os.environ["DATA_BUCKET_NAME"] = bucket_name
-    client = local_stack_container.get_client("s3")  # type: ignore (missing-argument)
+    client = local_stack_container.get_client("s3")
     client.create_bucket(
         Bucket=bucket_name,
         CreateBucketConfiguration={"LocationConstraint": local_stack_container.region_name},

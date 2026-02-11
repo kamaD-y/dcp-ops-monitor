@@ -1,17 +1,17 @@
-"""S3 オブジェクトリポジトリ実装"""
+"""S3 アーティファクトリポジトリ実装"""
 
 import os
 
 import boto3
 
 from src.config.settings import get_logger
-from src.domain import ArtifactUploadError, IObjectRepository
+from src.domain import ArtifactUploadError, IArtifactRepository
 
 logger = get_logger()
 
 
-class S3ObjectRepository(IObjectRepository):
-    """S3 オブジェクトリポジトリ実装"""
+class S3ArtifactRepository(IArtifactRepository):
+    """S3 アーティファクトリポジトリ実装"""
 
     def __init__(self, bucket: str) -> None:
         """S3 クライアントを初期化
@@ -27,12 +27,12 @@ class S3ObjectRepository(IObjectRepository):
             self.client = boto3.client("s3")
         self.bucket = bucket
 
-    def upload_file(self, key: str, file_path: str) -> None:
-        """S3バケットにファイルをアップロードする
+    def save_error_artifact(self, key: str, file_path: str) -> None:
+        """エラーアーティファクトを S3 に保存する
 
         Args:
             key: S3オブジェクトのキー
-            file_path: アップロードするファイルのパス
+            file_path: 保存するファイルのパス
 
         Raises:
             ArtifactUploadError: S3 へのファイルアップロード失敗時
@@ -45,8 +45,8 @@ class S3ObjectRepository(IObjectRepository):
                 f"S3 へのファイルアップロードに失敗しました。bucket={self.bucket}, key={key}"
             ) from e
 
-    def put_json(self, key: str, json_str: str) -> None:
-        """JSON 文字列を S3 に保存する
+    def save_assets(self, key: str, json_str: str) -> None:
+        """資産情報 JSON を S3 に保存する
 
         Args:
             key: S3オブジェクトのキー
