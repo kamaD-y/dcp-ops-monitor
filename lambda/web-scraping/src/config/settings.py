@@ -23,5 +23,5 @@ def get_settings(settings_instance: EnvSettings | None = None) -> EnvSettings:
         EnvSettings: 設定インスタンス
     """
     if settings_instance is None:
-        settings_instance = EnvSettings()  # type: ignore (missing-argument)
+        settings_instance = EnvSettings()
     return settings_instance
