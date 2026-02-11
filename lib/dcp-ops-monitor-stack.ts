@@ -1,5 +1,4 @@
 import * as path from 'node:path';
-import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as cw_actions from 'aws-cdk-lib/aws-cloudwatch-actions';
@@ -45,8 +44,8 @@ export class DcpOpsMonitorStack extends cdk.Stack {
 
     // Lambda Function
     const webScrapingFunction = new lambda.DockerImageFunction(this, 'webScrapingFunction', {
-      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../lambda/web-scraping'), {
-        file: 'Dockerfile',
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../lambda'), {
+        file: 'web-scraping/Dockerfile',
         extraHash: props.env?.region,
       }),
       memorySize: 1024,
@@ -86,16 +85,31 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     });
 
     // サマリ通知用Lambda Function
-    const summaryNotificationFunction = new PythonFunction(this, 'SummaryNotificationFunction', {
+    const summaryNotificationFunction = new lambda.Function(this, 'SummaryNotificationFunction', {
       runtime: lambda.Runtime.PYTHON_3_13,
-      entry: path.join(__dirname, '../lambda/summary-notification'),
-      index: 'src/handler.py',
-      handler: 'handler',
+      handler: 'src.handler.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../lambda'), {
+        bundling: {
+          image: cdk.DockerImage.fromRegistry('ghcr.io/astral-sh/uv:python3.13-bookworm-slim'),
+          command: [
+            'bash',
+            '-c',
+            [
+              'export UV_CACHE_DIR=/tmp/uv-cache',
+              'cd summary-notification',
+              'uv export --no-hashes --no-dev --no-emit-workspace -o /tmp/requirements.txt',
+              'pip install -r /tmp/requirements.txt -t /asset-output/',
+              'cp -r src/ /asset-output/src/',
+              'cp -r ../shared/src/shared /asset-output/shared/',
+            ].join(' && '),
+          ],
+        },
+      }),
       memorySize: 128,
       timeout: cdk.Duration.seconds(30),
-      bundling: {
-        assetExcludes: ['.venv'],
-      },
+      loggingFormat: lambda.LoggingFormat.JSON,
+      logGroup: logGroup,
+      applicationLogLevel: props.logLevel,
       environment: {
         POWERTOOLS_SERVICE_NAME: 'summary-notification',
         POWERTOOLS_LOG_LEVEL: props.logLevel,
