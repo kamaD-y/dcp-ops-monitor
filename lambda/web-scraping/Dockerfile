@@ -14,7 +14,8 @@ RUN python3.13 -m pip install uv
 
 # workspace root と shared をコピー
 COPY pyproject.toml ./
-COPY shared/ ./shared/
+COPY uv.lock ./
+COPY shared/pyproject.toml ./shared/
 COPY web-scraping/pyproject.toml ./web-scraping/
 RUN cd web-scraping && uv export -o /tmp/requirements.txt --no-hashes --no-dev --no-emit-workspace
 
