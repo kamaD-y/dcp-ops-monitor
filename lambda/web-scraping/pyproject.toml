@@ -5,12 +5,12 @@ description = "To check the operation status of defined contribution pension pla
 readme = "README.md"
 requires-python = ">=3.13.1"
 dependencies = [
-    "aws-lambda-powertools>=3.11.0",
-    "boto3>=1.38.8",
-    "pydantic>=2.11.4",
-    "pydantic-settings>=2.9.1",
+    "shared",
     "selenium>=4.33.0",
 ]
+
+[tool.uv.sources]
+shared = { workspace = true }
 
 [dependency-groups]
 dev = [
