@@ -44,24 +44,3 @@ class S3ArtifactRepository(IArtifactRepository):
             raise ArtifactUploadError(
                 f"S3 へのファイルアップロードに失敗しました。bucket={self.bucket}, key={key}"
             ) from e
-
-    def save_assets(self, key: str, json_str: str) -> None:
-        """資産情報 JSON を S3 に保存する
-
-        Args:
-            key: S3オブジェクトのキー
-            json_str: JSON 文字列
-
-        Raises:
-            ArtifactUploadError: S3 への JSON 保存失敗時
-        """
-        try:
-            self.client.put_object(
-                Bucket=self.bucket,
-                Key=key,
-                Body=json_str.encode("utf-8"),
-                ContentType="application/json",
-            )
-            logger.info("JSON の S3 保存成功", bucket=self.bucket, key=key)
-        except Exception as e:
-            raise ArtifactUploadError(f"JSON の S3 保存に失敗しました。bucket={self.bucket}, key={key}") from e

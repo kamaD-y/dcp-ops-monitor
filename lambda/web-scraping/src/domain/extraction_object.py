@@ -1,5 +1,4 @@
 from shared.domain.asset_object import DcpAssetInfo as BaseDcpAssetInfo
-from shared.domain.asset_object import DcpAssets
 
 
 class DcpAssetInfo(BaseDcpAssetInfo):
@@ -50,4 +49,4 @@ class DcpAssetInfo(BaseDcpAssetInfo):
         return int(cleaned)
 
 
-__all__ = ["DcpAssetInfo", "DcpAssets"]
+__all__ = ["DcpAssetInfo"]

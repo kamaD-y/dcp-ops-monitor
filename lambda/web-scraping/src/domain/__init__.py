@@ -6,14 +6,13 @@ from .exceptions import (
     ScrapingFailed,
     WebScrapingFailed,
 )
-from .extraction_object import DcpAssetInfo, DcpAssets
+from .extraction_object import DcpAssetInfo
 from .scraping_interface import IScraper
 from .scraping_object import ScrapingParams
 
 __all__ = [
     # Models
     "DcpAssetInfo",
-    "DcpAssets",
     "ScrapingParams",
     # Interfaces
     "IScraper",

@@ -1,15 +1,17 @@
-from src.domain import DcpAssets, IScraper, ScrapingFailed, ScrapingParams
+from shared.domain.asset_object import DcpAssetInfo
+
+from src.domain import IScraper, ScrapingFailed, ScrapingParams
 
 
 class MockSeleniumScraper(IScraper):
     """Selenium WebDriver のMock実装（E2Eテスト用）
 
-    実際にブラウザを起動せず、事前に用意した DcpAssets を返すMockオブジェクト
+    実際にブラウザを起動せず、事前に用意した商品別資産情報を返すMockオブジェクト
     """
 
     def __init__(
         self,
-        mock_assets: DcpAssets | None = None,
+        mock_products: dict[str, DcpAssetInfo] | None = None,
         user_agent: str = "",
         scraping_params: ScrapingParams | None = None,
         chrome_binary_location: str = "",
@@ -20,7 +22,7 @@ class MockSeleniumScraper(IScraper):
         """コンストラクタ
 
         Args:
-            mock_assets: 返却する資産情報（指定しない場合はデフォルト値）
+            mock_products: 返却する商品別資産情報（指定しない場合はデフォルト値）
             user_agent: ユーザーエージェント（使用しない）
             scraping_params: スクレイピングパラメータ（使用しない）
             chrome_binary_location: Chromeバイナリの場所（使用しない）
@@ -32,16 +34,16 @@ class MockSeleniumScraper(IScraper):
         self.scraping_params = scraping_params
         self.chrome_binary_location = chrome_binary_location
         self.chrome_driver_path = chrome_driver_path
-        self.mock_assets = mock_assets
+        self.mock_products = mock_products
         self.should_fail = should_fail
         self.should_fail_extraction = should_fail_extraction
         self.fetch_called = False
 
-    def fetch_asset_valuation(self) -> DcpAssets:
+    def fetch_asset_valuation(self) -> dict[str, DcpAssetInfo]:
         """資産評価情報を返す（Mock実装）
 
         Returns:
-            DcpAssets: 資産評価情報
+            dict[str, DcpAssetInfo]: 商品別の資産評価情報
 
         Raises:
             ScrapingFailed: should_fail=True または should_fail_extraction=True の場合
@@ -62,9 +64,9 @@ class MockSeleniumScraper(IScraper):
             print("[Mock] Extraction failed (simulated)")
             raise ScrapingFailed.during_extraction(tmp_html_path=html_path)
 
-        if self.mock_assets is None:
-            msg = "mock_assets must be provided when should_fail=False and should_fail_extraction=False"
+        if self.mock_products is None:
+            msg = "mock_products must be provided when should_fail=False and should_fail_extraction=False"
             raise ValueError(msg)
 
-        print(f"[Mock] Scraping succeeded (products={len(self.mock_assets.products)})")
-        return self.mock_assets
+        print(f"[Mock] Scraping succeeded (products={len(self.mock_products)})")
+        return self.mock_products

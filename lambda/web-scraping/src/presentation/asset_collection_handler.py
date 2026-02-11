@@ -1,8 +1,6 @@
 """資産情報収集の Presentation 層"""
 
-from datetime import datetime
 from typing import Optional
-from zoneinfo import ZoneInfo
 
 from src.application import WebScrapingService
 from src.config.settings import get_logger, get_settings
@@ -27,7 +25,7 @@ def main(
 
     Raises:
         ScrapingFailed: スクレイピングまたは資産情報抽出処理失敗時
-        ArtifactUploadError: 資産情報の S3 保存失敗時
+        ArtifactUploadError: エラーアーティファクトの S3 保存失敗時
     """
     # scraperが指定されていない場合のみ実装を使用
     if scraper is None:
@@ -46,10 +44,4 @@ def main(
         scraper=scraper,
         artifact_repository=artifact_repository,
     )
-    assets_info = web_scraping_service.scrape()
-
-    # JSON として S3 に保存
-    today = datetime.now(ZoneInfo("Asia/Tokyo"))
-    key = f"assets/{today.strftime('%Y/%m/%d')}.json"
-    artifact_repository.save_assets(key=key, json_str=assets_info.model_dump_json())
-    logger.info("資産情報を S3 に保存しました", key=key)
+    web_scraping_service.scrape()

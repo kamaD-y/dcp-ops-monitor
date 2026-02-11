@@ -1,8 +1,9 @@
 from datetime import datetime
 
+from shared.domain.asset_object import DcpAssetInfo
+
 from src.config.settings import get_logger
 from src.domain import (
-    DcpAssets,
     IArtifactRepository,
     IScraper,
     ScrapingFailed,
@@ -20,7 +21,7 @@ class WebScrapingService:
         self.scraper: IScraper = scraper
         self.artifact_repository: IArtifactRepository = artifact_repository
 
-    def scrape(self) -> DcpAssets:
+    def scrape(self) -> dict[str, DcpAssetInfo]:
         try:
             return self.scraper.fetch_asset_valuation()
         except ScrapingFailed as e:

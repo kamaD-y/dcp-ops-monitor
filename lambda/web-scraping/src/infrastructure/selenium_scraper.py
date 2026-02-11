@@ -4,7 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 from src.config.settings import get_logger
-from src.domain import DcpAssetInfo, DcpAssets, IScraper, ScrapingFailed, ScrapingParams
+from src.domain import DcpAssetInfo, IScraper, ScrapingFailed, ScrapingParams
 
 logger = get_logger()
 
@@ -57,22 +57,22 @@ class SeleniumScraper(IScraper):
 
         return driver
 
-    def fetch_asset_valuation(self) -> DcpAssets:
+    def fetch_asset_valuation(self) -> dict[str, DcpAssetInfo]:
         """資産評価情報を取得する
 
         Returns:
-            DcpAssets: 資産評価情報
+            dict[str, DcpAssetInfo]: 商品別の資産評価情報
         """
         logger.info("資産評価情報の取得開始")
         self.driver.get(self.start_url)
 
         self._login()
         self._navigate_to_asset_page()
-        assets = self._extract_asset_valuation()
+        products = self._extract_asset_valuation()
         self._logout()
         self.driver.quit()
         logger.info("資産評価情報の取得完了")
-        return assets
+        return products
 
     def _login(self) -> None:
         try:
@@ -114,18 +114,17 @@ class SeleniumScraper(IScraper):
             self.driver.quit()
             raise ScrapingFailed.during_page_fetch(tmp_screenshot_path=screenshot_path) from e
 
-    def _extract_asset_valuation(self) -> DcpAssets:
-        """資産評価額照会ページから資産情報を抽出する
+    def _extract_asset_valuation(self) -> dict[str, DcpAssetInfo]:
+        """資産評価額照会ページから商品別の資産情報を抽出する
 
         Returns:
-            DcpAssets: 抽出された資産情報
+            dict[str, DcpAssetInfo]: 商品別の資産評価情報
         """
         try:
             logger.info("資産情報の抽出開始")
-            total_assets = self._extract_total_assets()
             products_assets = self._extract_product_assets()
             logger.info("資産情報の抽出完了")
-            return DcpAssets(total=total_assets, products=products_assets)
+            return products_assets
         except Exception as e:
             html_path = "/tmp/error_extraction.html"
             try:
@@ -137,28 +136,6 @@ class SeleniumScraper(IScraper):
             self._logout()
             self.driver.quit()
             raise ScrapingFailed.during_extraction(tmp_html_path=html_path) from e
-
-    def _extract_total_assets(self) -> DcpAssetInfo:
-        """総評価額を抽出する
-
-        Returns:
-            DcpAssetInfo: 総評価額情報
-        """
-        logger.info("総評価額の抽出開始")
-        total_elem = self.driver.find_element(By.CLASS_NAME, "total")
-        dd_elements = total_elem.find_elements(By.TAG_NAME, "dd")
-
-        total_assets = DcpAssetInfo.from_html_strings(
-            cumulative_contributions_str=dd_elements[0].text,
-            gains_or_losses_str=dd_elements[1].text,
-            asset_valuation_str=dd_elements[2].text,
-        )
-
-        logger.info(
-            "総評価額の抽出完了",
-            extra=total_assets.__dict__,
-        )
-        return total_assets
 
     def _extract_product_assets(self) -> dict[str, DcpAssetInfo]:
         """商品別資産を抽出する
