@@ -16,7 +16,7 @@ RUN python3.13 -m pip install uv
 COPY pyproject.toml ./
 COPY shared/ ./shared/
 COPY web-scraping/pyproject.toml ./web-scraping/
-RUN cd web-scraping && uv export -o /tmp/requirements.txt --no-hashes --no-dev
+RUN cd web-scraping && uv export -o /tmp/requirements.txt --no-hashes --no-dev --no-emit-workspace
 
 FROM public.ecr.aws/lambda/python:3.13
 
