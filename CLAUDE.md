@@ -28,7 +28,10 @@
 ├── docs/                         # 設計/アーキテクチャ
 ├── localstack/ready.sh           # localstack 起動スクリプト (docker compose で使用)
 ├── test/cdk/                     # CDK 関連テスト
-├── lambda/                       # Lambda コード
+├── lambda/                       # Lambda コード (uv workspace)
+│   ├── shared/                   # 共通パッケージ
+│   ├── web-scraping/             # 資産情報収集 Lambda
+│   └── summary-notification/     # サマリ通知 Lambda
 ├── CLAUDE.md
 ├── README.md
 ├── biome.jsonc
@@ -71,10 +74,10 @@ $ npx lefthook install
 
 ### Python 実行環境のセットアップ
 
-各プロジェクト毎に依存関係を管理、分離しています
+uv workspace で依存関係を一元管理しています
 
 ```bash
-$ cd lambda/{specific_project_name}
+$ cd lambda
 $ uv sync
 ```
 

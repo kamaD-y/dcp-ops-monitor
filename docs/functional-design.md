@@ -107,22 +107,28 @@ sequenceDiagram
 ## コンポーネント設計
 
 各 Lambda はクリーンアーキテクチャに基づいた 4 層構造で実装されています。
+共通コードは uv workspace の shared パッケージで管理しています。
 
 ```
-lambda/{feature}/src/
-├── handler.py              # Lambda エントリーポイント
-├── config/
-│   └── settings.py         # 環境設定管理
-├── presentation/
-│   └── *.py                # Lambda イベント処理、依存性注入
-├── application/
-│   └── *.py                # ビジネスロジック
-├── domain/
-│   ├── {domain}_object.py    # ドメインモデル（ドメイン知識単位）
-│   ├── {domain}_interface.py # インターフェース定義（ドメイン知識単位）
-│   └── exceptions.py         # ドメイン例外
-└── infrastructure/
-    └── *.py                # AWS サービス実装、外部 API 連携
+lambda/
+├── shared/src/shared/          # 共通パッケージ
+│   ├── config/                 # 共通設定（Logger、BaseSettings）
+│   ├── domain/                 # 共通ドメインモデル（DcpAssetInfo、DcpAssets）
+│   └── infrastructure/         # 共通インフラ（SSM Parameter Store）
+├── {feature}/src/
+│   ├── handler.py              # Lambda エントリーポイント
+│   ├── config/
+│   │   └── settings.py         # 環境設定管理（shared を継承）
+│   ├── presentation/
+│   │   └── *.py                # Lambda イベント処理、依存性注入
+│   ├── application/
+│   │   └── *.py                # ビジネスロジック
+│   ├── domain/
+│   │   ├── {domain}_object.py    # ドメインモデル（ドメイン知識単位）
+│   │   ├── {domain}_interface.py # インターフェース定義（ドメイン知識単位）
+│   │   └── exceptions.py         # ドメイン例外
+│   └── infrastructure/
+│       └── *.py                # AWS サービス実装、外部 API 連携
 ```
 
 ### 各レイヤーの責務
