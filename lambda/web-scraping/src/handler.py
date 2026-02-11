@@ -1,4 +1,5 @@
 from aws_lambda_powertools.utilities.typing import LambdaContext
+from shared.domain.exceptions import AssetRecordError
 
 from src.config.settings import get_logger
 from src.domain import ArtifactUploadError, ScrapingFailed
@@ -23,7 +24,10 @@ def handler(event: dict, context: LambdaContext) -> str | None:
         )
         raise
     except ArtifactUploadError:
-        logger.exception("資産情報の保存に失敗しました。")
+        logger.exception("エラーアーティファクトの保存に失敗しました。")
+        raise
+    except AssetRecordError:
+        logger.exception("資産レコードの保存に失敗しました。")
         raise
     except Exception:
         logger.exception("予期せぬエラーが発生しました。")

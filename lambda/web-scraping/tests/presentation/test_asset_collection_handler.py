@@ -43,15 +43,19 @@ def test_main_e2e_with_mocks(valid_products, local_stack_container):
     """
     # given
     from src.presentation.asset_collection_handler import main
-    from tests.fixtures.mocks import MockSeleniumScraper
+    from tests.fixtures.mocks import MockAssetRecordRepository, MockSeleniumScraper
 
     scraper = MockSeleniumScraper(mock_products=valid_products)
+    asset_record_repo = MockAssetRecordRepository()
 
     # when
-    main(scraper=scraper)
+    main(scraper=scraper, asset_record_repository=asset_record_repo)
 
     # then
     assert scraper.fetch_called is True
+    assert len(asset_record_repo.saved_records) == 3
+    product_names = {r.product for r in asset_record_repo.saved_records}
+    assert product_names == {"プロダクト_1", "プロダクト_2", "プロダクト_3"}
 
 
 def test_main_e2e_with_scraping_error(local_stack_container):
@@ -63,13 +67,14 @@ def test_main_e2e_with_scraping_error(local_stack_container):
     # given
     from src.domain import ScrapingFailed
     from src.presentation.asset_collection_handler import main
-    from tests.fixtures.mocks import MockSeleniumScraper
+    from tests.fixtures.mocks import MockAssetRecordRepository, MockSeleniumScraper
 
     scraper = MockSeleniumScraper(should_fail=True)
+    asset_record_repo = MockAssetRecordRepository()
 
     # when, then
     with pytest.raises(ScrapingFailed) as exc_info:
-        main(scraper=scraper)
+        main(scraper=scraper, asset_record_repository=asset_record_repo)
 
     # エラーオブジェクトに error_screenshot_key が含まれることを確認
     assert exc_info.value.error_screenshot_key is not None
@@ -77,6 +82,9 @@ def test_main_e2e_with_scraping_error(local_stack_container):
 
     # スクレイピングは試みられたが失敗したことを確認
     assert scraper.fetch_called is True
+
+    # レコード保存は呼ばれていないことを確認
+    assert len(asset_record_repo.saved_records) == 0
 
     # S3 バケットにエラー画像ファイルが存在することを確認
     object_keys = list_s3_objects(local_stack_container, "errors/")
@@ -92,13 +100,14 @@ def test_main_e2e_with_extraction_error(local_stack_container):
     # given
     from src.domain import ScrapingFailed
     from src.presentation.asset_collection_handler import main
-    from tests.fixtures.mocks import MockSeleniumScraper
+    from tests.fixtures.mocks import MockAssetRecordRepository, MockSeleniumScraper
 
     scraper = MockSeleniumScraper(should_fail_extraction=True)
+    asset_record_repo = MockAssetRecordRepository()
 
     # when, then
     with pytest.raises(ScrapingFailed) as exc_info:
-        main(scraper=scraper)
+        main(scraper=scraper, asset_record_repository=asset_record_repo)
 
     # エラーオブジェクトに error_html_key が含まれることを確認
     assert exc_info.value.error_html_key is not None
@@ -106,6 +115,9 @@ def test_main_e2e_with_extraction_error(local_stack_container):
 
     # スクレイピングは実行されたことを確認
     assert scraper.fetch_called is True
+
+    # レコード保存は呼ばれていないことを確認
+    assert len(asset_record_repo.saved_records) == 0
 
     # S3 バケットにエラー HTML ファイルが存在することを確認
     object_keys = list_s3_objects(local_stack_container, "errors/")
