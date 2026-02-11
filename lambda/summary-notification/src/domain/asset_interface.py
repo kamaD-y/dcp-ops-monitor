@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .asset_object import DcpAssets
+from shared.domain.asset_object import DcpAssets
 
 
 class IAssetRepository(ABC):

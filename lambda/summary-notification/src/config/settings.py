@@ -1,37 +1,11 @@
-from aws_lambda_powertools import Logger
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from shared.config.base_settings import BaseEnvSettings, get_logger  # noqa: F401
 
 
-def get_logger(logger: Logger | None = None) -> Logger:
-    """Logger のインスタンスを取得する
-
-    Args:
-        logger (Logger | None, optional): Logger のインスタンス. Defaults to None.
-
-    Returns:
-        Logger: Logger のインスタンス
-    """
-    if logger is None:
-        logger = Logger()
-    return logger
-
-
-class EnvSettings(BaseSettings):
+class EnvSettings(BaseEnvSettings):
     """サマリ通知関数の設定"""
-
-    powertools_log_level: str = "INFO"
 
     # Systems Manager Parameter Store のパラメータ名
     line_message_parameter_name: str
-
-    # データ保存用 S3 バケット名
-    data_bucket_name: str
-
-    model_config = SettingsConfigDict(
-        env_file_encoding="utf-8",
-        case_sensitive=False,
-        extra="ignore",
-    )
 
 
 def get_settings(settings_instance: EnvSettings | None = None) -> EnvSettings:
