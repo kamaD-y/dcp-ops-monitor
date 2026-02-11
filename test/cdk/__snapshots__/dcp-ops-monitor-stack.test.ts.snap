@@ -318,6 +318,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
             "POWERTOOLS_LOG_LEVEL": "INFO",
             "POWERTOOLS_SERVICE_NAME": "web-scraping",
             "SCRAPING_PARAMETER_NAME": "/dcp-ops-monitor/dummy-scraping-parameters",
+            "SPREADSHEET_PARAMETER_NAME": "/dcp-ops-monitor/dummy-spreadsheet-parameters",
             "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
           },
         },
@@ -378,26 +379,48 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
             {
               "Action": "ssm:GetParameter",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":ssm:",
-                    {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":parameter/dcp-ops-monitor/dummy-scraping-parameters",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":parameter/dcp-ops-monitor/dummy-scraping-parameters",
+                    ],
                   ],
-                ],
-              },
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":parameter/dcp-ops-monitor/dummy-spreadsheet-parameters",
+                    ],
+                  ],
+                },
+              ],
             },
             {
               "Action": "s3:PutObject",
