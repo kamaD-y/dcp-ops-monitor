@@ -25,9 +25,13 @@ pre-commit:
       run: npm run type-check
 
     test:web-scraping:
-      glob: "lambda/web-scraping/**/*.py"
+      glob:
+        - "lambda/web-scraping/**/*.py"
+        - "lambda/shared/**/*.py"
       run: cd lambda/web-scraping && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1
 
     test:summary-notification:
-      glob: "lambda/summary-notification/**/*.py"
+      glob:
+        - "lambda/summary-notification/**/*.py"
+        - "lambda/shared/**/*.py"
       run: cd lambda/summary-notification && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1
