@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Self
 
 from pydantic import BaseModel
 
@@ -14,14 +15,15 @@ class AssetRecord(BaseModel):
     cumulative_contributions: int
     gains_or_losses: int
 
-    @staticmethod
+    @classmethod
     def from_dcp_asset_products(
+        cls,
         target_date: date,
         products: dict[str, DcpAssetInfo],
-    ) -> list["AssetRecord"]:
+    ) -> list[Self]:
         """商品別 DcpAssetInfo から AssetRecord のリストを生成する"""
         return [
-            AssetRecord(
+            cls(
                 date=target_date,
                 product=product_name,
                 asset_valuation=info.asset_valuation,
