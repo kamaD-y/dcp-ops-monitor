@@ -36,7 +36,7 @@ def valid_products() -> dict[str, DcpAssetInfo]:
     }
 
 
-def test_main_e2e_with_mocks(valid_products, local_stack_container):
+def test_main_e2e_with_mocks(valid_products):
     """main関数のE2Eテスト（Mockを使用）
 
     エンドツーエンドで処理が正常に完了することを確認する

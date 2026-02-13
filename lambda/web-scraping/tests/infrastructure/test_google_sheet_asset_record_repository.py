@@ -85,9 +85,9 @@ class TestSaveDailyRecords:
         repository.save_daily_records(sample_records)
 
         # 下の行から削除される（行番号 4, 3 の順）
-        assert mock_worksheet.delete_rows.call_count == 2
-        mock_worksheet.delete_rows.assert_any_call(4)
-        mock_worksheet.delete_rows.assert_any_call(3)
+        calls = mock_worksheet.delete_rows.call_args_list
+        assert calls[0].args == (4,)
+        assert calls[1].args == (3,)
 
         mock_worksheet.append_rows.assert_called_once()
 
