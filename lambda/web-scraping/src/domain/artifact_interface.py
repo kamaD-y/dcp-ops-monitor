@@ -18,14 +18,3 @@ class IArtifactRepository(ABC):
             ArtifactUploadError: 保存失敗時
         """
         pass
-
-    @abstractmethod
-    def save_assets(self, key: str, json_str: str) -> None:
-        """資産情報を JSON として保存する
-        Args:
-            key (str): オブジェクトのキー
-            json_str (str): JSON 文字列
-        Raises:
-            ArtifactUploadError: 保存失敗時
-        """
-        pass

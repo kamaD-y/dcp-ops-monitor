@@ -2,8 +2,8 @@ services:
   dcp-web-scraping:
     container_name: dcp-web-scraping
     build:
-      context: lambda/web-scraping
-      dockerfile: Dockerfile
+      context: lambda
+      dockerfile: web-scraping/Dockerfile
     ports:
       - "8080:8080"
     env_file:

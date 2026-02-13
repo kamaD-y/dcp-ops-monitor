@@ -13,10 +13,3 @@ class DcpAssetInfo(BaseModel):
     cumulative_contributions: int
     gains_or_losses: int
     asset_valuation: int
-
-
-class DcpAssets(BaseModel):
-    """資産情報（総評価 + 商品別）"""
-
-    total: DcpAssetInfo
-    products: dict[str, DcpAssetInfo]

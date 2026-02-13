@@ -16,6 +16,7 @@ export interface DcpOpsMonitorStackProps extends cdk.StackProps {
   logLevel: string;
   userAgent: string;
   scrapingParameterName: string;
+  spreadsheetParameterName: string;
   lineMessageParameterName: string;
 }
 
@@ -26,6 +27,9 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     // Parameter Store
     const scrapingParameter = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'ScrapingParameter', {
       parameterName: props.scrapingParameterName,
+    });
+    const spreadsheetParameter = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'SpreadsheetParameter', {
+      parameterName: props.spreadsheetParameterName,
     });
     const lineMessageParameter = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'LineMessageParameter', {
       parameterName: props.lineMessageParameterName,
@@ -58,13 +62,14 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         POWERTOOLS_LOG_LEVEL: props.logLevel,
         USER_AGENT: props.userAgent,
         SCRAPING_PARAMETER_NAME: scrapingParameter.parameterName,
+        SPREADSHEET_PARAMETER_NAME: spreadsheetParameter.parameterName,
         DATA_BUCKET_NAME: dataBucket.bucketName,
       },
     });
     webScrapingFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['ssm:GetParameter'],
-        resources: [scrapingParameter.parameterArn],
+        resources: [scrapingParameter.parameterArn, spreadsheetParameter.parameterArn],
       }),
     );
     webScrapingFunction.addToRolePolicy(

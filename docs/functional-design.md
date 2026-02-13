@@ -12,7 +12,7 @@
 
 ### 資産情報収集機能 (web-scraping)
 
-EventBridge によるスケジュール実行で起動し、確定拠出年金 Web ページをスクレイピングして資産情報を取得・S3 に保存します。
+EventBridge によるスケジュール実行で起動し、確定拠出年金 Web ページをスクレイピングして資産情報を取得・Google Spreadsheet に保存します。
 
 ```mermaid
 sequenceDiagram
@@ -21,23 +21,27 @@ sequenceDiagram
     participant SSM as SSM Parameter Store
     participant Web as 確定拠出年金 Web
     participant S3
+    participant GSheet as Google Spreadsheet
 
     EventBridge->>Lambda: スケジュール実行（平日 09:00 JST）
-    Lambda->>SSM: 認証情報取得
+    Lambda->>SSM: 認証情報・スプレッドシート設定取得
     Lambda->>Web: スクレイピング実行
     Lambda->>Web: ページ遷移・資産情報抽出
     Web-->>Lambda: 資産情報
     alt 抽出失敗
         Lambda->>S3: エラーアーティファクト保存（errors/）
     end
-    Lambda->>S3: JSON 保存（assets/{YYYY}/{MM}/{DD}.json）
+    Lambda->>GSheet: 資産レコード保存（日次フラットレコード）
 ```
 
 **使用する AWS サービス**:
 - EventBridge: スケジュール実行（平日のみ）
 - Lambda (Docker): スクレイピング処理
-- SSM Parameter Store: 認証情報の保存
-- S3: 資産情報の JSON 保存、エラー時の HTML/スクリーンショット保存
+- SSM Parameter Store: 認証情報・スプレッドシート設定の保存
+- S3: エラー時の HTML/スクリーンショット保存
+
+**使用する外部サービス**:
+- Google Spreadsheet: 資産レコードの蓄積（gspread + サービスアカウント認証）
 
 ### サマリ通知機能 (summary-notification)
 
@@ -70,7 +74,7 @@ sequenceDiagram
 
 ## データモデル定義
 
-### 資産情報収集機能
+### 共通（shared パッケージ）
 
 #### DcpAssetInfo（資産評価情報）
 
@@ -82,16 +86,28 @@ sequenceDiagram
 | gains_or_losses | int | 評価損益 |
 | asset_valuation | int | 資産評価額 |
 
+#### AssetRecord（資産レコード）
+
+商品別のフラットなレコードモデル。Google Spreadsheet への蓄積に使用。
+
+| フィールド | 型 | 説明 |
+|-----------|-----|------|
+| date | date | 取得日 |
+| product | str | 商品名 |
+| asset_valuation | int | 資産評価額 |
+| cumulative_contributions | int | 拠出金額累計 |
+| gains_or_losses | int | 評価損益 |
+
+### サマリ通知機能
+
 #### DcpAssets（資産情報）
 
-総合評価と商品別評価を保持するモデル。
+総合評価と商品別評価を保持するモデル。summary-notification ローカルで定義。
 
 | フィールド | 型 | 説明 |
 |-----------|-----|------|
 | total | DcpAssetInfo | 総評価額 |
 | products | dict[str, DcpAssetInfo] | 商品別資産（商品名をキーとする） |
-
-### サマリ通知機能
 
 #### DcpOpsIndicators（運用指標）
 
@@ -113,7 +129,7 @@ sequenceDiagram
 lambda/
 ├── shared/src/shared/          # 共通パッケージ
 │   ├── config/                 # 共通設定（Logger、BaseSettings）
-│   ├── domain/                 # 共通ドメインモデル（DcpAssetInfo、DcpAssets）
+│   ├── domain/                 # 共通ドメインモデル（DcpAssetInfo、AssetRecord、IAssetRecordRepository）
 │   └── infrastructure/         # 共通インフラ（SSM Parameter Store）
 ├── {feature}/src/
 │   ├── handler.py              # Lambda エントリーポイント
@@ -160,20 +176,26 @@ Presentation → Application → Domain ← Infrastructure
 ページ遷移と資産情報抽出を抽象化。
 
 ```python
-def fetch_asset_valuation(self) -> DcpAssets:
+def fetch_asset_valuation(self) -> dict[str, DcpAssetInfo]:
     """資産評価情報を取得（ページ遷移・要素抽出を一括で行う）"""
 ```
 
 #### IArtifactRepository（アーティファクト保存インターフェース）
 
-S3 へのアーティファクト保存を抽象化。
+S3 へのエラーアーティファクト保存を抽象化。
 
 ```python
 def save_error_artifact(self, key: str, file_path: str) -> None:
     """エラーアーティファクトを保存する"""
+```
 
-def save_assets(self, key: str, json_str: str) -> None:
-    """資産情報を JSON として保存する"""
+#### IAssetRecordRepository（資産レコードリポジトリインターフェース）
+
+資産レコードの保存を抽象化（shared パッケージで定義）。
+
+```python
+def save_daily_records(self, records: list[AssetRecord]) -> None:
+    """日次の資産レコードを保存する（冪等性を保証）"""
 ```
 
 ### サマリ通知機能
@@ -217,7 +239,8 @@ def notify(self, messages: list[NotificationMessage]) -> None:
 | 例外 | 発生条件 | 対応 |
 |------|---------|------|
 | ScrapingFailed | スクレイピング失敗（ページ遷移・抽出） | スクリーンショット/HTML 保存（errors/）、ERROR ログ出力 |
-| ArtifactUploadError | S3 への保存失敗（エラーアーティファクト、資産情報） | ERROR ログ出力 |
+| ArtifactUploadError | S3 へのエラーアーティファクト保存失敗 | ERROR ログ出力 |
+| AssetRecordError | 資産レコードの保存失敗（Google Spreadsheet） | ERROR ログ出力 |
 
 ### サマリ通知機能
 

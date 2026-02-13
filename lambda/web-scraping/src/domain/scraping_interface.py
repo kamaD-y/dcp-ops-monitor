@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .extraction_object import DcpAssets
+from shared.domain.asset_object import DcpAssetInfo
 
 
 class IScraper(ABC):
@@ -11,14 +11,14 @@ class IScraper(ABC):
         pass
 
     @abstractmethod
-    def fetch_asset_valuation(self) -> DcpAssets:
+    def fetch_asset_valuation(self) -> dict[str, DcpAssetInfo]:
         """資産評価情報を取得するメソッド
 
         ページ遷移（ログイン → 資産評価ページ → ログアウト）と
         要素抽出を一括で行う。
 
         Returns:
-            DcpAssets: 資産評価情報
+            dict[str, DcpAssetInfo]: 商品別の資産評価情報
 
         Raises:
             ScrapingFailed: スクレイピングまたは資産情報抽出に失敗した場合

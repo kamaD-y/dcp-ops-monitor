@@ -11,6 +11,7 @@ class EnvSettings(BaseEnvSettings):
 
     # Systems Manager Parameter Store のパラメータ名
     scraping_parameter_name: str
+    spreadsheet_parameter_name: str
 
 
 def get_settings(settings_instance: EnvSettings | None = None) -> EnvSettings:
