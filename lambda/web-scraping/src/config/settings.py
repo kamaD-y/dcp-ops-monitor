@@ -13,6 +13,9 @@ class EnvSettings(BaseEnvSettings):
     scraping_parameter_name: str
     spreadsheet_parameter_name: str
 
+    # データ保存用 S3 バケット名
+    data_bucket_name: str
+
 
 def get_settings(settings_instance: EnvSettings | None = None) -> EnvSettings:
     """設定インスタンスを取得する

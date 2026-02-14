@@ -1,10 +1,6 @@
-import json
-import os
-
 import pytest
 
 from src.domain import AssetNotFound, DcpAssetInfo, DcpAssets
-from tests.conftest import data_bucket_name
 from tests.fixtures.mocks import MockAssetRepository, MockNotifier
 
 
@@ -60,49 +56,14 @@ def test_main__e2e_with_mocks(sample_assets):
     assert "想定受取額(60歳):" in message.text
 
 
-def test_main__e2e_with_s3(local_stack_container, create_test_bucket, sample_assets):
-    """main 関数の E2E テスト（S3 + Mock Notifier）
-
-    S3 から実際に資産情報を取得し、通知が送信されることを確認する
-    """
+def test_main__asset_not_found_raises():
+    """資産情報が見つからない場合 AssetNotFound が発生する"""
     # given
     from src.presentation.summary_notification_handler import main
 
-    client = local_stack_container.get_client("s3")
-    client.put_object(
-        Bucket=data_bucket_name,
-        Key="assets/2026/02/05.json",
-        Body=sample_assets.model_dump_json().encode("utf-8"),
-        ContentType="application/json",
-    )
-
-    notifier = MockNotifier()
-
-    # when
-    main(notifier=notifier)
-
-    # then
-    assert notifier.notify_called
-    assert len(notifier.messages_sent) == 1
-    assert "900,000円" in notifier.messages_sent[0].text
-
-    # cleanup
-    client.delete_object(Bucket=data_bucket_name, Key="assets/2026/02/05.json")
-
-
-def test_main__asset_not_found_raises(local_stack_container, create_test_bucket):
-    """S3 に資産情報がない場合 AssetNotFound が発生する"""
-    # given
-    from src.presentation.summary_notification_handler import main
-
-    # assets/ を全削除
-    client = local_stack_container.get_client("s3")
-    response = client.list_objects_v2(Bucket=data_bucket_name, Prefix="assets/")
-    for obj in response.get("Contents", []):
-        client.delete_object(Bucket=data_bucket_name, Key=obj["Key"])
-
+    repo = MockAssetRepository(should_fail=True)
     notifier = MockNotifier()
 
     # when, then
     with pytest.raises(AssetNotFound):
-        main(notifier=notifier)
+        main(asset_repository=repo, notifier=notifier)

@@ -144,12 +144,10 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
         },
         "Environment": {
           "Variables": {
-            "DATA_BUCKET_NAME": {
-              "Ref": "DataBucketE3889A50",
-            },
             "LINE_MESSAGE_PARAMETER_NAME": "/dcp-ops-monitor/dummy-line-message-parameters",
             "POWERTOOLS_LOG_LEVEL": "INFO",
             "POWERTOOLS_SERVICE_NAME": "summary-notification",
+            "SPREADSHEET_PARAMETER_NAME": "/dcp-ops-monitor/dummy-spreadsheet-parameters",
           },
         },
         "Handler": "src.handler.handler",
@@ -208,57 +206,50 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "s3:GetObject",
-                "s3:ListBucket",
-              ],
+              "Action": "ssm:GetParameter",
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Fn::GetAtt": [
-                    "DataBucketE3889A50",
-                    "Arn",
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":parameter/dcp-ops-monitor/dummy-line-message-parameters",
+                    ],
                   ],
                 },
                 {
                   "Fn::Join": [
                     "",
                     [
+                      "arn:",
                       {
-                        "Fn::GetAtt": [
-                          "DataBucketE3889A50",
-                          "Arn",
-                        ],
+                        "Ref": "AWS::Partition",
                       },
-                      "/*",
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":parameter/dcp-ops-monitor/dummy-spreadsheet-parameters",
                     ],
                   ],
                 },
               ],
-            },
-            {
-              "Action": "ssm:GetParameter",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":ssm:",
-                    {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":parameter/dcp-ops-monitor/dummy-line-message-parameters",
-                  ],
-                ],
-              },
             },
           ],
           "Version": "2012-10-17",

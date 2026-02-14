@@ -119,19 +119,13 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         POWERTOOLS_SERVICE_NAME: 'summary-notification',
         POWERTOOLS_LOG_LEVEL: props.logLevel,
         LINE_MESSAGE_PARAMETER_NAME: lineMessageParameter.parameterName,
-        DATA_BUCKET_NAME: dataBucket.bucketName,
+        SPREADSHEET_PARAMETER_NAME: spreadsheetParameter.parameterName,
       },
     });
     summaryNotificationFunction.addToRolePolicy(
       new iam.PolicyStatement({
-        actions: ['s3:GetObject', 's3:ListBucket'],
-        resources: [dataBucket.bucketArn, `${dataBucket.bucketArn}/*`],
-      }),
-    );
-    summaryNotificationFunction.addToRolePolicy(
-      new iam.PolicyStatement({
         actions: ['ssm:GetParameter'],
-        resources: [lineMessageParameter.parameterArn],
+        resources: [lineMessageParameter.parameterArn, spreadsheetParameter.parameterArn],
       }),
     );
 
