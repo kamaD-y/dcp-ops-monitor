@@ -1,3 +1,9 @@
 {
-  "recommendations": ["ms-python.python", "charliermarsh.ruff", "biomejs.biome", "astral-sh.ty"]
+  "recommendations": [
+    "ms-python.python",
+    "charliermarsh.ruff",
+    "biomejs.biome",
+    "astral-sh.ty",
+    "bierner.markdown-mermaid"
+  ]
 }
