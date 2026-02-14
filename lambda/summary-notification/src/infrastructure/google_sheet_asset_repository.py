@@ -37,7 +37,7 @@ class GoogleSheetAssetRepository(IAssetRepository):
         1. ヘッダー行から列構成を取得
         2. date 列のみ取得し、最新日付と該当行番号を特定
         3. 該当行のデータのみ取得
-        4. DcpAssets に変換（total は全商品の合算）
+        4. DcpAssets に変換
 
         Returns:
             DcpAssets: 最新の資産情報
@@ -72,11 +72,8 @@ class GoogleSheetAssetRepository(IAssetRepository):
             raise AssetNotFound(f"資産情報の取得に失敗しました: {e}") from e
 
     def _to_dcp_assets(self, rows: list[dict]) -> DcpAssets:
-        """フラットレコードから DcpAssets を構築する（total は全商品の合算）"""
+        """フラットレコードから DcpAssets を構築する"""
         products: dict[str, DcpAssetInfo] = {}
-        total_contributions = 0
-        total_gains = 0
-        total_valuation = 0
 
         for row in rows:
             info = DcpAssetInfo(
@@ -85,13 +82,5 @@ class GoogleSheetAssetRepository(IAssetRepository):
                 gains_or_losses=int(row["gains_or_losses"]),
             )
             products[row["product"]] = info
-            total_contributions += info.cumulative_contributions
-            total_gains += info.gains_or_losses
-            total_valuation += info.asset_valuation
 
-        total = DcpAssetInfo(
-            cumulative_contributions=total_contributions,
-            gains_or_losses=total_gains,
-            asset_valuation=total_valuation,
-        )
-        return DcpAssets(total=total, products=products)
+        return DcpAssets(products=products)

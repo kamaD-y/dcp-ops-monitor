@@ -1,7 +1,7 @@
 """サマリ通知サービス"""
 
 from src.config.settings import get_logger
-from src.domain import DcpAssets, IAssetRepository, INotifier, NotificationMessage
+from src.domain import IAssetRepository, INotifier, NotificationMessage
 
 from .indicators_calculator import calculate_indicators
 from .message_formatter import format_summary_message
@@ -37,14 +37,15 @@ class SummaryNotificationService:
         """
         # 最新の資産情報を取得
         assets = self.asset_repository.get_latest_assets()
+        total = assets.calculate_total()
         logger.info("資産情報を取得しました")
 
         # 運用指標を計算
-        indicators = calculate_indicators(assets.total)
+        indicators = calculate_indicators(total)
         logger.info("運用指標を計算しました", indicators=indicators.model_dump())
 
         # メッセージをフォーマット
-        message_text = format_summary_message(assets, indicators)
+        message_text = format_summary_message(total, indicators)
 
         # 通知を送信
         notification_message = NotificationMessage(text=message_text)

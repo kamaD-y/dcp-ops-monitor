@@ -9,13 +9,13 @@ from tests.fixtures.mocks import MockAssetRepository, MockNotifier
 def sample_assets() -> DcpAssets:
     """テスト用資産情報"""
     return DcpAssets(
-        total=DcpAssetInfo(
-            cumulative_contributions=900_000,
-            gains_or_losses=300_000,
-            asset_valuation=1_200_000,
-        ),
         products={
             "商品A": DcpAssetInfo(
+                cumulative_contributions=450_000,
+                gains_or_losses=150_000,
+                asset_valuation=600_000,
+            ),
+            "商品B": DcpAssetInfo(
                 cumulative_contributions=450_000,
                 gains_or_losses=150_000,
                 asset_valuation=600_000,

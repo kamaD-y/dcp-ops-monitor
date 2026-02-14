@@ -8,11 +8,6 @@ from tests.fixtures.mocks import MockAssetRepository, MockNotifier
 def sample_assets() -> DcpAssets:
     """テスト用の資産情報"""
     return DcpAssets(
-        total=DcpAssetInfo(
-            cumulative_contributions=900_000,
-            gains_or_losses=300_000,
-            asset_valuation=1_200_000,
-        ),
         products={
             "商品A": DcpAssetInfo(
                 cumulative_contributions=450_000,
@@ -50,8 +45,6 @@ def test_main__e2e_with_mocks(sample_assets):
     message = notifier.messages_sent[0]
     assert "確定拠出年金 運用状況通知Bot" in message.text
     assert "900,000円" in message.text
-    assert "商品A" in message.text
-    assert "商品B" in message.text
     assert "運用年数:" in message.text
     assert "想定受取額(60歳):" in message.text
 
