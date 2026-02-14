@@ -45,30 +45,33 @@ sequenceDiagram
 
 ### サマリ通知機能 (summary-notification)
 
-EventBridge による週次スケジュール実行で起動し、S3 から最新の資産情報を取得して運用指標を計算し、サマリを通知します。
+EventBridge による週次スケジュール実行で起動し、Google Spreadsheet から最新の資産情報を取得して運用指標を計算し、サマリを通知します。
 
 ```mermaid
 sequenceDiagram
     participant EventBridge
     participant Lambda as summary-notification Lambda
-    participant S3
     participant SSM as SSM Parameter Store
+    participant GSheet as Google Spreadsheet
     participant LINE as LINE Messaging API
 
     EventBridge->>Lambda: 週次実行（日曜 09:00 JST）
-    Lambda->>S3: 最新の資産情報 JSON 取得
-    S3-->>Lambda: assets/{YYYY}/{MM}/{DD}.json
+    Lambda->>SSM: スプレッドシート設定・LINE 設定取得
+    Lambda->>GSheet: 最新日付の資産レコード取得
+    GSheet-->>Lambda: 資産レコード（日次フラットレコード）
+    Lambda->>Lambda: DcpAssets 変換（total は全商品合算）
     Lambda->>Lambda: 運用指標計算
     Lambda->>Lambda: メッセージフォーマット
-    Lambda->>SSM: LINE 設定取得
     Lambda->>LINE: 通知送信
 ```
 
 **使用する AWS サービス**:
 - EventBridge: 週次スケジュール実行（日曜のみ）
 - Lambda: サマリ通知処理（Python ランタイム）
-- S3: 資産情報の取得
-- SSM Parameter Store: LINE 設定の保存
+- SSM Parameter Store: スプレッドシート設定・LINE 設定の保存
+
+**使用する外部サービス**:
+- Google Spreadsheet: 資産レコードの取得（gspread + サービスアカウント認証）
 
 ---
 
@@ -202,7 +205,7 @@ def save_daily_records(self, records: list[AssetRecord]) -> None:
 
 #### IAssetRepository（資産リポジトリインターフェース）
 
-S3 からの資産情報取得を抽象化。
+Google Spreadsheet からの資産情報取得を抽象化。
 
 ```python
 def get_latest_assets(self) -> DcpAssets:
@@ -246,7 +249,7 @@ def notify(self, messages: list[NotificationMessage]) -> None:
 
 | 例外 | 発生条件 | 対応 |
 |------|---------|------|
-| AssetNotFound | S3 に資産情報がない | ERROR ログ出力 |
+| AssetNotFound | スプレッドシートに資産情報がない | ERROR ログ出力 |
 | NotificationFailed | 通知送信失敗 | ERROR ログ出力、Lambda リトライ |
 
 ---
