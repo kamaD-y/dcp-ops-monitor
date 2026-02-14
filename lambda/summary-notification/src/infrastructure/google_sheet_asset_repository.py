@@ -62,7 +62,7 @@ class GoogleSheetAssetRepository(IAssetRepository):
             num_cols = len(headers)
             ranges = [f"{rowcol_to_a1(row, 1)}:{rowcol_to_a1(row, num_cols)}" for row in target_rows]
             results = self.worksheet.batch_get(ranges)
-            rows = [dict(zip(headers, row[0])) for row in results]
+            rows = [dict(zip(headers, row[0])) for row in results if row and row[0]]
 
             return self._to_dcp_assets(rows)
 
