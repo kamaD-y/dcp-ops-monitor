@@ -2,6 +2,7 @@
 
 import gspread
 from google.oauth2.service_account import Credentials
+from gspread.utils import rowcol_to_a1
 from shared.domain.asset_object import DcpAssetInfo
 
 from src.config.settings import get_logger
@@ -59,8 +60,7 @@ class GoogleSheetAssetRepository(IAssetRepository):
             target_rows = [i + self.HEADER_ROW + 1 for i, d in enumerate(data_dates) if d == latest_date]
 
             num_cols = len(headers)
-            end_col = chr(ord("A") + num_cols - 1)
-            ranges = [f"A{row}:{end_col}{row}" for row in target_rows]
+            ranges = [f"{rowcol_to_a1(row, 1)}:{rowcol_to_a1(row, num_cols)}" for row in target_rows]
             results = self.worksheet.batch_get(ranges)
             rows = [dict(zip(headers, row[0])) for row in results]
 
