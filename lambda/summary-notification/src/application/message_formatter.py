@@ -23,7 +23,6 @@ def format_summary_message(total: DcpAssetInfo, indicators: DcpOpsIndicators) ->
 
     message += f"運用年数: {indicators.operation_years}年\n"
     message += f"運用利回り: {indicators.actual_yield_rate}\n"
-    message += f"目標利回り: {indicators.expected_yield_rate}\n"
     message += f"想定受取額(60歳): {indicators.total_amount_at_60age:,}円\n"
     message += "\n"
 

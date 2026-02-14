@@ -9,7 +9,6 @@ class TestFormatSummaryMessage:
         indicators = DcpOpsIndicators(
             operation_years=9.34,
             actual_yield_rate=0.036,
-            expected_yield_rate=0.06,
             total_amount_at_60age=15_000_000,
         )
 
@@ -23,7 +22,6 @@ class TestFormatSummaryMessage:
         indicators = DcpOpsIndicators(
             operation_years=9.34,
             actual_yield_rate=0.036,
-            expected_yield_rate=0.06,
             total_amount_at_60age=15_000_000,
         )
 
@@ -39,7 +37,6 @@ class TestFormatSummaryMessage:
         indicators = DcpOpsIndicators(
             operation_years=9.34,
             actual_yield_rate=0.036,
-            expected_yield_rate=0.06,
             total_amount_at_60age=15_000_000,
         )
 
@@ -47,5 +44,4 @@ class TestFormatSummaryMessage:
 
         assert "運用年数: 9.34年" in result
         assert "運用利回り: 0.036" in result
-        assert "目標利回り: 0.06" in result
         assert "想定受取額(60歳): 15,000,000円" in result

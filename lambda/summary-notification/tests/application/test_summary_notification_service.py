@@ -69,5 +69,4 @@ class TestSummaryNotificationService:
         message_text = notifier.messages_sent[0].text
         assert "運用年数:" in message_text
         assert "運用利回り:" in message_text
-        assert "目標利回り: 0.06" in message_text
         assert "想定受取額(60歳):" in message_text
