@@ -17,7 +17,7 @@ class MockAssetRepository(IAssetRepository):
     def get_latest_assets(self) -> DcpAssets:
         self.get_called = True
         if self.should_fail:
-            raise AssetNotFound.no_assets_in_bucket()
+            raise AssetNotFound.no_assets_in_spreadsheet()
         if self.assets is None:
-            raise AssetNotFound.no_assets_in_bucket()
+            raise AssetNotFound.no_assets_in_spreadsheet()
         return self.assets

@@ -2,11 +2,11 @@
 
 from shared.infrastructure.ssm_parameter import get_ssm_json_parameter
 
+from .google_sheet_asset_repository import GoogleSheetAssetRepository
 from .line_notifier import LineNotifier
-from .s3_asset_repository import S3AssetRepository
 
 __all__ = [
+    "GoogleSheetAssetRepository",
     "LineNotifier",
-    "S3AssetRepository",
     "get_ssm_json_parameter",
 ]

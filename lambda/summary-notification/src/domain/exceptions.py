@@ -13,13 +13,13 @@ class AssetNotFound(SummaryNotificationFailed):
     """資産情報が見つからない"""
 
     @classmethod
-    def no_assets_in_bucket(cls) -> Self:
-        """S3 バケットに資産情報が存在しない場合の例外を生成
+    def no_assets_in_spreadsheet(cls) -> Self:
+        """スプレッドシートに資産情報が存在しない場合の例外を生成
 
         Returns:
             AssetNotFound: 生成された例外インスタンス
         """
-        return cls("S3 バケットに資産情報が見つかりません")
+        return cls("スプレッドシートに資産情報が見つかりません")
 
 
 class NotificationFailed(SummaryNotificationFailed):

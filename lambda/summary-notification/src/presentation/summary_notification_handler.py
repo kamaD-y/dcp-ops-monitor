@@ -4,8 +4,8 @@ from src.application import SummaryNotificationService
 from src.config.settings import get_logger, get_settings
 from src.domain import IAssetRepository, INotifier
 from src.infrastructure import (
+    GoogleSheetAssetRepository,
     LineNotifier,
-    S3AssetRepository,
     get_ssm_json_parameter,
 )
 
@@ -25,7 +25,12 @@ def main(
     """
     # 資産リポジトリが指定されていない場合のみ実装を使用
     if asset_repository is None:
-        asset_repository = S3AssetRepository(bucket=settings.data_bucket_name)
+        spreadsheet_parameter = get_ssm_json_parameter(name=settings.spreadsheet_parameter_name, decrypt=True)
+        asset_repository = GoogleSheetAssetRepository(
+            spreadsheet_id=spreadsheet_parameter["spreadsheet_id"],
+            sheet_name=spreadsheet_parameter["sheet_name"],
+            credentials=spreadsheet_parameter["credentials"],
+        )
 
     # 通知クライアントが指定されていない場合のみ実装を使用
     if notifier is None:

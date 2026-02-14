@@ -21,9 +21,6 @@ class BaseEnvSettings(BaseSettings):
 
     powertools_log_level: str = "INFO"
 
-    # データ保存用 S3 バケット名
-    data_bucket_name: str
-
     model_config = SettingsConfigDict(
         env_file_encoding="utf-8",
         case_sensitive=False,

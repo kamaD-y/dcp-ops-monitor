@@ -858,38 +858,38 @@ name = "summary-notification"
 version = "0.1.0"
 source = { virtual = "summary-notification" }
 dependencies = [
+    { name = "google-auth" },
+    { name = "gspread" },
     { name = "requests" },
     { name = "shared" },
 ]
 
 [package.dev-dependencies]
 dev = [
-    { name = "botocore", extra = ["crt"] },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-env" },
     { name = "pytest-mock" },
     { name = "requests-mock" },
     { name = "ruff" },
-    { name = "testcontainers", extra = ["localstack"] },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "google-auth", specifier = ">=2.0.0" },
+    { name = "gspread", specifier = ">=6.0.0" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "shared", editable = "shared" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "botocore", extras = ["crt"], specifier = ">=1.42.42" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-cov", specifier = ">=6.2.1" },
     { name = "pytest-env", specifier = ">=1.1.5" },
     { name = "pytest-mock", specifier = ">=3.15.0" },
     { name = "requests-mock", specifier = ">=1.12.1" },
     { name = "ruff", specifier = ">=0.11.8" },
-    { name = "testcontainers", extras = ["localstack"], specifier = ">=4.10.0" },
 ]
 
 [[package]]
@@ -906,11 +906,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8b/02/ef62dec9e4f804189c44df23f0b86897c738d38e9c48282fcd410308632f/testcontainers-4.14.1.tar.gz", hash = "sha256:316f1bb178d829c003acd650233e3ff3c59a833a08d8661c074f58a4fbd42a64", size = 80148, upload-time = "2026-01-31T23:13:46.915Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c8/31/5e7b23f9e43ff7fd46d243808d70c5e8daf3bc08ecf5a7fb84d5e38f7603/testcontainers-4.14.1-py3-none-any.whl", hash = "sha256:03dfef4797b31c82e7b762a454b6afec61a2a512ad54af47ab41e4fa5415f891", size = 125640, upload-time = "2026-01-31T23:13:45.464Z" },
-]
-
-[package.optional-dependencies]
-localstack = [
-    { name = "boto3" },
 ]
 
 [[package]]
