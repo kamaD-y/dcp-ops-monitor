@@ -1,5 +1,7 @@
 """Google Spreadsheet 資産リポジトリ実装"""
 
+from datetime import date, timedelta
+
 import gspread
 from google.oauth2.service_account import Credentials
 from gspread.utils import rowcol_to_a1
@@ -70,6 +72,37 @@ class GoogleSheetAssetRepository(IAssetRepository):
             raise
         except Exception as e:
             raise AssetNotFound(f"資産情報の取得に失敗しました: {e}") from e
+
+    def get_weekly_assets(self) -> dict[date, DcpAssets]:
+        """直近カレンダー7日分の資産情報を日付別に取得する
+
+        Returns:
+            dict[date, DcpAssets]: 日付 → 資産情報のマッピング
+        """
+        headers = self.worksheet.row_values(self.HEADER_ROW)
+        date_col = headers.index("date") + 1
+        date_values = self.worksheet.col_values(date_col)
+        data_dates = date_values[self.HEADER_ROW :]
+
+        if not data_dates:
+            return {}
+
+        latest_date = max(data_dates)
+        latest_dt = date.fromisoformat(latest_date)
+        cutoff_dt = latest_dt - timedelta(days=7)
+
+        target_dates = {d for d in data_dates if date.fromisoformat(d) > cutoff_dt}
+
+        result: dict[date, DcpAssets] = {}
+        num_cols = len(headers)
+        for target_date in target_dates:
+            target_rows = [i + self.HEADER_ROW + 1 for i, d in enumerate(data_dates) if d == target_date]
+            ranges = [f"{rowcol_to_a1(row, 1)}:{rowcol_to_a1(row, num_cols)}" for row in target_rows]
+            results = self.worksheet.batch_get(ranges)
+            rows = [dict(zip(headers, row[0])) for row in results if row and row[0]]
+            result[date.fromisoformat(target_date)] = self._to_dcp_assets(rows)
+
+        return result
 
     def _to_dcp_assets(self, rows: list[dict]) -> DcpAssets:
         """フラットレコードから DcpAssets を構築する"""

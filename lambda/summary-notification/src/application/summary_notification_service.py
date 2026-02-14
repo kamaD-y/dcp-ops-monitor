@@ -1,7 +1,9 @@
 """サマリ通知サービス"""
 
+from datetime import date
+
 from src.config.settings import get_logger
-from src.domain import IAssetRepository, INotifier, NotificationMessage
+from src.domain import DcpAssets, IAssetRepository, INotifier, NotificationMessage
 
 from .indicators_calculator import calculate_indicators
 from .message_formatter import format_summary_message
@@ -29,7 +31,7 @@ class SummaryNotificationService:
     def send_summary(self) -> None:
         """サマリ通知を送信
 
-        S3 から最新の資産情報を取得し、運用指標を計算してメッセージを生成・送信する。
+        最新の資産情報を取得し、運用指標を計算してメッセージを生成・送信する。
 
         Raises:
             AssetNotFound: 資産情報が見つからない場合
@@ -44,10 +46,38 @@ class SummaryNotificationService:
         indicators = calculate_indicators(total)
         logger.info("運用指標を計算しました", indicators=indicators.model_dump())
 
+        # 直近1週間の資産評価額推移を取得・計算
+        weekly_assets = self.asset_repository.get_weekly_assets()
+        weekly_valuations = self._calculate_weekly_valuations(weekly_assets)
+
         # メッセージをフォーマット
-        message_text = format_summary_message(total, indicators)
+        message_text = format_summary_message(total, indicators, weekly_valuations)
 
         # 通知を送信
         notification_message = NotificationMessage(text=message_text)
         self.notifier.notify([notification_message])
         logger.info("サマリ通知を送信しました")
+
+    @staticmethod
+    def _calculate_weekly_valuations(
+        weekly_assets: dict[date, DcpAssets],
+    ) -> list[tuple[date, int, int | None]]:
+        """週次データから日毎の資産評価額と前日比を算出する
+
+        Args:
+            weekly_assets: 日付別の資産情報
+
+        Returns:
+            (日付, 資産評価額, 前日比 or None) のリスト（新しい日付順）
+        """
+        sorted_dates = sorted(weekly_assets.keys())
+        result: list[tuple[date, int, int | None]] = []
+        for i, d in enumerate(sorted_dates):
+            valuation = weekly_assets[d].calculate_total().asset_valuation
+            if i == 0:
+                diff = None
+            else:
+                prev_valuation = weekly_assets[sorted_dates[i - 1]].calculate_total().asset_valuation
+                diff = valuation - prev_valuation
+            result.append((d, valuation, diff))
+        return list(reversed(result))
