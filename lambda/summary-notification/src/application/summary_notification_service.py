@@ -70,14 +70,11 @@ class SummaryNotificationService:
         Returns:
             (日付, 資産評価額, 前日比 or None) のリスト（新しい日付順）
         """
-        sorted_dates = sorted(weekly_assets.keys())
+        valuations = {d: weekly_assets[d].calculate_total().asset_valuation for d in sorted(weekly_assets.keys())}
         result: list[tuple[date, int, int | None]] = []
-        for i, d in enumerate(sorted_dates):
-            valuation = weekly_assets[d].calculate_total().asset_valuation
-            if i == 0:
-                diff = None
-            else:
-                prev_valuation = weekly_assets[sorted_dates[i - 1]].calculate_total().asset_valuation
-                diff = valuation - prev_valuation
+        prev_valuation: int | None = None
+        for d, valuation in valuations.items():
+            diff = None if prev_valuation is None else valuation - prev_valuation
             result.append((d, valuation, diff))
+            prev_valuation = valuation
         return list(reversed(result))
