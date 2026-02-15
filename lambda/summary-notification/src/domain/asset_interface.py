@@ -26,5 +26,8 @@ class IAssetRepository(ABC):
         Returns:
             dict[date, DcpAssets]: 日付 → 資産情報のマッピング
             データが存在しない日は含まない
+
+        Raises:
+            AssetNotFound: 資産情報が見つからない場合
         """
         pass
