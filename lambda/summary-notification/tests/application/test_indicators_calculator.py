@@ -74,19 +74,5 @@ class TestCalculateIndicators:
 
         assert result.operation_years > 9.0
         assert result.actual_yield_rate > 0
-        assert result.expected_yield_rate == 0.06
         assert result.total_amount_at_60age > 1_200_000
         assert isinstance(result.total_amount_at_60age, int)
-
-    def test_calculate_indicators__uses_fixed_parameters(self):
-        """固定パラメータ（目標利回り）が正しく設定される"""
-        total_assets = DcpAssetInfo(
-            cumulative_contributions=500_000,
-            gains_or_losses=50_000,
-            asset_valuation=550_000,
-        )
-        today = datetime(2026, 2, 5)
-
-        result = calculate_indicators(total_assets, today=today)
-
-        assert result.expected_yield_rate == 0.06

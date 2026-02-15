@@ -8,7 +8,6 @@ from src.domain import DcpAssetInfo, DcpOpsIndicators
 OPERATION_START_DATE = datetime(2016, 10, 1)
 RETIREMENT_DATE = datetime(2046, 10, 1)
 ANNUAL_CONTRIBUTION = 240_000  # 年間積立額: 24万円
-EXPECTED_YIELD_RATE = 0.06  # 目標利回り
 
 
 def calculate_year_diff(start_dt: datetime, end_dt: datetime) -> float:
@@ -98,6 +97,5 @@ def calculate_indicators(total_assets: DcpAssetInfo, today: datetime | None = No
     return DcpOpsIndicators(
         operation_years=operation_years,
         actual_yield_rate=actual_yield_rate,
-        expected_yield_rate=EXPECTED_YIELD_RATE,
         total_amount_at_60age=total_amount_at_60age,
     )

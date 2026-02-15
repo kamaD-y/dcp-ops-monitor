@@ -61,6 +61,9 @@ sequenceDiagram
     GSheet-->>Lambda: 資産レコード（日次フラットレコード）
     Lambda->>Lambda: DcpAssets 変換（total は全商品合算）
     Lambda->>Lambda: 運用指標計算
+    Lambda->>GSheet: 直近1週間の資産レコード取得
+    GSheet-->>Lambda: 日付別の資産レコード
+    Lambda->>Lambda: 資産評価額推移算出（前日比計算）
     Lambda->>Lambda: メッセージフォーマット
     Lambda->>LINE: 通知送信
 ```
@@ -105,12 +108,16 @@ sequenceDiagram
 
 #### DcpAssets（資産情報）
 
-総合評価と商品別評価を保持するモデル。summary-notification ローカルで定義。
+商品別評価を保持するモデル。summary-notification ローカルで定義。
+総評価は `calculate_total()` メソッドで全商品から算出する。
 
 | フィールド | 型 | 説明 |
 |-----------|-----|------|
-| total | DcpAssetInfo | 総評価額 |
 | products | dict[str, DcpAssetInfo] | 商品別資産（商品名をキーとする） |
+
+| メソッド | 戻り値 | 説明 |
+|---------|--------|------|
+| calculate_total() | DcpAssetInfo | 全商品の合計を算出 |
 
 #### DcpOpsIndicators（運用指標）
 
@@ -118,7 +125,6 @@ sequenceDiagram
 |-----------|-----|------|
 | operation_years | float | 運用年数 |
 | actual_yield_rate | float | 運用利回り |
-| expected_yield_rate | float | 目標利回り（固定 0.06） |
 | total_amount_at_60age | int | 想定受取額（60歳） |
 
 ---
@@ -210,6 +216,9 @@ Google Spreadsheet からの資産情報取得を抽象化。
 ```python
 def get_latest_assets(self) -> DcpAssets:
     """最新の資産情報を取得"""
+
+def get_weekly_assets(self) -> dict[date, DcpAssets]:
+    """直近1週間の日付別資産情報を取得"""
 ```
 
 #### INotifier（通知インターフェース）
@@ -249,7 +258,7 @@ def notify(self, messages: list[NotificationMessage]) -> None:
 
 | 例外 | 発生条件 | 対応 |
 |------|---------|------|
-| AssetNotFound | スプレッドシートに資産情報がない | ERROR ログ出力 |
+| AssetRetrievalFailed | スプレッドシートに資産情報がない | ERROR ログ出力 |
 | NotificationFailed | 通知送信失敗 | ERROR ログ出力、Lambda リトライ |
 
 ---

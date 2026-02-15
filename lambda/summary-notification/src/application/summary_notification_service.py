@@ -1,5 +1,7 @@
 """サマリ通知サービス"""
 
+from datetime import date
+
 from src.config.settings import get_logger
 from src.domain import DcpAssets, IAssetRepository, INotifier, NotificationMessage
 
@@ -29,24 +31,50 @@ class SummaryNotificationService:
     def send_summary(self) -> None:
         """サマリ通知を送信
 
-        S3 から最新の資産情報を取得し、運用指標を計算してメッセージを生成・送信する。
+        最新の資産情報を取得し、運用指標を計算してメッセージを生成・送信する。
 
         Raises:
-            AssetNotFound: 資産情報が見つからない場合
+            AssetRetrievalFailed: 資産情報が見つからない場合
             NotificationFailed: 通知送信失敗時
         """
         # 最新の資産情報を取得
         assets = self.asset_repository.get_latest_assets()
+        total = assets.calculate_total()
         logger.info("資産情報を取得しました")
 
         # 運用指標を計算
-        indicators = calculate_indicators(assets.total)
+        indicators = calculate_indicators(total)
         logger.info("運用指標を計算しました", indicators=indicators.model_dump())
 
+        # 直近1週間の資産評価額推移を取得・計算
+        weekly_assets = self.asset_repository.get_weekly_assets()
+        weekly_valuations = self._calculate_weekly_valuations(weekly_assets)
+
         # メッセージをフォーマット
-        message_text = format_summary_message(assets, indicators)
+        message_text = format_summary_message(total, indicators, weekly_valuations)
 
         # 通知を送信
         notification_message = NotificationMessage(text=message_text)
         self.notifier.notify([notification_message])
         logger.info("サマリ通知を送信しました")
+
+    @staticmethod
+    def _calculate_weekly_valuations(
+        weekly_assets: dict[date, DcpAssets],
+    ) -> list[tuple[date, int, int | None]]:
+        """週次データから日毎の資産評価額と前日比を算出する
+
+        Args:
+            weekly_assets: 日付別の資産情報
+
+        Returns:
+            (日付, 資産評価額, 前日比 or None) のリスト（新しい日付順）
+        """
+        valuations = {d: weekly_assets[d].calculate_total().asset_valuation for d in sorted(weekly_assets.keys())}
+        result: list[tuple[date, int, int | None]] = []
+        prev_valuation: int | None = None
+        for d, valuation in valuations.items():
+            diff = None if prev_valuation is None else valuation - prev_valuation
+            result.append((d, valuation, diff))
+            prev_valuation = valuation
+        return list(reversed(result))

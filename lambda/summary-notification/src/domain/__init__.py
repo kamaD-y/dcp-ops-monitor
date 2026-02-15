@@ -5,7 +5,7 @@ from shared.domain.asset_object import DcpAssetInfo
 from .asset_interface import IAssetRepository
 from .asset_object import DcpAssets
 from .exceptions import (
-    AssetNotFound,
+    AssetRetrievalFailed,
     NotificationFailed,
     SummaryNotificationFailed,
 )
@@ -24,6 +24,6 @@ __all__ = [
     "INotifier",
     # Exceptions
     "SummaryNotificationFailed",
-    "AssetNotFound",
+    "AssetRetrievalFailed",
     "NotificationFailed",
 ]
