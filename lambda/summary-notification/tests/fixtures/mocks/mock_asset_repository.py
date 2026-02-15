@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from src.domain import AssetNotFound, DcpAssets, IAssetRepository
+from src.domain import AssetRetrievalFailed, DcpAssets, IAssetRepository
 
 
 class MockAssetRepository(IAssetRepository):
@@ -25,9 +25,9 @@ class MockAssetRepository(IAssetRepository):
     def get_latest_assets(self) -> DcpAssets:
         self.get_called = True
         if self.should_fail:
-            raise AssetNotFound.no_assets_in_spreadsheet()
+            raise AssetRetrievalFailed.no_assets_in_spreadsheet()
         if self.assets is None:
-            raise AssetNotFound.no_assets_in_spreadsheet()
+            raise AssetRetrievalFailed.no_assets_in_spreadsheet()
         return self.assets
 
     def get_weekly_assets(self) -> dict[date, DcpAssets]:

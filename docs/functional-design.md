@@ -258,7 +258,7 @@ def notify(self, messages: list[NotificationMessage]) -> None:
 
 | 例外 | 発生条件 | 対応 |
 |------|---------|------|
-| AssetNotFound | スプレッドシートに資産情報がない | ERROR ログ出力 |
+| AssetRetrievalFailed | スプレッドシートに資産情報がない | ERROR ログ出力 |
 | NotificationFailed | 通知送信失敗 | ERROR ログ出力、Lambda リトライ |
 
 ---

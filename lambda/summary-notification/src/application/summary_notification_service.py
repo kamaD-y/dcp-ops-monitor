@@ -34,7 +34,7 @@ class SummaryNotificationService:
         最新の資産情報を取得し、運用指標を計算してメッセージを生成・送信する。
 
         Raises:
-            AssetNotFound: 資産情報が見つからない場合
+            AssetRetrievalFailed: 資産情報が見つからない場合
             NotificationFailed: 通知送信失敗時
         """
         # 最新の資産情報を取得

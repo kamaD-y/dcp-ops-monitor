@@ -1,6 +1,6 @@
 import pytest
 
-from src.domain import AssetNotFound, DcpAssetInfo, DcpAssets
+from src.domain import AssetRetrievalFailed, DcpAssetInfo, DcpAssets
 from tests.fixtures.mocks import MockAssetRepository, MockNotifier
 
 
@@ -50,7 +50,7 @@ def test_main__e2e_with_mocks(sample_assets):
 
 
 def test_main__asset_not_found_raises():
-    """資産情報が見つからない場合 AssetNotFound が発生する"""
+    """資産情報が見つからない場合 AssetRetrievalFailed が発生する"""
     # given
     from src.presentation.summary_notification_handler import main
 
@@ -58,5 +58,5 @@ def test_main__asset_not_found_raises():
     notifier = MockNotifier()
 
     # when, then
-    with pytest.raises(AssetNotFound):
+    with pytest.raises(AssetRetrievalFailed):
         main(asset_repository=repo, notifier=notifier)

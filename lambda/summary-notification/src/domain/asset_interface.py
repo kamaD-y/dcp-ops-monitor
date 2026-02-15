@@ -15,7 +15,7 @@ class IAssetRepository(ABC):
             DcpAssets: 最新の資産情報
 
         Raises:
-            AssetNotFound: 資産情報が見つからない場合
+            AssetRetrievalFailed: 資産情報が見つからない場合
         """
         pass
 
@@ -28,6 +28,6 @@ class IAssetRepository(ABC):
             データが存在しない日は含まない
 
         Raises:
-            AssetNotFound: 資産情報が見つからない場合
+            AssetRetrievalFailed: 資産情報が見つからない場合
         """
         pass

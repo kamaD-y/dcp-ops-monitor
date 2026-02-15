@@ -3,7 +3,7 @@ from datetime import date
 import pytest
 
 from src.application import SummaryNotificationService
-from src.domain import AssetNotFound, DcpAssetInfo, DcpAssets
+from src.domain import AssetRetrievalFailed, DcpAssetInfo, DcpAssets
 from tests.fixtures.mocks import MockAssetRepository, MockNotifier
 
 
@@ -78,14 +78,14 @@ class TestSummaryNotificationService:
         assert "900,000円" in notifier.messages_sent[0].text
 
     def test_send_summary__asset_not_found_raises(self):
-        """資産情報がない場合 AssetNotFound が発生する"""
+        """資産情報がない場合 AssetRetrievalFailed が発生する"""
         # given
         repo = MockAssetRepository(should_fail=True)
         notifier = MockNotifier()
         service = SummaryNotificationService(asset_repository=repo, notifier=notifier)
 
         # when, then
-        with pytest.raises(AssetNotFound):
+        with pytest.raises(AssetRetrievalFailed):
             service.send_summary()
 
         assert not notifier.notify_called

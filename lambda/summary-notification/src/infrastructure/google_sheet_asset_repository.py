@@ -8,7 +8,7 @@ from gspread.utils import rowcol_to_a1
 from shared.domain.asset_object import DcpAssetInfo
 
 from src.config.settings import get_logger
-from src.domain import AssetNotFound, DcpAssets, IAssetRepository
+from src.domain import AssetRetrievalFailed, DcpAssets, IAssetRepository
 
 logger = get_logger()
 
@@ -45,7 +45,7 @@ class GoogleSheetAssetRepository(IAssetRepository):
             DcpAssets: 最新の資産情報
 
         Raises:
-            AssetNotFound: 資産情報が見つからない場合
+            AssetRetrievalFailed: 資産情報が見つからない場合
         """
         try:
             headers = self.worksheet.row_values(self.HEADER_ROW)
@@ -54,7 +54,7 @@ class GoogleSheetAssetRepository(IAssetRepository):
             data_dates = date_values[self.HEADER_ROW :]
 
             if not data_dates:
-                raise AssetNotFound.no_assets_in_spreadsheet()
+                raise AssetRetrievalFailed.no_assets_in_spreadsheet()
 
             latest_date = max(data_dates)
             logger.info("最新の資産情報を取得します", extra={"date": latest_date})
@@ -68,10 +68,10 @@ class GoogleSheetAssetRepository(IAssetRepository):
 
             return self._to_dcp_assets(rows)
 
-        except AssetNotFound:
+        except AssetRetrievalFailed:
             raise
         except Exception as e:
-            raise AssetNotFound(f"資産情報の取得に失敗しました: {e}") from e
+            raise AssetRetrievalFailed.during_fetching() from e
 
     def get_weekly_assets(self) -> dict[date, DcpAssets]:
         """直近カレンダー7日分の資産情報を日付別に取得する
@@ -86,7 +86,7 @@ class GoogleSheetAssetRepository(IAssetRepository):
             data_dates = date_values[self.HEADER_ROW :]
 
             if not data_dates:
-                raise AssetNotFound.no_assets_in_spreadsheet()
+                raise AssetRetrievalFailed.no_assets_in_spreadsheet()
 
             latest_date = max(data_dates)
             latest_dt = date.fromisoformat(latest_date)
@@ -105,10 +105,10 @@ class GoogleSheetAssetRepository(IAssetRepository):
 
             return result
 
-        except AssetNotFound:
+        except AssetRetrievalFailed:
             raise
         except Exception as e:
-            raise AssetNotFound(f"資産情報の取得に失敗しました: {e}") from e
+            raise AssetRetrievalFailed.during_fetching() from e
 
     def _to_dcp_assets(self, rows: list[dict]) -> DcpAssets:
         """フラットレコードから DcpAssets を構築する"""
