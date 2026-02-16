@@ -50,6 +50,31 @@ sequenceDiagram
 
 **注**: `SCRAPING_PARAMETER_NAME` と `DATA_BUCKET_NAME` は必須です。
 
+## ECR ライフサイクルポリシー
+
+この Lambda は Docker イメージを使用しており、デプロイの度に CDK ブートストラップ用の ECR リポジトリにイメージがプッシュされます。
+コスト削減の為、ECR リポジトリにライフサイクルポリシーを設定し、保持するイメージを1つに制限しています。
+
+```bash
+aws ecr put-lifecycle-policy \
+  --repository-name cdk-hnb659fds-container-assets-{ACCOUNT_ID}-{REGION} \
+  --lifecycle-policy-text '{
+    "rules": [{
+      "rulePriority": 1,
+      "selection": {
+        "tagStatus": "any",
+        "countType": "imageCountMoreThan",
+        "countNumber": 1
+      },
+      "action": { "type": "expire" }
+    }]
+  }'
+```
+
+> [!NOTE]
+> このポリシーは初回セットアップ時に1回実行すれば永続します（`cdk deploy` では上書きされません）。
+> ただし `cdk bootstrap` を再実行するとリセットされる為、再設定が必要です。
+
 ## 開発ガイド
 
 開発環境のセットアップ、テスト実行、Lint/Format については、[CLAUDE.md](../../CLAUDE.md) を参照してください。
