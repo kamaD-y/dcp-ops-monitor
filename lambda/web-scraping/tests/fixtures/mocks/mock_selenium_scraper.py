@@ -1,6 +1,4 @@
-from shared.domain.asset_object import DcpAssetInfo
-
-from src.domain import IScraper, ScrapingFailed, ScrapingParams
+from src.domain import DcpAssetInfo, IScraper, ScrapingFailed, ScrapingParams
 
 
 class MockSeleniumScraper(IScraper):
