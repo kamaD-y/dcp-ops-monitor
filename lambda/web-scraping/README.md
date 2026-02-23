@@ -9,7 +9,7 @@ Selenium を Lambda で使用する場合、モジュール間の依存関係の
 
 - EventBridge によるスケジュール実行（平日 09:00 JST）
 - Selenium を使用した Web スクレイピング
-- 資産情報の JSON 形式での S3 保存
+- 資産情報の Google Spreadsheet への保存（日次フラットレコード）
 - エラー時のスクリーンショット・ HTML 保存（デバッグ用）
 
 ## 処理シーケンス
@@ -20,6 +20,7 @@ sequenceDiagram
     participant Scraping as Web スクレイピング Lambda
     participant Web as 確定拠出年金 Web サイト
     participant S3 as S3
+    participant GSheet as Google Spreadsheet
 
     EventBridge->>Scraping: 平日 09:00 実行トリガー
     activate Scraping
@@ -33,7 +34,7 @@ sequenceDiagram
     Scraping->>Scraping: HTML データ加工処理
     Note right of Scraping: 資産情報を抽出
 
-    Scraping->>S3: JSON 保存（assets/{YYYY}/{MM}/{DD}.json）
+    Scraping->>GSheet: 資産レコード保存（日次フラットレコード）
     deactivate Scraping
 ```
 
@@ -44,11 +45,12 @@ sequenceDiagram
 | 環境変数 | 説明 | デフォルト値 |
 |---------|------|-------------|
 | `SCRAPING_PARAMETER_NAME` | スクレイピングに必要な各種パラメータ（URL、認証情報等）を格納した SSM パラメータ名 | - |
-| `DATA_BUCKET_NAME` | データ保存用 S3 バケット名 | - |
+| `SPREADSHEET_PARAMETER_NAME` | Google Spreadsheet の接続設定（スプレッドシート ID、シート名、認証情報等）を格納した SSM パラメータ名 | - |
+| `DATA_BUCKET_NAME` | エラーアーティファクト（スクリーンショット/HTML）保存用 S3 バケット名 | - |
 | `USER_AGENT` | スクレイピングで使用するユーザーエージェント | - |
 | `POWERTOOLS_LOG_LEVEL` | ログレベル (ERROR, WARNING, INFO, DEBUG) | INFO |
 
-**注**: `SCRAPING_PARAMETER_NAME` と `DATA_BUCKET_NAME` は必須です。
+**注**: `SCRAPING_PARAMETER_NAME`、`SPREADSHEET_PARAMETER_NAME`、`DATA_BUCKET_NAME` は必須です。
 
 ## ECR ライフサイクルポリシー
 
