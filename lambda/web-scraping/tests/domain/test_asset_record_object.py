@@ -1,6 +1,6 @@
 from datetime import date
 
-from src.domain import AssetRecord, DcpAssetInfo
+from src.domain import AssetEvaluation, AssetRecord
 
 
 class TestAssetRecord:
@@ -21,18 +21,18 @@ class TestAssetRecord:
         assert record.gains_or_losses == 20_000
 
 
-class TestFromDcpAssetProducts:
-    def test_from_dcp_asset_products__single_product(self):
+class TestFromAssetEvaluations:
+    def test_from_asset_evaluations__single_product(self):
         """単一商品から AssetRecord リストを生成できる"""
         products = {
-            "商品A": DcpAssetInfo(
+            "商品A": AssetEvaluation(
                 cumulative_contributions=100_000,
                 gains_or_losses=10_000,
                 asset_valuation=110_000,
             ),
         }
 
-        records = AssetRecord.from_dcp_asset_products(
+        records = AssetRecord.from_asset_evaluations(
             target_date=date(2026, 2, 11),
             products=products,
         )
@@ -44,27 +44,27 @@ class TestFromDcpAssetProducts:
         assert records[0].cumulative_contributions == 100_000
         assert records[0].gains_or_losses == 10_000
 
-    def test_from_dcp_asset_products__multiple_products(self):
+    def test_from_asset_evaluations__multiple_products(self):
         """複数商品から AssetRecord リストを生成できる"""
         products = {
-            "商品A": DcpAssetInfo(
+            "商品A": AssetEvaluation(
                 cumulative_contributions=100_000,
                 gains_or_losses=10_000,
                 asset_valuation=110_000,
             ),
-            "商品B": DcpAssetInfo(
+            "商品B": AssetEvaluation(
                 cumulative_contributions=200_000,
                 gains_or_losses=20_000,
                 asset_valuation=220_000,
             ),
-            "商品C": DcpAssetInfo(
+            "商品C": AssetEvaluation(
                 cumulative_contributions=300_000,
                 gains_or_losses=-5_000,
                 asset_valuation=295_000,
             ),
         }
 
-        records = AssetRecord.from_dcp_asset_products(
+        records = AssetRecord.from_asset_evaluations(
             target_date=date(2026, 1, 15),
             products=products,
         )
@@ -76,9 +76,9 @@ class TestFromDcpAssetProducts:
         # 全レコードが同一日付を持つ
         assert all(r.date == date(2026, 1, 15) for r in records)
 
-    def test_from_dcp_asset_products__empty_products(self):
+    def test_from_asset_evaluations__empty_products(self):
         """空の商品辞書から空リストが返される"""
-        records = AssetRecord.from_dcp_asset_products(
+        records = AssetRecord.from_asset_evaluations(
             target_date=date(2026, 2, 11),
             products={},
         )

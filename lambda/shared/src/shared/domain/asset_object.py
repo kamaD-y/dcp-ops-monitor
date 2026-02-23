@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class DcpAssetInfo(BaseModel):
+class AssetEvaluation(BaseModel):
     """確定拠出年金の資産評価を扱う値クラス
 
     Attributes:
@@ -20,8 +20,8 @@ class DcpAssetInfo(BaseModel):
         cumulative_contributions_str: str,
         gains_or_losses_str: str,
         asset_valuation_str: str,
-    ) -> "DcpAssetInfo":
-        """HTML から取得した文字列から DcpAssetInfo を生成
+    ) -> "AssetEvaluation":
+        """HTML から取得した文字列から AssetEvaluation を生成
 
         Args:
             cumulative_contributions_str: 拠出金額累計の文字列（例: "1,234,567円"）
@@ -29,7 +29,7 @@ class DcpAssetInfo(BaseModel):
             asset_valuation_str: 資産評価額の文字列
 
         Returns:
-            DcpAssetInfo: 変換済みの資産情報
+            AssetEvaluation: 変換済みの資産情報
         """
         return cls(
             cumulative_contributions=cls._parse_yen_amount(cumulative_contributions_str),

@@ -3,7 +3,7 @@ from typing import Self
 
 from pydantic import BaseModel
 
-from shared.domain.asset_object import DcpAssetInfo
+from shared.domain.asset_object import AssetEvaluation
 
 
 class AssetRecord(BaseModel):
@@ -16,12 +16,12 @@ class AssetRecord(BaseModel):
     gains_or_losses: int
 
     @classmethod
-    def from_dcp_asset_products(
+    def from_asset_evaluations(
         cls,
         target_date: date,
-        products: dict[str, DcpAssetInfo],
+        products: dict[str, AssetEvaluation],
     ) -> list[Self]:
-        """商品別 DcpAssetInfo から AssetRecord のリストを生成する"""
+        """商品別 AssetEvaluation から AssetRecord のリストを生成する"""
         return [
             cls(
                 date=target_date,

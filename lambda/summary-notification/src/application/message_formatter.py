@@ -2,11 +2,11 @@
 
 from datetime import date
 
-from src.domain import DcpAssetInfo, DcpOpsIndicators
+from src.domain import AssetEvaluation, DcpOpsIndicators
 
 
 def format_summary_message(
-    total: DcpAssetInfo,
+    total: AssetEvaluation,
     indicators: DcpOpsIndicators,
     weekly_valuations: list[tuple[date, int, int | None]],
 ) -> str:

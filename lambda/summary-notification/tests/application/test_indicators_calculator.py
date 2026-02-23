@@ -6,7 +6,7 @@ from src.application.indicators_calculator import (
     calculate_total_amount_at_60age,
     calculate_year_diff,
 )
-from src.domain import DcpAssetInfo
+from src.domain import AssetEvaluation
 
 
 class TestCalculateYearDiff:
@@ -63,7 +63,7 @@ class TestCalculateTotalAmountAt60age:
 class TestCalculateIndicators:
     def test_calculate_indicators__returns_valid_indicators(self):
         """正常な資産情報から運用指標を計算できる"""
-        total_assets = DcpAssetInfo(
+        total_assets = AssetEvaluation(
             cumulative_contributions=900_000,
             gains_or_losses=300_000,
             asset_valuation=1_200_000,

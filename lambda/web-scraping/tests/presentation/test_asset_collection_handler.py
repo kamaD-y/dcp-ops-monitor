@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from src.domain import DcpAssetInfo
+from src.domain import AssetEvaluation
 
 
 def list_s3_objects(local_stack_container, prefix: str) -> list[str]:
@@ -16,20 +16,20 @@ def list_s3_objects(local_stack_container, prefix: str) -> list[str]:
 
 
 @pytest.fixture
-def valid_products() -> dict[str, DcpAssetInfo]:
+def valid_products() -> dict[str, AssetEvaluation]:
     """テスト用の正常な商品別資産情報を生成する"""
     return {
-        "プロダクト_1": DcpAssetInfo(
+        "プロダクト_1": AssetEvaluation(
             cumulative_contributions=100_000,
             gains_or_losses=11_111,
             asset_valuation=111_111,
         ),
-        "プロダクト_2": DcpAssetInfo(
+        "プロダクト_2": AssetEvaluation(
             cumulative_contributions=200_000,
             gains_or_losses=22_222,
             asset_valuation=222_222,
         ),
-        "プロダクト_3": DcpAssetInfo(
+        "プロダクト_3": AssetEvaluation(
             cumulative_contributions=300_000,
             gains_or_losses=33_333,
             asset_valuation=333_333,

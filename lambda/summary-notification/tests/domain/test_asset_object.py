@@ -1,10 +1,10 @@
-from src.domain import DcpAssetInfo, DcpAssets
+from src.domain import AssetEvaluation, DcpAssets
 
 
-class TestDcpAssetInfo:
+class TestAssetEvaluation:
     def test_create__valid_values(self):
-        """正常な値で DcpAssetInfo を生成できる"""
-        info = DcpAssetInfo(
+        """正常な値で AssetEvaluation を生成できる"""
+        info = AssetEvaluation(
             cumulative_contributions=900_000,
             gains_or_losses=300_000,
             asset_valuation=1_200_000,
@@ -15,7 +15,7 @@ class TestDcpAssetInfo:
 
     def test_create__negative_gains_or_losses(self):
         """評価損益がマイナスの場合も生成できる"""
-        info = DcpAssetInfo(
+        info = AssetEvaluation(
             cumulative_contributions=900_000,
             gains_or_losses=-100_000,
             asset_valuation=800_000,
@@ -28,12 +28,12 @@ class TestDcpAssets:
         """商品別資産情報を含む DcpAssets を生成できる"""
         assets = DcpAssets(
             products={
-                "商品A": DcpAssetInfo(
+                "商品A": AssetEvaluation(
                     cumulative_contributions=450_000,
                     gains_or_losses=150_000,
                     asset_valuation=600_000,
                 ),
-                "商品B": DcpAssetInfo(
+                "商品B": AssetEvaluation(
                     cumulative_contributions=450_000,
                     gains_or_losses=150_000,
                     asset_valuation=600_000,
@@ -53,12 +53,12 @@ class TestDcpAssets:
         """calculate_total で全商品の合計が算出される"""
         assets = DcpAssets(
             products={
-                "商品A": DcpAssetInfo(
+                "商品A": AssetEvaluation(
                     cumulative_contributions=450_000,
                     gains_or_losses=150_000,
                     asset_valuation=600_000,
                 ),
-                "商品B": DcpAssetInfo(
+                "商品B": AssetEvaluation(
                     cumulative_contributions=450_000,
                     gains_or_losses=150_000,
                     asset_valuation=600_000,
@@ -82,7 +82,7 @@ class TestDcpAssets:
         """JSON シリアライズ・デシリアライズが正常に動作する"""
         original = DcpAssets(
             products={
-                "商品A": DcpAssetInfo(
+                "商品A": AssetEvaluation(
                     cumulative_contributions=900_000,
                     gains_or_losses=300_000,
                     asset_valuation=1_200_000,

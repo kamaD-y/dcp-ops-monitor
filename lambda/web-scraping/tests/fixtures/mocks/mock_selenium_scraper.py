@@ -1,4 +1,4 @@
-from src.domain import DcpAssetInfo, IScraper, ScrapingFailed, ScrapingParams
+from src.domain import AssetEvaluation, IScraper, ScrapingFailed, ScrapingParams
 
 
 class MockSeleniumScraper(IScraper):
@@ -9,7 +9,7 @@ class MockSeleniumScraper(IScraper):
 
     def __init__(
         self,
-        mock_products: dict[str, DcpAssetInfo] | None = None,
+        mock_products: dict[str, AssetEvaluation] | None = None,
         scraping_params: ScrapingParams | None = None,
         chrome_binary_location: str = "",
         chrome_driver_path: str = "",
@@ -34,11 +34,11 @@ class MockSeleniumScraper(IScraper):
         self.should_fail_extraction = should_fail_extraction
         self.fetch_called = False
 
-    def fetch_asset_valuation(self) -> dict[str, DcpAssetInfo]:
+    def fetch_asset_valuation(self) -> dict[str, AssetEvaluation]:
         """資産評価情報を返す（Mock実装）
 
         Returns:
-            dict[str, DcpAssetInfo]: 商品別の資産評価情報
+            dict[str, AssetEvaluation]: 商品別の資産評価情報
 
         Raises:
             ScrapingFailed: should_fail=True または should_fail_extraction=True の場合

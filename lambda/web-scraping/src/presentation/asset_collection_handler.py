@@ -62,5 +62,5 @@ def main(
     products = web_scraping_service.scrape()
 
     today = datetime.now(ZoneInfo("Asia/Tokyo")).date()
-    records = AssetRecord.from_dcp_asset_products(target_date=today, products=products)
+    records = AssetRecord.from_asset_evaluations(target_date=today, products=products)
     asset_record_repository.save_daily_records(records)

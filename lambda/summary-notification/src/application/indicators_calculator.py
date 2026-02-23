@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta
 
-from src.domain import DcpAssetInfo, DcpOpsIndicators
+from src.domain import AssetEvaluation, DcpOpsIndicators
 
 # 固定パラメータ
 OPERATION_START_DATE = datetime(2016, 10, 1)
@@ -67,7 +67,7 @@ def calculate_total_amount_at_60age(
     return total
 
 
-def calculate_indicators(total_assets: DcpAssetInfo, today: datetime | None = None) -> DcpOpsIndicators:
+def calculate_indicators(total_assets: AssetEvaluation, today: datetime | None = None) -> DcpOpsIndicators:
     """資産情報から運用指標を計算する
 
     Args:

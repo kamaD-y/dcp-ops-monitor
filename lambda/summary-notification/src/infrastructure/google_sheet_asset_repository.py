@@ -5,7 +5,7 @@ from datetime import date, timedelta
 import gspread
 from google.oauth2.service_account import Credentials
 from gspread.utils import rowcol_to_a1
-from shared.domain.asset_object import DcpAssetInfo
+from shared.domain.asset_object import AssetEvaluation
 
 from src.config.settings import get_logger
 from src.domain import AssetRetrievalFailed, DcpAssets, IAssetRepository
@@ -112,10 +112,10 @@ class GoogleSheetAssetRepository(IAssetRepository):
 
     def _to_dcp_assets(self, rows: list[dict]) -> DcpAssets:
         """フラットレコードから DcpAssets を構築する"""
-        products: dict[str, DcpAssetInfo] = {}
+        products: dict[str, AssetEvaluation] = {}
 
         for row in rows:
-            info = DcpAssetInfo(
+            info = AssetEvaluation(
                 asset_valuation=int(row["asset_valuation"]),
                 cumulative_contributions=int(row["cumulative_contributions"]),
                 gains_or_losses=int(row["gains_or_losses"]),
