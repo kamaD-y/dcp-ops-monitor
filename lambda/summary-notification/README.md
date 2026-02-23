@@ -1,11 +1,11 @@
 # summary-notification
 
-S3 に蓄積された資産情報を取得し、運用指標を計算してサマリを LINE 通知する Lambda 関数です。
+Google Spreadsheet に蓄積された資産情報を取得し、運用指標を計算してサマリを LINE 通知する Lambda 関数です。
 
 ## 機能概要
 
 - EventBridge による週次スケジュール実行（毎週日曜 09:00 JST）
-- S3 から最新の資産情報 JSON を取得
+- Google Spreadsheet から最新の資産情報を取得
 - 運用指標（運用年数、利回り、想定受取額）を計算
 - サマリメッセージをフォーマットし LINE 経由で通知
 
@@ -27,6 +27,18 @@ uv sync
 ```bash
 ENV=test uv run pytest --cov -v --tb=short --disable-warnings
 ```
+
+## 環境変数
+
+この Lambda は以下の環境変数を使用します:
+
+| 環境変数 | 説明 | デフォルト値 |
+|---------|------|-------------|
+| `LINE_MESSAGE_PARAMETER_NAME` | LINE 通知に必要な各種パラメータ（Channel Access Token、送信先 User ID 等）を格納した SSM パラメータ名 | - |
+| `SPREADSHEET_PARAMETER_NAME` | Google Spreadsheet の接続設定（スプレッドシート ID、シート名、認証情報等）を格納した SSM パラメータ名 | - |
+| `POWERTOOLS_LOG_LEVEL` | ログレベル (ERROR, WARNING, INFO, DEBUG) | INFO |
+
+**注**: `LINE_MESSAGE_PARAMETER_NAME` と `SPREADSHEET_PARAMETER_NAME` は必須です。
 
 ## アーキテクチャ
 
@@ -51,7 +63,6 @@ src/
 │   ├── notification_interface.py # INotifier
 │   └── exceptions.py             # ドメイン例外
 └── infrastructure/
-    ├── s3_asset_repository.py    # S3 資産リポジトリ
-    ├── line_notifier.py          # LINE 通知アダプター
-    └── ssm_parameter.py          # SSM パラメータ取得
+    ├── google_sheet_asset_repository.py  # Google Spreadsheet 資産リポジトリ
+    └── line_notifier.py                  # LINE 通知アダプター
 ```
