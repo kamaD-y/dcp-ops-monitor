@@ -4,12 +4,9 @@ from datetime import datetime
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-from shared.domain.asset_record_interface import IAssetRecordRepository
-from shared.domain.asset_record_object import AssetRecord
-
 from src.application import WebScrapingService
 from src.config.settings import get_logger, get_settings
-from src.domain import IScraper, ScrapingParams
+from src.domain import AssetRecord, IAssetRecordRepository, IScraper, ScrapingParams
 from src.infrastructure import (
     GoogleSheetAssetRecordRepository,
     S3ArtifactRepository,

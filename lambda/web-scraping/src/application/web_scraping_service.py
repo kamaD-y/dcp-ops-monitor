@@ -1,9 +1,8 @@
 from datetime import datetime
 
-from shared.domain.asset_object import DcpAssetInfo
-
 from src.config.settings import get_logger
 from src.domain import (
+    DcpAssetInfo,
     IArtifactRepository,
     IScraper,
     ScrapingFailed,

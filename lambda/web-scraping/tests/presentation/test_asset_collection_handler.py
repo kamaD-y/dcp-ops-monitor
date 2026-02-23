@@ -1,7 +1,8 @@
 import os
 
 import pytest
-from shared.domain.asset_object import DcpAssetInfo
+
+from src.domain import DcpAssetInfo
 
 
 def list_s3_objects(local_stack_container, prefix: str) -> list[str]:

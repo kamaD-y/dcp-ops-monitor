@@ -1,8 +1,7 @@
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from shared.domain.exceptions import AssetRecordError
 
 from src.config.settings import get_logger
-from src.domain import ArtifactUploadError, ScrapingFailed
+from src.domain import ArtifactUploadError, AssetRecordError, ScrapingFailed
 from src.presentation.asset_collection_handler import main
 
 logger = get_logger()

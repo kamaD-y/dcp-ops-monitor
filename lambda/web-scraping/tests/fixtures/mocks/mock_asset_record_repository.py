@@ -1,5 +1,4 @@
-from shared.domain.asset_record_interface import IAssetRecordRepository
-from shared.domain.asset_record_object import AssetRecord
+from src.domain import AssetRecord, IAssetRecordRepository
 
 
 class MockAssetRecordRepository(IAssetRecordRepository):

@@ -1,7 +1,6 @@
 from datetime import date
 
-from shared.domain.asset_object import DcpAssetInfo
-from shared.domain.asset_record_object import AssetRecord
+from src.domain import AssetRecord, DcpAssetInfo
 
 
 class TestAssetRecord:

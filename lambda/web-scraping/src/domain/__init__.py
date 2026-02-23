@@ -1,6 +1,9 @@
 """Domain レイヤー: モデル、インターフェース、例外"""
 
 from shared.domain.asset_object import DcpAssetInfo
+from shared.domain.asset_record_interface import IAssetRecordRepository
+from shared.domain.asset_record_object import AssetRecord
+from shared.domain.exceptions import AssetRecordError
 
 from .artifact_interface import IArtifactRepository
 from .exceptions import (
@@ -15,11 +18,14 @@ __all__ = [
     # Models
     "DcpAssetInfo",
     "ScrapingParams",
+    "AssetRecord",
     # Interfaces
     "IScraper",
     "IArtifactRepository",
+    "IAssetRecordRepository",
     # Exceptions
     "ArtifactUploadError",
     "ScrapingFailed",
     "WebScrapingFailed",
+    "AssetRecordError",
 ]
