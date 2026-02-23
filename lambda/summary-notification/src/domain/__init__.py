@@ -1,6 +1,6 @@
 """Domain レイヤー: モデル、インターフェース、例外"""
 
-from shared.domain.asset_object import DcpAssetInfo
+from shared.domain.asset_object import AssetEvaluation
 
 from .asset_interface import IAssetRepository
 from .asset_object import DcpAssets
@@ -15,7 +15,7 @@ from .notification_object import NotificationMessage
 
 __all__ = [
     # Models
-    "DcpAssetInfo",
+    "AssetEvaluation",
     "DcpAssets",
     "DcpOpsIndicators",
     "NotificationMessage",

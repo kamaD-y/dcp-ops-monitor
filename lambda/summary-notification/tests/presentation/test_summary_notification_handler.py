@@ -1,6 +1,6 @@
 import pytest
 
-from src.domain import AssetRetrievalFailed, DcpAssetInfo, DcpAssets
+from src.domain import AssetEvaluation, AssetRetrievalFailed, DcpAssets
 from tests.fixtures.mocks import MockAssetRepository, MockNotifier
 
 
@@ -9,12 +9,12 @@ def sample_assets() -> DcpAssets:
     """テスト用の資産情報"""
     return DcpAssets(
         products={
-            "商品A": DcpAssetInfo(
+            "商品A": AssetEvaluation(
                 cumulative_contributions=450_000,
                 gains_or_losses=150_000,
                 asset_valuation=600_000,
             ),
-            "商品B": DcpAssetInfo(
+            "商品B": AssetEvaluation(
                 cumulative_contributions=450_000,
                 gains_or_losses=150_000,
                 asset_valuation=600_000,

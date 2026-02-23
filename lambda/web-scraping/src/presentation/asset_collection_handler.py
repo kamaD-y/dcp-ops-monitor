@@ -4,12 +4,9 @@ from datetime import datetime
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-from shared.domain.asset_record_interface import IAssetRecordRepository
-from shared.domain.asset_record_object import AssetRecord
-
 from src.application import WebScrapingService
 from src.config.settings import get_logger, get_settings
-from src.domain import IScraper, ScrapingParams
+from src.domain import AssetRecord, IAssetRecordRepository, IScraper, ScrapingParams
 from src.infrastructure import (
     GoogleSheetAssetRecordRepository,
     S3ArtifactRepository,
@@ -44,8 +41,9 @@ def main(
             login_password=scraping_parameter["login_password"],
             login_birthdate=scraping_parameter["login_birthdate"],
             start_url=scraping_parameter["start_url"],
+            user_agent=settings.user_agent,
         )
-        scraper = SeleniumScraper(user_agent=settings.user_agent, scraping_params=scraping_params)
+        scraper = SeleniumScraper(scraping_params=scraping_params)
 
     if asset_record_repository is None:
         spreadsheet_param = get_ssm_json_parameter(name=settings.spreadsheet_parameter_name, decrypt=True)
@@ -64,5 +62,5 @@ def main(
     products = web_scraping_service.scrape()
 
     today = datetime.now(ZoneInfo("Asia/Tokyo")).date()
-    records = AssetRecord.from_dcp_asset_products(target_date=today, products=products)
+    records = AssetRecord.from_asset_evaluations(target_date=today, products=products)
     asset_record_repository.save_daily_records(records)

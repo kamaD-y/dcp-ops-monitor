@@ -2,11 +2,9 @@
 
 import gspread
 from google.oauth2.service_account import Credentials
-from shared.domain.asset_record_interface import IAssetRecordRepository
-from shared.domain.asset_record_object import AssetRecord
-from shared.domain.exceptions import AssetRecordError
 
 from src.config.settings import get_logger
+from src.domain import AssetRecord, AssetRecordError, IAssetRecordRepository
 
 logger = get_logger()
 
