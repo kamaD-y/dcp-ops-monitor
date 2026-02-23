@@ -5,7 +5,7 @@
 ![last commit](https://img.shields.io/github/last-commit/kamaD-y/dcp-ops-monitor)
 
 このシステムは、確定拠出年金 (Defined Contribution Plan) の運用状況の管理を楽にする為、
-平日に確定拠出年金 Web ページをスクレイピングし、資産情報を S3 に蓄積します。
+平日に確定拠出年金 Web ページをスクレイピングし、資産情報を Google Spreadsheet に蓄積します。
 
 ※運用商品の見直しなどの操作には、対応していません。
 
@@ -19,21 +19,21 @@
 ## 搭載機能
 
 ### 1. 資産情報収集
-平日に確定拠出年金の Web ページにアクセスし、資産情報をスクレイピングして S3 に保存します。
+平日に確定拠出年金の Web ページにアクセスし、資産情報をスクレイピングして Google Spreadsheet に保存します。
 
 **機能概要:**
 - EventBridge によるスケジュール実行（平日 09:00 JST）
 - Selenium を使用した Web スクレイピング
-- 資産情報の JSON 形式での S3 保存
+- 資産情報の Google Spreadsheet への保存（日次フラットレコード）
 
 詳細は [lambda/web-scraping/README.md](lambda/web-scraping/README.md) を参照してください。
 
 ### 2. サマリ通知
-S3 に蓄積された資産情報を取得し、運用指標を計算してサマリを通知します。
+Google Spreadsheet に蓄積された資産情報を取得し、運用指標を計算してサマリを通知します。
 
 **機能概要:**
 - EventBridge によるスケジュール実行（毎週日曜 09:00 JST）
-- S3 から最新の資産情報を取得し、運用指標を計算
+- Google Spreadsheet から最新の資産情報を取得し、運用指標を計算
 - LINE 経由でサマリ通知を送信
 
 詳細は [lambda/summary-notification/README.md](lambda/summary-notification/README.md) を参照してください。
