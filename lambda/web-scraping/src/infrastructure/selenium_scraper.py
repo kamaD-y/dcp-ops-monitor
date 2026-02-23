@@ -14,14 +14,13 @@ class SeleniumScraper(IScraper):
 
     def __init__(
         self,
-        user_agent: str,
         scraping_params: ScrapingParams,
         chrome_binary_location: str = "/opt/chrome/chrome",
         chrome_driver_path: str = "/opt/chromedriver",
     ) -> None:
         self.chrome_binary_location = chrome_binary_location
         self.chrome_driver_path = chrome_driver_path
-        self.user_agent = user_agent
+        self.user_agent = scraping_params.user_agent
         self.driver = self._get_driver()
         self.user_id = scraping_params.login_user_id
         self.password = scraping_params.login_password

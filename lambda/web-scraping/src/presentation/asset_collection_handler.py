@@ -44,8 +44,9 @@ def main(
             login_password=scraping_parameter["login_password"],
             login_birthdate=scraping_parameter["login_birthdate"],
             start_url=scraping_parameter["start_url"],
+            user_agent=settings.user_agent,
         )
-        scraper = SeleniumScraper(user_agent=settings.user_agent, scraping_params=scraping_params)
+        scraper = SeleniumScraper(scraping_params=scraping_params)
 
     if asset_record_repository is None:
         spreadsheet_param = get_ssm_json_parameter(name=settings.spreadsheet_parameter_name, decrypt=True)
