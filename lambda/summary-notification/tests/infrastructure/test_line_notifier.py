@@ -1,6 +1,6 @@
 import pytest
 
-from src.domain import NotificationFailed, NotificationMessage
+from src.domain import NotificationFailed
 from src.infrastructure import LineNotifier
 
 LINE_API_URL = "https://api.line.me/v2/bot/message/push"
@@ -18,7 +18,7 @@ class TestLineNotifier:
         """テキストメッセージを正常に送信できる"""
         # given
         requests_mock.post(LINE_API_URL, json={}, status_code=200)
-        messages = [NotificationMessage(text="テストメッセージ")]
+        messages = ["テストメッセージ"]
 
         # when
         notifier.notify(messages)
@@ -30,27 +30,11 @@ class TestLineNotifier:
         assert sent_body["messages"][0]["type"] == "text"
         assert sent_body["messages"][0]["text"] == "テストメッセージ"
 
-    def test_notify__sends_text_with_image(self, notifier, requests_mock):
-        """テキスト + 画像メッセージを送信できる"""
-        # given
-        requests_mock.post(LINE_API_URL, json={}, status_code=200)
-        messages = [NotificationMessage(text="テスト", image_url="https://example.com/image.png")]
-
-        # when
-        notifier.notify(messages)
-
-        # then
-        sent_body = requests_mock.last_request.json()
-        assert len(sent_body["messages"]) == 2
-        assert sent_body["messages"][0]["type"] == "text"
-        assert sent_body["messages"][1]["type"] == "image"
-        assert sent_body["messages"][1]["originalContentUrl"] == "https://example.com/image.png"
-
     def test_notify__api_error_raises_notification_failed(self, notifier, requests_mock):
         """API エラー時に NotificationFailed が発生する"""
         # given
         requests_mock.post(LINE_API_URL, status_code=500)
-        messages = [NotificationMessage(text="テスト")]
+        messages = ["テスト"]
 
         # when, then
         with pytest.raises(NotificationFailed):
@@ -60,7 +44,7 @@ class TestLineNotifier:
         """Authorization ヘッダーが正しく設定される"""
         # given
         requests_mock.post(LINE_API_URL, json={}, status_code=200)
-        messages = [NotificationMessage(text="テスト")]
+        messages = ["テスト"]
 
         # when
         notifier.notify(messages)

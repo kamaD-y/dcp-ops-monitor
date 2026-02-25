@@ -3,7 +3,7 @@
 from datetime import date
 
 from src.config.settings import get_logger
-from src.domain import DcpAssets, IAssetRepository, INotifier, NotificationMessage
+from src.domain import DcpAssets, IAssetRepository, INotifier
 
 from .indicators_calculator import calculate_indicators
 from .message_formatter import format_summary_message
@@ -54,8 +54,7 @@ class SummaryNotificationService:
         message_text = format_summary_message(total, indicators, weekly_valuations)
 
         # 通知を送信
-        notification_message = NotificationMessage(text=message_text)
-        self.notifier.notify([notification_message])
+        self.notifier.notify([message_text])
         logger.info("サマリ通知を送信しました")
 
     @staticmethod

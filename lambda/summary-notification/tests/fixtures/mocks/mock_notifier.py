@@ -1,6 +1,6 @@
 """テスト用 Mock Notifier"""
 
-from src.domain import INotifier, NotificationMessage
+from src.domain import INotifier
 
 
 class MockNotifier(INotifier):
@@ -12,9 +12,9 @@ class MockNotifier(INotifier):
     def __init__(self) -> None:
         """Mock Notifier を初期化"""
         self.notify_called = False
-        self.messages_sent: list[NotificationMessage] = []
+        self.messages_sent: list[str] = []
 
-    def notify(self, messages: list[NotificationMessage]) -> None:
+    def notify(self, messages: list[str]) -> None:
         """通知を送信 (Mock: 実際には送信せず記録のみ)
 
         Args:
