@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from shared.domain.asset_object import AssetEvaluation
+from src.domain import AssetEvaluation
 
 
 class IScraper(ABC):
