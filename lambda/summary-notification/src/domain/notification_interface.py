@@ -1,13 +1,11 @@
 from abc import ABC, abstractmethod
 
-from .notification_object import NotificationMessage
-
 
 class INotifier(ABC):
     """通知インターフェース（LINE非依存）"""
 
     @abstractmethod
-    def notify(self, messages: list[NotificationMessage]) -> None:
+    def notify(self, messages: list[str]) -> None:
         """通知を送信
 
         Args:

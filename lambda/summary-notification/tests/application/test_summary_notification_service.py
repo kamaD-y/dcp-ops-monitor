@@ -74,8 +74,8 @@ class TestSummaryNotificationService:
         assert repo.get_called
         assert notifier.notify_called
         assert len(notifier.messages_sent) == 1
-        assert "確定拠出年金 運用状況通知Bot" in notifier.messages_sent[0].text
-        assert "900,000円" in notifier.messages_sent[0].text
+        assert "確定拠出年金 運用状況通知Bot" in notifier.messages_sent[0]
+        assert "900,000円" in notifier.messages_sent[0]
 
     def test_send_summary__asset_not_found_raises(self):
         """資産情報がない場合 AssetRetrievalFailed が発生する"""
@@ -101,7 +101,7 @@ class TestSummaryNotificationService:
         service.send_summary()
 
         # then
-        message_text = notifier.messages_sent[0].text
+        message_text = notifier.messages_sent[0]
         assert "運用年数:" in message_text
         assert "運用利回り:" in message_text
         assert "想定受取額(60歳):" in message_text
@@ -118,7 +118,7 @@ class TestSummaryNotificationService:
         service.send_summary()
 
         # then
-        message_text = notifier.messages_sent[0].text
+        message_text = notifier.messages_sent[0]
         assert "資産評価額推移（直近1週間）" in message_text
         assert "2026-02-14: 600,000円 +5,000円" in message_text
         assert "2026-02-13: 595,000円 -2,000円" in message_text

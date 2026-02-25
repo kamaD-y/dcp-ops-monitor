@@ -11,14 +11,12 @@ from .exceptions import (
 )
 from .indicator_object import DcpOpsIndicators
 from .notification_interface import INotifier
-from .notification_object import NotificationMessage
 
 __all__ = [
     # Models
     "AssetEvaluation",
     "DcpAssets",
     "DcpOpsIndicators",
-    "NotificationMessage",
     # Interfaces
     "IAssetRepository",
     "INotifier",

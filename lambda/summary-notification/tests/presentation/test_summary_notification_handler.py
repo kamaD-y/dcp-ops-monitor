@@ -43,10 +43,10 @@ def test_main__e2e_with_mocks(sample_assets):
     assert len(notifier.messages_sent) == 1
 
     message = notifier.messages_sent[0]
-    assert "確定拠出年金 運用状況通知Bot" in message.text
-    assert "900,000円" in message.text
-    assert "運用年数:" in message.text
-    assert "想定受取額(60歳):" in message.text
+    assert "確定拠出年金 運用状況通知Bot" in message
+    assert "900,000円" in message
+    assert "運用年数:" in message
+    assert "想定受取額(60歳):" in message
 
 
 def test_main__asset_not_found_raises():
