@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from shared.domain.asset_object import AssetEvaluation
+
+from . import AssetEvaluation
 
 
 class DcpAssets(BaseModel):
