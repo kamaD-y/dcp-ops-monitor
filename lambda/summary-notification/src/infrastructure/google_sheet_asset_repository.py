@@ -5,10 +5,9 @@ from datetime import date, timedelta
 import gspread
 from google.oauth2.service_account import Credentials
 from gspread.utils import rowcol_to_a1
-from shared.domain.asset_object import AssetEvaluation
 
 from src.config.settings import get_logger
-from src.domain import AssetRetrievalFailed, DcpAssets, IAssetRepository
+from src.domain import AssetEvaluation, AssetRetrievalFailed, DcpAssets, IAssetRepository
 
 logger = get_logger()
 
