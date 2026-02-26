@@ -3,7 +3,6 @@
 from shared.domain.asset_object import AssetEvaluation
 
 from .asset_interface import IAssetRepository
-from .asset_object import DcpAssets
 from .exceptions import (
     AssetRetrievalFailed,
     NotificationFailed,
@@ -16,7 +15,6 @@ from .notification_interface import INotifier
 __all__ = [
     # Models
     "AssetEvaluation",
-    "DcpAssets",
     "DcpOpsIndicators",
     # Domain Services
     "calculate_indicators",

@@ -1,26 +1,24 @@
 import pytest
 
-from src.domain import AssetEvaluation, AssetRetrievalFailed, DcpAssets
+from src.domain import AssetEvaluation, AssetRetrievalFailed
 from tests.fixtures.mocks import MockAssetRepository, MockNotifier
 
 
 @pytest.fixture
-def sample_assets() -> DcpAssets:
+def sample_assets() -> dict[str, AssetEvaluation]:
     """テスト用の資産情報"""
-    return DcpAssets(
-        products={
-            "商品A": AssetEvaluation(
-                cumulative_contributions=450_000,
-                gains_or_losses=150_000,
-                asset_valuation=600_000,
-            ),
-            "商品B": AssetEvaluation(
-                cumulative_contributions=450_000,
-                gains_or_losses=150_000,
-                asset_valuation=600_000,
-            ),
-        },
-    )
+    return {
+        "商品A": AssetEvaluation(
+            cumulative_contributions=450_000,
+            gains_or_losses=150_000,
+            asset_valuation=600_000,
+        ),
+        "商品B": AssetEvaluation(
+            cumulative_contributions=450_000,
+            gains_or_losses=150_000,
+            asset_valuation=600_000,
+        ),
+    }
 
 
 def test_main__e2e_with_mocks(sample_assets):
