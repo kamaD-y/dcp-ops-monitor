@@ -1,12 +1,11 @@
 from datetime import datetime
 
-from src.application import calculate_indicators
-from src.application.indicators_calculator import (
+from src.domain import AssetEvaluation, calculate_indicators
+from src.domain.indicators_calculator import (
     calculate_annual_yield_rate,
     calculate_total_amount_at_60age,
     calculate_year_diff,
 )
-from src.domain import AssetEvaluation
 
 
 class TestCalculateYearDiff:

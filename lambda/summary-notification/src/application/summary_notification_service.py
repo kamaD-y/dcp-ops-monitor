@@ -3,9 +3,8 @@
 from datetime import date
 
 from src.config.settings import get_logger
-from src.domain import DcpAssets, IAssetRepository, INotifier
+from src.domain import DcpAssets, IAssetRepository, INotifier, calculate_indicators
 
-from .indicators_calculator import calculate_indicators
 from .message_formatter import format_summary_message
 
 logger = get_logger()

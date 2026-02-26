@@ -10,6 +10,7 @@ from .exceptions import (
     SummaryNotificationFailed,
 )
 from .indicator_object import DcpOpsIndicators
+from .indicators_calculator import calculate_indicators
 from .notification_interface import INotifier
 
 __all__ = [
@@ -17,6 +18,8 @@ __all__ = [
     "AssetEvaluation",
     "DcpAssets",
     "DcpOpsIndicators",
+    # Domain Services
+    "calculate_indicators",
     # Interfaces
     "IAssetRepository",
     "INotifier",
