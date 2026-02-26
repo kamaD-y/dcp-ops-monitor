@@ -8,14 +8,14 @@ from .exceptions import (
     NotificationFailed,
     SummaryNotificationFailed,
 )
-from .indicator_object import DcpOpsIndicators
+from .indicator_object import OpsIndicators
 from .indicators_calculator import calculate_indicators
 from .notification_interface import INotifier
 
 __all__ = [
     # Models
     "AssetEvaluation",
-    "DcpOpsIndicators",
+    "OpsIndicators",
     # Domain Services
     "calculate_indicators",
     # Interfaces

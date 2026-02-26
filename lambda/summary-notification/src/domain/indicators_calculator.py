@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 from shared.domain.asset_object import AssetEvaluation
 
-from .indicator_object import DcpOpsIndicators
+from .indicator_object import OpsIndicators
 
 # 固定パラメータ
 OPERATION_START_DATE = date(2016, 10, 1)
@@ -10,7 +10,7 @@ RETIREMENT_DATE = date(2046, 10, 1)
 ANNUAL_CONTRIBUTION = 240_000  # 年間積立額: 24万円
 
 
-def calculate_indicators(total_assets: AssetEvaluation, today: date | None = None) -> DcpOpsIndicators:
+def calculate_indicators(total_assets: AssetEvaluation, today: date | None = None) -> OpsIndicators:
     """資産情報から運用指標を計算するドメインサービス
 
     Args:
@@ -18,7 +18,7 @@ def calculate_indicators(total_assets: AssetEvaluation, today: date | None = Non
         today: 現在日（テスト用に注入可能、デフォルトは今日の日付）
 
     Returns:
-        DcpOpsIndicators: 運用指標
+        OpsIndicators: 運用指標
     """
     if today is None:
         today = date.today()
@@ -37,7 +37,7 @@ def calculate_indicators(total_assets: AssetEvaluation, today: date | None = Non
         today=today,
     )
 
-    return DcpOpsIndicators(
+    return OpsIndicators(
         operation_years=operation_years,
         actual_yield_rate=actual_yield_rate,
         total_amount_at_60age=total_amount_at_60age,

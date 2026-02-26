@@ -2,12 +2,12 @@
 
 from datetime import date
 
-from src.domain import AssetEvaluation, DcpOpsIndicators
+from src.domain import AssetEvaluation, OpsIndicators
 
 
 def format_summary_message(
     total: AssetEvaluation,
-    indicators: DcpOpsIndicators,
+    indicators: OpsIndicators,
     weekly_valuations: list[tuple[date, int, int | None]],
 ) -> str:
     """資産情報と運用指標からサマリメッセージをフォーマット

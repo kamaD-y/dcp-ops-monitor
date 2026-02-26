@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class DcpOpsIndicators(BaseModel):
+class OpsIndicators(BaseModel):
     """運用指標を扱う値クラス
 
     Attributes:
