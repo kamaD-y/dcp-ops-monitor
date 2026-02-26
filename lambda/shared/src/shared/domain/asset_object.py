@@ -1,3 +1,5 @@
+from collections.abc import Iterable
+
 from pydantic import BaseModel
 
 
@@ -13,6 +15,16 @@ class AssetEvaluation(BaseModel):
     cumulative_contributions: int
     gains_or_losses: int
     asset_valuation: int
+
+    @classmethod
+    def aggregate(cls, evaluations: Iterable["AssetEvaluation"]) -> "AssetEvaluation":
+        """複数の AssetEvaluation を合算して単一の AssetEvaluation を生成する"""
+        items = list(evaluations)
+        return cls(
+            cumulative_contributions=sum(e.cumulative_contributions for e in items),
+            gains_or_losses=sum(e.gains_or_losses for e in items),
+            asset_valuation=sum(e.asset_valuation for e in items),
+        )
 
     @classmethod
     def from_html_strings(
