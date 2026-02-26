@@ -59,7 +59,7 @@ sequenceDiagram
     Lambda->>SSM: スプレッドシート設定・LINE 設定取得
     Lambda->>GSheet: 最新日付の資産レコード取得
     GSheet-->>Lambda: 資産レコード（日次フラットレコード）
-    Lambda->>Lambda: DcpAssets 変換（total は全商品合算）
+    Lambda->>Lambda: AssetEvaluation.aggregate() で全商品合算
     Lambda->>Lambda: 運用指標計算
     Lambda->>GSheet: 直近1週間の資産レコード取得
     GSheet-->>Lambda: 日付別の資産レコード
@@ -82,7 +82,7 @@ sequenceDiagram
 
 ### 共通（shared パッケージ）
 
-#### DcpAssetInfo（資産評価情報）
+#### AssetEvaluation（資産評価情報）
 
 単一の資産評価情報を表すモデル。
 
@@ -91,6 +91,10 @@ sequenceDiagram
 | cumulative_contributions | int | 拠出金額累計 |
 | gains_or_losses | int | 評価損益 |
 | asset_valuation | int | 資産評価額 |
+
+| メソッド | 戻り値 | 説明 |
+|---------|--------|------|
+| aggregate(evaluations) | AssetEvaluation | 複数の AssetEvaluation を合算 |
 
 #### AssetRecord（資産レコード）
 
@@ -105,19 +109,6 @@ sequenceDiagram
 | gains_or_losses | int | 評価損益 |
 
 ### サマリ通知機能
-
-#### DcpAssets（資産情報）
-
-商品別評価を保持するモデル。summary-notification ローカルで定義。
-総評価は `calculate_total()` メソッドで全商品から算出する。
-
-| フィールド | 型 | 説明 |
-|-----------|-----|------|
-| products | dict[str, DcpAssetInfo] | 商品別資産（商品名をキーとする） |
-
-| メソッド | 戻り値 | 説明 |
-|---------|--------|------|
-| calculate_total() | DcpAssetInfo | 全商品の合計を算出 |
 
 #### DcpOpsIndicators（運用指標）
 
@@ -138,7 +129,7 @@ sequenceDiagram
 lambda/
 ├── shared/src/shared/          # 共通パッケージ
 │   ├── config/                 # 共通設定（Logger、BaseSettings）
-│   ├── domain/                 # 共通ドメインモデル（DcpAssetInfo、AssetRecord、IAssetRecordRepository）
+│   ├── domain/                 # 共通ドメインモデル（AssetEvaluation、AssetRecord、IAssetRecordRepository）
 │   └── infrastructure/         # 共通インフラ（SSM Parameter Store）
 ├── {feature}/src/
 │   ├── handler.py              # Lambda エントリーポイント
@@ -214,10 +205,10 @@ def save_daily_records(self, records: list[AssetRecord]) -> None:
 Google Spreadsheet からの資産情報取得を抽象化。
 
 ```python
-def get_latest_assets(self) -> DcpAssets:
+def get_latest_assets(self) -> dict[str, AssetEvaluation]:
     """最新の資産情報を取得"""
 
-def get_weekly_assets(self) -> dict[date, DcpAssets]:
+def get_weekly_assets(self) -> dict[date, dict[str, AssetEvaluation]]:
     """直近1週間の日付別資産情報を取得"""
 ```
 
@@ -226,7 +217,7 @@ def get_weekly_assets(self) -> dict[date, DcpAssets]:
 通知送信を抽象化。
 
 ```python
-def notify(self, messages: list[NotificationMessage]) -> None:
+def notify(self, messages: list[str]) -> None:
     """通知を送信"""
 ```
 
