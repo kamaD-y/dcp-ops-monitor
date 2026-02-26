@@ -31,4 +31,5 @@ class MockAssetRepository(IAssetRepository):
         return self.assets
 
     def get_weekly_assets(self) -> dict[date, dict[str, AssetEvaluation]]:
+        self.get_called = True
         return self.weekly_assets
