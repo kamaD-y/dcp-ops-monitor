@@ -1,16 +1,50 @@
-"""運用指標の計算"""
+from datetime import date, timedelta
 
-from datetime import datetime, timedelta
+from shared.domain.asset_object import AssetEvaluation
 
-from src.domain import AssetEvaluation, DcpOpsIndicators
+from .indicator_object import OpsIndicators
 
 # 固定パラメータ
-OPERATION_START_DATE = datetime(2016, 10, 1)
-RETIREMENT_DATE = datetime(2046, 10, 1)
+OPERATION_START_DATE = date(2016, 10, 1)
+RETIREMENT_DATE = date(2046, 10, 1)
 ANNUAL_CONTRIBUTION = 240_000  # 年間積立額: 24万円
 
 
-def calculate_year_diff(start_dt: datetime, end_dt: datetime) -> float:
+def calculate_indicators(total_assets: AssetEvaluation, today: date | None = None) -> OpsIndicators:
+    """資産情報から運用指標を計算するドメインサービス
+
+    Args:
+        total_assets: 総資産情報
+        today: 現在日（テスト用に注入可能、デフォルトは今日の日付）
+
+    Returns:
+        OpsIndicators: 運用指標
+    """
+    if today is None:
+        today = date.today()
+
+    operation_years = calculate_year_diff(start_dt=OPERATION_START_DATE, end_dt=today)
+
+    actual_yield_rate = calculate_annual_yield_rate(
+        cumulative_contributions=total_assets.cumulative_contributions,
+        gains_or_losses=total_assets.gains_or_losses,
+        operation_years=operation_years,
+    )
+
+    total_amount_at_60age = calculate_total_amount_at_60age(
+        yield_rate=actual_yield_rate,
+        asset_valuation=total_assets.asset_valuation,
+        today=today,
+    )
+
+    return OpsIndicators(
+        operation_years=operation_years,
+        actual_yield_rate=actual_yield_rate,
+        total_amount_at_60age=total_amount_at_60age,
+    )
+
+
+def calculate_year_diff(start_dt: date, end_dt: date) -> float:
     """開始日と終了日から年数を算出する
 
     Args:
@@ -47,7 +81,7 @@ def calculate_annual_yield_rate(
 def calculate_total_amount_at_60age(
     yield_rate: float,
     asset_valuation: int,
-    today: datetime,
+    today: date,
 ) -> int:
     """60歳時点の想定受取額を算出する
 
@@ -65,37 +99,3 @@ def calculate_total_amount_at_60age(
     total = int(ANNUAL_CONTRIBUTION * (((1 + yield_rate) ** years_to_60age - 1) / yield_rate))
     total += asset_valuation
     return total
-
-
-def calculate_indicators(total_assets: AssetEvaluation, today: datetime | None = None) -> DcpOpsIndicators:
-    """資産情報から運用指標を計算する
-
-    Args:
-        total_assets: 総資産情報
-        today: 現在日（テスト用に注入可能、デフォルトは現在日時）
-
-    Returns:
-        DcpOpsIndicators: 運用指標
-    """
-    if today is None:
-        today = datetime.now()
-
-    operation_years = calculate_year_diff(start_dt=OPERATION_START_DATE, end_dt=today)
-
-    actual_yield_rate = calculate_annual_yield_rate(
-        cumulative_contributions=total_assets.cumulative_contributions,
-        gains_or_losses=total_assets.gains_or_losses,
-        operation_years=operation_years,
-    )
-
-    total_amount_at_60age = calculate_total_amount_at_60age(
-        yield_rate=actual_yield_rate,
-        asset_valuation=total_assets.asset_valuation,
-        today=today,
-    )
-
-    return DcpOpsIndicators(
-        operation_years=operation_years,
-        actual_yield_rate=actual_yield_rate,
-        total_amount_at_60age=total_amount_at_60age,
-    )

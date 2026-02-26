@@ -1,14 +1,14 @@
 from datetime import date
 
 from src.application import format_summary_message
-from src.domain import AssetEvaluation, DcpOpsIndicators
+from src.domain import AssetEvaluation, OpsIndicators
 
 
 class TestFormatSummaryMessage:
     def test_format_summary_message__contains_header(self):
         """メッセージにヘッダーが含まれる"""
         total = AssetEvaluation(cumulative_contributions=900_000, gains_or_losses=300_000, asset_valuation=1_200_000)
-        indicators = DcpOpsIndicators(
+        indicators = OpsIndicators(
             operation_years=9.34,
             actual_yield_rate=0.036,
             total_amount_at_60age=15_000_000,
@@ -21,7 +21,7 @@ class TestFormatSummaryMessage:
     def test_format_summary_message__contains_total_assets(self):
         """メッセージに総評価が含まれる"""
         total = AssetEvaluation(cumulative_contributions=900_000, gains_or_losses=300_000, asset_valuation=1_200_000)
-        indicators = DcpOpsIndicators(
+        indicators = OpsIndicators(
             operation_years=9.34,
             actual_yield_rate=0.036,
             total_amount_at_60age=15_000_000,
@@ -36,7 +36,7 @@ class TestFormatSummaryMessage:
     def test_format_summary_message__contains_indicators(self):
         """メッセージに運用指標が含まれる"""
         total = AssetEvaluation(cumulative_contributions=900_000, gains_or_losses=300_000, asset_valuation=1_200_000)
-        indicators = DcpOpsIndicators(
+        indicators = OpsIndicators(
             operation_years=9.34,
             actual_yield_rate=0.036,
             total_amount_at_60age=15_000_000,
@@ -51,7 +51,7 @@ class TestFormatSummaryMessage:
     def test_format_summary_message__contains_weekly_valuations(self):
         """メッセージに資産評価額推移が含まれる"""
         total = AssetEvaluation(cumulative_contributions=900_000, gains_or_losses=300_000, asset_valuation=1_200_000)
-        indicators = DcpOpsIndicators(
+        indicators = OpsIndicators(
             operation_years=9.34,
             actual_yield_rate=0.036,
             total_amount_at_60age=15_000_000,
@@ -72,7 +72,7 @@ class TestFormatSummaryMessage:
     def test_format_summary_message__empty_weekly_valuations(self):
         """週次データが空の場合、推移セクションが表示されない"""
         total = AssetEvaluation(cumulative_contributions=900_000, gains_or_losses=300_000, asset_valuation=1_200_000)
-        indicators = DcpOpsIndicators(
+        indicators = OpsIndicators(
             operation_years=9.34,
             actual_yield_rate=0.036,
             total_amount_at_60age=15_000_000,

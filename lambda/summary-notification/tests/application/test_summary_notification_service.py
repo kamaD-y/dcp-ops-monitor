@@ -3,59 +3,51 @@ from datetime import date
 import pytest
 
 from src.application import SummaryNotificationService
-from src.domain import AssetEvaluation, AssetRetrievalFailed, DcpAssets
+from src.domain import AssetEvaluation, AssetRetrievalFailed
 from tests.fixtures.mocks import MockAssetRepository, MockNotifier
 
 
 @pytest.fixture
-def sample_assets() -> DcpAssets:
+def sample_assets() -> dict[str, AssetEvaluation]:
     """テスト用資産情報"""
-    return DcpAssets(
-        products={
+    return {
+        "商品A": AssetEvaluation(
+            cumulative_contributions=450_000,
+            gains_or_losses=150_000,
+            asset_valuation=600_000,
+        ),
+        "商品B": AssetEvaluation(
+            cumulative_contributions=450_000,
+            gains_or_losses=150_000,
+            asset_valuation=600_000,
+        ),
+    }
+
+
+def _make_weekly_assets() -> dict[date, dict[str, AssetEvaluation]]:
+    """テスト用の週次資産データを生成"""
+    return {
+        date(2026, 2, 12): {
+            "商品A": AssetEvaluation(
+                cumulative_contributions=450_000,
+                gains_or_losses=147_000,
+                asset_valuation=597_000,
+            ),
+        },
+        date(2026, 2, 13): {
+            "商品A": AssetEvaluation(
+                cumulative_contributions=450_000,
+                gains_or_losses=145_000,
+                asset_valuation=595_000,
+            ),
+        },
+        date(2026, 2, 14): {
             "商品A": AssetEvaluation(
                 cumulative_contributions=450_000,
                 gains_or_losses=150_000,
                 asset_valuation=600_000,
             ),
-            "商品B": AssetEvaluation(
-                cumulative_contributions=450_000,
-                gains_or_losses=150_000,
-                asset_valuation=600_000,
-            ),
         },
-    )
-
-
-def _make_weekly_assets() -> dict[date, DcpAssets]:
-    """テスト用の週次資産データを生成"""
-    return {
-        date(2026, 2, 12): DcpAssets(
-            products={
-                "商品A": AssetEvaluation(
-                    cumulative_contributions=450_000,
-                    gains_or_losses=147_000,
-                    asset_valuation=597_000,
-                ),
-            },
-        ),
-        date(2026, 2, 13): DcpAssets(
-            products={
-                "商品A": AssetEvaluation(
-                    cumulative_contributions=450_000,
-                    gains_or_losses=145_000,
-                    asset_valuation=595_000,
-                ),
-            },
-        ),
-        date(2026, 2, 14): DcpAssets(
-            products={
-                "商品A": AssetEvaluation(
-                    cumulative_contributions=450_000,
-                    gains_or_losses=150_000,
-                    asset_valuation=600_000,
-                ),
-            },
-        ),
     }
 
 
@@ -145,15 +137,13 @@ class TestCalculateWeeklyValuations:
     def test_calculate_weekly_valuations__single_day(self):
         """1日分のデータの場合、前日比はNone"""
         weekly_assets = {
-            date(2026, 2, 14): DcpAssets(
-                products={
-                    "商品A": AssetEvaluation(
-                        cumulative_contributions=450_000,
-                        gains_or_losses=150_000,
-                        asset_valuation=600_000,
-                    ),
-                },
-            ),
+            date(2026, 2, 14): {
+                "商品A": AssetEvaluation(
+                    cumulative_contributions=450_000,
+                    gains_or_losses=150_000,
+                    asset_valuation=600_000,
+                ),
+            },
         }
 
         result = SummaryNotificationService._calculate_weekly_valuations(weekly_assets)

@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from src.domain import AssetRetrievalFailed, DcpAssets, IAssetRepository
+from src.domain import AssetEvaluation, AssetRetrievalFailed, IAssetRepository
 
 
 class MockAssetRepository(IAssetRepository):
@@ -13,8 +13,8 @@ class MockAssetRepository(IAssetRepository):
 
     def __init__(
         self,
-        assets: DcpAssets | None = None,
-        weekly_assets: dict[date, DcpAssets] | None = None,
+        assets: dict[str, AssetEvaluation] | None = None,
+        weekly_assets: dict[date, dict[str, AssetEvaluation]] | None = None,
         should_fail: bool = False,
     ) -> None:
         self.assets = assets
@@ -22,7 +22,7 @@ class MockAssetRepository(IAssetRepository):
         self.should_fail = should_fail
         self.get_called = False
 
-    def get_latest_assets(self) -> DcpAssets:
+    def get_latest_assets(self) -> dict[str, AssetEvaluation]:
         self.get_called = True
         if self.should_fail:
             raise AssetRetrievalFailed.no_assets_in_spreadsheet()
@@ -30,5 +30,6 @@ class MockAssetRepository(IAssetRepository):
             raise AssetRetrievalFailed.no_assets_in_spreadsheet()
         return self.assets
 
-    def get_weekly_assets(self) -> dict[date, DcpAssets]:
+    def get_weekly_assets(self) -> dict[date, dict[str, AssetEvaluation]]:
+        self.get_called = True
         return self.weekly_assets

@@ -1,28 +1,27 @@
-from datetime import datetime
+from datetime import date
 
-from src.application import calculate_indicators
-from src.application.indicators_calculator import (
+from src.domain import AssetEvaluation, calculate_indicators
+from src.domain.indicators_calculator import (
     calculate_annual_yield_rate,
     calculate_total_amount_at_60age,
     calculate_year_diff,
 )
-from src.domain import AssetEvaluation
 
 
 class TestCalculateYearDiff:
     def test_calculate_year_diff__one_year(self):
         """1年差を正しく計算できる"""
         result = calculate_year_diff(
-            start_dt=datetime(2016, 10, 1),
-            end_dt=datetime(2017, 10, 1),
+            start_dt=date(2016, 10, 1),
+            end_dt=date(2017, 10, 1),
         )
         assert result == 1.0
 
     def test_calculate_year_diff__fractional_years(self):
         """端数年数を正しく計算できる"""
         result = calculate_year_diff(
-            start_dt=datetime(2016, 10, 1),
-            end_dt=datetime(2026, 2, 5),
+            start_dt=date(2016, 10, 1),
+            end_dt=date(2026, 2, 5),
         )
         assert result > 9.0
         assert result < 10.0
@@ -54,7 +53,7 @@ class TestCalculateTotalAmountAt60age:
         result = calculate_total_amount_at_60age(
             yield_rate=0.03,
             asset_valuation=1_200_000,
-            today=datetime(2026, 2, 5),
+            today=date(2026, 2, 5),
         )
         assert result > 1_200_000  # 積立分 + 現在の資産
         assert isinstance(result, int)
@@ -68,7 +67,7 @@ class TestCalculateIndicators:
             gains_or_losses=300_000,
             asset_valuation=1_200_000,
         )
-        today = datetime(2026, 2, 5)
+        today = date(2026, 2, 5)
 
         result = calculate_indicators(total_assets, today=today)
 
