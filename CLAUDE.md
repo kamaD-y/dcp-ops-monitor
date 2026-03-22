@@ -2,7 +2,8 @@
 
 ## プロジェクト概要
 このシステムは、確定拠出年金 (Defined Contribution Plan) の運用状況の管理を楽にする為、
-平日に確定拠出年金 Web ページをスクレイピングし、資産情報を Google Spreadsheet に蓄積します。
+平日に確定拠出年金 Web ページをスクレイピングし、資産情報を Google Spreadsheet に蓄積するとともに、
+週次で運用サマリを LINE に通知します。
 
 ## 環境
 
@@ -23,6 +24,7 @@
 ## ディレクトリ構成
 
 ```
+├── .steering-docs/               # 作業単位のドキュメント（要件・設計・タスクリスト）
 ├── bin/dcp-ops-monitor.ts        # CDK アプリケーション
 ├── lib/dcp-ops-monitor-stack.ts  # スタック
 ├── docs/                         # 設計/アーキテクチャ
@@ -161,7 +163,7 @@ $ mkdir -p .steering-docs/20260126-add-tag-feature
 - 大きな設計変更時のみ更新
 - プロジェクト全体の「北極星」として機能
 
-### 作業単位のドキュメント (`steering-docs/`)
+### 作業単位のドキュメント (`.steering-docs/`)
 - 特定の作業・変更に特化
 - 作業ごとに新しいディレクトリを作成
 - 作業完了後は履歴として保持
