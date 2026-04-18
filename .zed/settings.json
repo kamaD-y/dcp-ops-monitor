@@ -1,0 +1,29 @@
+{
+  "format_on_save": "on",
+  "languages": {
+    "JSON": {
+      "language_servers": ["biome"],
+      "formatter": "language_server",
+      "code_actions_on_format": {
+        "source.fixAll": true,
+        "source.organizeImports": true
+      }
+    },
+    "TypeScript": {
+      "language_servers": ["biome"],
+      "formatter": "language_server",
+      "code_actions_on_format": {
+        "source.fixAll": true,
+        "source.organizeImports": true
+      }
+    },
+    "Python": {
+      "language_servers": ["ruff"],
+      "formatter": "language_server",
+      "code_actions_on_format": {
+        "source.fixAll": true,
+        "source.organizeImports": true
+      }
+    }
+  }
+}
