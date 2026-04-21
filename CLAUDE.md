@@ -1,10 +1,5 @@
 # CLAUDE.md
 
-## プロジェクト概要
-このシステムは、確定拠出年金 (Defined Contribution Plan) の運用状況の管理を楽にする為、
-平日に確定拠出年金 Web ページをスクレイピングし、資産情報を Google Spreadsheet に蓄積するとともに、
-週次で運用サマリを LINE に通知します。
-
 ## 環境
 
 ### パッケージマネージャー
@@ -20,32 +15,6 @@
 - `uv`: Python パッケージマネージャー
 - `Ruff`: Python コードのリンティング、フォーマット
 - `Ty`: Python コードの型チェック
-
-## ディレクトリ構成
-
-```
-├── .steering-docs/               # 作業単位のドキュメント（要件・設計・タスクリスト）
-├── bin/dcp-ops-monitor.ts        # CDK アプリケーション
-├── lib/dcp-ops-monitor-stack.ts  # スタック
-├── docs/                         # 設計/アーキテクチャ
-├── localstack/ready.sh           # localstack 起動スクリプト (docker compose で使用)
-├── test/cdk/                     # CDK 関連テスト
-├── lambda/                       # Lambda コード (uv workspace)
-│   ├── shared/                   # 共通パッケージ
-│   ├── web-scraping/             # 資産情報収集 Lambda
-│   └── summary-notification/     # サマリ通知 Lambda
-├── CLAUDE.md
-├── README.md
-├── biome.jsonc
-├── cdk.json
-├── docker-compose.yaml
-├── jest.config.js
-├── lefthook.yml
-├── package-lock.json
-├── package.json
-├── pyproject.toml
-└── tsconfig.json
-```
 
 ## 開発コマンド
 ### cdk 開発環境の構築 (初回のみ)
@@ -171,6 +140,7 @@ $ mkdir -p .steering-docs/20260126-add-tag-feature
 
 ## ドキュメント管理
 
+アーキテクチャ概要（概要、コードマップ、不変条件）: @ARCHITECTURE.md  
 プロダクト要件（ビジョン、機能要件、非機能要件）: @docs/product-requirements.md  
 機能設計（データモデル、コンポーネント設計、処理フロー）: @docs/functional-design.md  
 開発ガイドライン（コーディング規約、命名規則、Git 規約）: @docs/development-guidelines.md

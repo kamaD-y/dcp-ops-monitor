@@ -34,15 +34,6 @@ sequenceDiagram
     Lambda->>GSheet: 資産レコード保存（日次フラットレコード）
 ```
 
-**使用する AWS サービス**:
-- EventBridge: スケジュール実行（平日のみ）
-- Lambda (Docker): スクレイピング処理
-- SSM Parameter Store: 認証情報・スプレッドシート設定の保存
-- S3: エラー時の HTML/スクリーンショット保存
-
-**使用する外部サービス**:
-- Google Spreadsheet: 資産レコードの蓄積（gspread + サービスアカウント認証）
-
 ### サマリ通知機能 (summary-notification)
 
 EventBridge による週次スケジュール実行で起動し、Google Spreadsheet から最新の資産情報を取得して運用指標を計算し、サマリを通知します。
@@ -67,14 +58,6 @@ sequenceDiagram
     Lambda->>Lambda: メッセージフォーマット
     Lambda->>LINE: 通知送信
 ```
-
-**使用する AWS サービス**:
-- EventBridge: 週次スケジュール実行（日曜のみ）
-- Lambda: サマリ通知処理（Python ランタイム）
-- SSM Parameter Store: スプレッドシート設定・LINE 設定の保存
-
-**使用する外部サービス**:
-- Google Spreadsheet: 資産レコードの取得（gspread + サービスアカウント認証）
 
 ---
 
@@ -233,34 +216,3 @@ def notify(self, messages: list[str]) -> None:
 - 認証: Channel Access Token（Bearer）
 - メッセージ形式: JSON
 
----
-
-## エラーハンドリング
-
-### 資産情報収集機能
-
-| 例外 | 発生条件 | 対応 |
-|------|---------|------|
-| ScrapingFailed | スクレイピング失敗（ページ遷移・抽出） | スクリーンショット/HTML 保存（errors/）、ERROR ログ出力 |
-| ArtifactUploadError | S3 へのエラーアーティファクト保存失敗 | ERROR ログ出力 |
-| AssetRecordError | 資産レコードの保存失敗（Google Spreadsheet） | ERROR ログ出力 |
-
-### サマリ通知機能
-
-| 例外 | 発生条件 | 対応 |
-|------|---------|------|
-| AssetRetrievalFailed | スプレッドシートに資産情報がない | ERROR ログ出力 |
-| NotificationFailed | 通知送信失敗 | ERROR ログ出力、Lambda リトライ |
-
----
-
-## 監視設計
-
-各 Lambda 関数のエラーメトリクスを CloudWatch Alarm で監視し、SNS Topic 経由で通知します。
-
-| 監視対象 | メトリクス | 評価期間 | しきい値 | 通知先 |
-|---------|----------|---------|---------|-------|
-| web-scraping Lambda | Errors | 5 分 | >= 1 | SNS Topic |
-| summary-notification Lambda | Errors | 5 分 | >= 1 | SNS Topic |
-
-- データポイントなし（Lambda 未実行）の場合はアラームを発火しない（TreatMissingData: NOT_BREACHING）
