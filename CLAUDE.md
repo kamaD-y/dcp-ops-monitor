@@ -119,7 +119,6 @@ mkdir -p .steering-docs/[YYYYMMDD]-[開発タイトル]
 |---------|------|
 | @ARCHITECTURE.md | アーキテクチャ概要（概要、コードマップ、不変条件） |
 | @CONTRIBUTING.md | Lambda アーキテクチャ方針・shared の背景・各 Lambda の実装詳細 |
-| @docs/development-guidelines.md | 開発ガイドライン（コーディング規約、命名規則、Git 規約） |
 
 ### 作業単位のドキュメント (`.steering-docs/`)
 
