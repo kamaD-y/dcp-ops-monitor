@@ -1,5 +1,6 @@
 ---
-globs: "{lib,bin,test}/**/*.ts"
+paths:
+  - "{lib,bin,test}/**/*.ts"
 ---
 
 # CDK（TypeScript）開発ガイドライン

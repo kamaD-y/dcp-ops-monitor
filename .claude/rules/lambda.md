@@ -1,5 +1,6 @@
 ---
-globs: "lambda/**/*.py"
+paths:
+  - "lambda/**/*.py"
 ---
 
 # Lambda（Python）開発ガイドライン
