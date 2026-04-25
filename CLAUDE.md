@@ -4,8 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 環境
 
-### パッケージマネージャー
-- [mise](https://mise.jdx.dev/installing-mise.html): パッケージマネージャー
+- パッケージマネージャー: [mise](https://mise.jdx.dev/installing-mise.html)
 
 ## セットアップ
 
@@ -103,7 +102,7 @@ mkdir -p .steering-docs/[YYYYMMDD]-[開発タイトル]
 
 #### 4. 永続的ドキュメント更新（必要な場合のみ）
 
-変更が基本設計に影響する場合、該当する `docs/` 内のドキュメントを更新する
+変更が基本設計に影響する場合、該当する永続ドキュメント（`ARCHITECTURE.md`、`CONTRIBUTING.md`、`docs/`）を更新する
 
 #### 5. 実装
 
@@ -111,7 +110,7 @@ mkdir -p .steering-docs/[YYYYMMDD]-[開発タイトル]
 
 ## ドキュメント管理
 
-### 永続的ドキュメント (`docs/`)
+### 永続的ドキュメント
 
 基本設計を記述し、大きな設計変更時のみ更新する。
 
