@@ -10,7 +10,7 @@
 
 ※運用商品の見直しなどの操作には、対応していません。
 
-アーキテクチャの詳細は [ARCHITECTURE.md](ARCHITECTURE.md) を参照してください。
+アーキテクチャの詳細は [ARCHITECTURE.md](docs/ARCHITECTURE.md) を参照してください。
 
 ## 構成図
 

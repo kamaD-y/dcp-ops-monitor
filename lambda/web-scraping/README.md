@@ -4,4 +4,4 @@
 
 Selenium の依存関係の問題を回避するため、Docker コンテナイメージとしてデプロイします。
 
-詳細は [CONTRIBUTING.md](../../CONTRIBUTING.md) を参照してください。
+詳細は [CONTRIBUTING.md](../../docs/CONTRIBUTING.md) を参照してください。
