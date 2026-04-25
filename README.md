@@ -10,33 +10,8 @@
 
 ※運用商品の見直しなどの操作には、対応していません。
 
-構成及び、処理の流れは下記のとおりです。
+アーキテクチャの詳細は [ARCHITECTURE.md](ARCHITECTURE.md) を参照してください。
 
-## 構成
-### 構成図
+## 構成図
 
 ![Architecture](docs/dcp-ops-monitor.drawio.png)
-
-## 搭載機能
-
-### 1. 資産情報収集
-平日に確定拠出年金の Web ページにアクセスし、資産情報をスクレイピングして Google Spreadsheet に保存します。
-
-**機能概要:**
-- EventBridge によるスケジュール実行（平日 09:00 JST）
-- Selenium を使用した Web スクレイピング
-- 資産情報の Google Spreadsheet への保存（日次フラットレコード）
-- スクレイピング失敗時のエラーアーティファクト（スクリーンショット/HTML）を S3 に保存
-
-詳細は [lambda/web-scraping/README.md](lambda/web-scraping/README.md) を参照してください。
-
-### 2. サマリ通知
-Google Spreadsheet に蓄積された資産情報を取得し、運用指標を計算してサマリを通知します。
-
-**機能概要:**
-- EventBridge によるスケジュール実行（毎週日曜 09:00 JST）
-- Google Spreadsheet から最新の資産情報を取得し、総評価・運用指標を計算
-- 直近1週間の日次資産評価額推移（前日比）を算出
-- LINE 経由でサマリ通知を送信
-
-詳細は [lambda/summary-notification/README.md](lambda/summary-notification/README.md) を参照してください。
