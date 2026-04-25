@@ -3,7 +3,7 @@
   "editor.formatOnSave": true,
   "editor.useTabStops": false,
   "files.insertFinalNewline": true,
-  "ruff.configuration": "pyproject.toml",
+  "ruff.configuration": "lambda/pyproject.toml",
   "ruff.configurationPreference": "filesystemFirst",
   "python.languageServer": "None",
   "[python]": {

@@ -14,11 +14,11 @@ pre-commit:
 
     lint:lambda:
       glob: "lambda/**/*.py"
-      run: uvx ruff check --no-fix
+      run: uvx ruff check --no-fix lambda/
 
     format:lambda:
       glob: "lambda/**/*.py"
-      run: uvx ruff format --check
+      run: uvx ruff format --check lambda/
 
     type-check:lambda:
       glob: "lambda/**/*.py"

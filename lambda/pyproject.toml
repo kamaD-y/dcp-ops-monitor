@@ -1,2 +1,21 @@
 [tool.uv.workspace]
 members = ["shared", "web-scraping", "summary-notification"]
+
+[tool.ruff]
+line-length = 120
+include = ["**/*.py"]
+exclude = [".venv"]
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+]
+ignore = ["F401", "F841"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

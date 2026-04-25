@@ -11,12 +11,12 @@
     "test:web-scraping": "cd lambda/web-scraping && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1",
     "test:summary-notification": "cd lambda/summary-notification && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1",
     "cdk": "cdk",
-    "lint": "biome lint --write . && uvx ruff check",
-    "lint:ci": "biome lint . && uvx ruff check --no-fix",
+    "lint": "biome lint --write . && uvx ruff check lambda/",
+    "lint:ci": "biome lint . && uvx ruff check --no-fix lambda/",
     "type-check": "cd lambda/web-scraping && uvx ty check src/ --ignore unresolved-import --ignore unresolved-attribute",
     "type-check:all": "npm run type-check",
-    "format": "biome format --write . && uvx ruff format",
-    "format:ci": "biome format . && uvx ruff format --check"
+    "format": "biome format --write . && uvx ruff format lambda/",
+    "format:ci": "biome format . && uvx ruff format --check lambda/"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.10",
