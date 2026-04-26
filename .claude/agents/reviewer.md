@@ -46,7 +46,7 @@ dcp-ops-monitor の実装差分をレビューする専門エージェント。*
 
 ### 5. 命名規則
 
-- Python: snake_case、TypeScript: kebab-case、ディレクトリ: kebab-case
+- `.claude/rules/common.md`（ファイル・ディレクトリ）/ `lambda.md`（Python）/ `cdk.md`（TypeScript）に従っているか
 - 識別子から意図が読み取れるか
 
 ### 6. 過剰実装・複雑性
