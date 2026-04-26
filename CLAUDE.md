@@ -70,42 +70,6 @@ docker compose up --build  # イメージ再ビルドして起動
 
 LocalStack 起動時に `localstack/ready.sh` が S3 バケットと SSM パラメータを自動作成する（`.env.local` の値を使用）。
 
-## 開発プロセス
-
-### 機能追加・修正時の手順
-
-#### 1. 影響分析
-
-- 永続的ドキュメント（`ARCHITECTURE.md`、`CONTRIBUTING.md`、`docs/`）への影響を確認
-- 変更が基本設計に影響する場合は該当ドキュメントを更新
-
-#### 2. ステアリングディレクトリ作成
-
-```bash
-mkdir -p docs/steering-docs/[YYYYMMDD]-[開発タイトル]
-# 例: mkdir -p docs/steering-docs/20260126-add-tag-feature
-```
-
-#### 3. 作業ドキュメント作成
-
-各ファイル作成後、必ず確認・承認を得てから次に進む:
-
-1. `docs/steering-docs/[YYYYMMDD]-[開発タイトル]/requirements.md` — 要求内容
-2. `docs/steering-docs/[YYYYMMDD]-[開発タイトル]/design.md` — 設計
-3. `docs/steering-docs/[YYYYMMDD]-[開発タイトル]/task-list.md` — タスクリスト
-
-**重要**: 1 ファイル毎に作成後、必ず確認・承認を得てから次のファイル作成を行う
-
-**タスクリスト作成時の注意**: コミット単位でタスクをグループ化する。pre-commit フックでテストが自動実行されるため、テストが通る単位を意識してタスクを分割する
-
-#### 4. 永続的ドキュメント更新（必要な場合のみ）
-
-変更が基本設計に影響する場合、該当する永続ドキュメント（`ARCHITECTURE.md`、`CONTRIBUTING.md`、`docs/`）を更新する
-
-#### 5. 実装
-
-`docs/steering-docs/[YYYYMMDD]-[開発タイトル]/task-list.md` に基づいて実装を進める
-
 ## ドキュメント管理
 
 ### 永続的ドキュメント
@@ -114,8 +78,8 @@ mkdir -p docs/steering-docs/[YYYYMMDD]-[開発タイトル]
 
 | ファイル | 内容 |
 |---------|------|
-| @ARCHITECTURE.md | アーキテクチャ概要（概要、コードマップ、不変条件） |
-| @CONTRIBUTING.md | Lambda アーキテクチャ方針・shared の背景・各 Lambda の実装詳細 |
+| @docs/ARCHITECTURE.md | アーキテクチャ概要（概要、コードマップ、不変条件） |
+| @docs/CONTRIBUTING.md | Lambda アーキテクチャ方針・shared の背景・各 Lambda の実装詳細 |
 
 ### 作業単位のドキュメント (`docs/steering-docs/`)
 
